@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- prevent favicon request (https://stackoverflow.com/a/13416784) -->
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+        <title>Foobar</title>
+        {% if settings.localVendorAssets %}
+            {% if settings.production %}
+        <link rel="stylesheet" href="vendor/bulma-0.7.2/css/bulma.min.css" integrity="sha256-2pUeJf+y0ltRPSbKOeJh09ipQFYxUdct5nTY6GAXswA=" crossorigin="anonymous" />
+            {% else %}
+        <link rel="stylesheet" href="vendor/bulma-0.7.2/css/bulma.css" integrity="sha256-dMQYvN6BU9M4mHK94P22cZ4dPGTSGOVP41yVXvXatws=" crossorigin="anonymous" />
+            {% endif %}
+        {% else %}
+            {% if settings.production %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" integrity="sha256-2pUeJf+y0ltRPSbKOeJh09ipQFYxUdct5nTY6GAXswA=" crossorigin="anonymous" />
+            {% else %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.css" integrity="sha256-dMQYvN6BU9M4mHK94P22cZ4dPGTSGOVP41yVXvXatws=" crossorigin="anonymous" />
+            {% endif %}
+        {% endif %}
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+        <link rel="stylesheet" href="styles/app.css">
+    </head>
+    <body>
+
+        <section class="section">
+            <div class="container">
+                <h1 class="title">FORMS: It works!</h1>
+                <p class="subtitle">Another website with <strong>Bulma</strong>!</p>
+            </div>
+        </section>
+
+        <script type="text/javascript">
+            window.__INITIAL_STATE__ = '{{ initialState | raw }}';
+            let initialState = JSON.parse(window.__INITIAL_STATE__);
+        </script>
+
+    </body>
+</html>

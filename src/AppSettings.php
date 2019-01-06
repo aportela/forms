@@ -7,6 +7,14 @@
     return [
         'settings' => [
             'phpRequiredExtensions' => array('pdo_sqlite', 'mbstring'),
+            'twigParams' => [
+                'production' => false,
+                'localVendorAssets' => true // use local vendor assets (vs remote cdn)
+            ],
+            // Renderer settings
+            'renderer' => [
+                'template_path' => __DIR__ . '/../templates',
+            ],
             // database settings
             'database' => [
                 'type' => "PDO_SQLITE", // supported types: PDO_SQLITE
