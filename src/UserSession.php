@@ -6,9 +6,10 @@
 
     class UserSession {
 
-        public static function set($userId = "", string $email = "") {
+        public static function set($userId = "", string $email = "", bool $isAdministrator) {
             $_SESSION["userId"] = $userId;
             $_SESSION["email"] = $email;
+            $_SESSION["isAdministrator"] = $isAdministrator;
         }
 
         public static function clear() {
@@ -47,6 +48,13 @@
          */
         public static function getEmail() {
             return(isset($_SESSION["email"]) ? $_SESSION["email"]: null);
+        }
+
+        /**
+         * return logged user administrator flag
+         */
+        public static function isAdministrator() {
+            return(isset($_SESSION["isAdministrator"]) ? $_SESSION["isAdministrator"]: false);
         }
 
     }

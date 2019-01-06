@@ -15,11 +15,13 @@
         public $passwordHash;
         public $creationDate;
         public $deletionDate;
+        public $isAdministrator;
 
-        public function __construct (string $id = "", string $email = "", string $password = "") {
+        public function __construct (string $id = "", string $email = "", string $password = "", bool $isAdministrator = false) {
             $this->id = $id;
             $this->email = $email;
             $this->password = $password;
+            $this->isAdministrator = $isAdministrator;
         }
 
         public function __destruct() {
@@ -47,8 +49,9 @@
                             (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
                             (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email)),
                             (new \Forms\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password)),
+                            (new \Forms\Database\DBParam())->str(":is_administrator", $this->isAdministrator ? "Y": "N")
                         );
-                        return($dbh->execute("INSERT INTO USER (id, email, password_hash, creation_date) VALUES(:id, :email, :password_hash, CURRENT_TIMESTAMP)", $params));
+                        return($dbh->execute("INSERT INTO USER (id, email, password_hash, creation_date, is_administrator) VALUES(:id, :email, :password_hash, CURRENT_TIMESTAMP, :is_administrator)", $params));
                     } else {
                         throw new \Forms\Exception\InvalidParamsException("password");
                     }
@@ -72,9 +75,10 @@
                         $params = array(
                             (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
                             (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email)),
-                            (new \Forms\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password))
+                            (new \Forms\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password)),
+                            (new \Forms\Database\DBParam())->str(":is_administrator", $this->isAdministrator ? "Y": "N")
                         );
-                        return($dbh->execute(" UPDATE USER SET email = :email, password_hash = :password_hash WHERE id = :id ", $params));
+                        return($dbh->execute(" UPDATE USER SET email = :email, password_hash = :password_hash, is_administrator = :is_administrator WHERE id = :id ", $params));
                     } else {
                         throw new \Forms\Exception\InvalidParamsException("password");
                     }
@@ -110,11 +114,11 @@
         public function get(\Forms\Database\DB $dbh) {
             $results = null;
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
-                $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash, creation_date AS creationDate, deletion_date AS deletionDate FROM USER WHERE id = :id ", array(
+                $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash, creation_date AS creationDate, deletion_date AS deletionDate, is_administrator AS isAdministrator FROM USER WHERE id = :id ", array(
                     (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id))
                 ));
             } else if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
-                $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash, creation_date AS creationDate, deletion_date AS deletionDate FROM USER WHERE email = :email ", array(
+                $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash, creation_date AS creationDate, deletion_date AS deletionDate, is_administrator AS isAdministrator FROM USER WHERE email = :email ", array(
                     (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email))
                 ));
             } else {
@@ -127,6 +131,8 @@
                 $this->creationDate = $results[0]->creationDate;
                 if (! empty($results[0]->deletionDate)) {
                     throw new \Forms\Exception\DeletedException("");
+                } else {
+                    $this->isAdministrator = $results[0]->isAdministrator == "Y";
                 }
             } else {
                 throw new \Forms\Exception\NotFoundException("");
@@ -145,7 +151,7 @@
             if (! empty($this->password)) {
                 $this->get($dbh);
                 if (password_verify($this->password, $this->passwordHash)) {
-                    \Forms\UserSession::set($this->id, $this->email);
+                    \Forms\UserSession::set($this->id, $this->email, $this->isAdministrator);
                     return(true);
                 } else {
                     return(false);

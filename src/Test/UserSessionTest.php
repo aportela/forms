@@ -53,7 +53,7 @@
 
         public function testIsLogged(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server.com", "secret", $id, "");
+            $u = new \Forms\User($id, $id . "@server.com", "secret");
             $u->add(self::$dbh);
             $u->login(self::$dbh);
             $this->assertTrue(\Forms\UserSession::isLogged());
@@ -68,7 +68,7 @@
         public function testGetUserId(): void {
             \Forms\User::logout();
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server.com", "secret", $id, "");
+            $u = new \Forms\User($id, $id . "@server.com", "secret");
             $u->add(self::$dbh);
             $u->login(self::$dbh);
             $this->assertEquals($u->id, \Forms\UserSession::getUserId());
@@ -77,16 +77,24 @@
         public function testGetEmailWithoutSession(): void {
             \Forms\User::logout();
             $this->assertNull(\Forms\UserSession::getEmail());
-
         }
 
         public function testGetEmail(): void {
             \Forms\User::logout();
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server.com", "secret", $id, "");
+            $u = new \Forms\User($id, $id . "@server.com", "secret");
             $u->add(self::$dbh);
             $u->login(self::$dbh);
             $this->assertEquals($u->email, \Forms\UserSession::getEmail());
+        }
+
+        public function testGetAdministrationFlag(): void {
+            \Forms\User::logout();
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Forms\User($id, $id . "@server.com", "secret", true);
+            $u->add(self::$dbh);
+            $u->login(self::$dbh);
+            $this->assertTrue(\Forms\UserSession::isAdministrator());
         }
 
     }

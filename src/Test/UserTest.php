@@ -95,6 +95,15 @@
             }
         }
 
+        public function testAddWithAdministratorPrivileges(): void {
+            if (self::$container->get('settings')['common']['allowSignUp']) {
+                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                $this->assertTrue((new \Forms\User($id, $id . "@server.com", "secret", true))->add(self::$dbh));
+            } else {
+                $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
+            }
+        }
+
         public function testUpdateWithoutId(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("id");
@@ -125,6 +134,14 @@
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $u = new \Forms\User($id, $id . "@server.com", "secret");
             $this->assertTrue($u->add(self::$dbh) && $u->update(self::$dbh));
+        }
+
+        public function testUpdateWithAdministrationPrivileges(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Forms\User($id, $id . "@server.com", "secret");
+            $u->add(self::$dbh);
+            $u->isAdministrator = true;
+            $this->assertTrue($u->update(self::$dbh));
         }
 
 

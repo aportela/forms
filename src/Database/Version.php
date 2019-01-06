@@ -59,6 +59,11 @@
                             PRIMARY KEY([user_id], [group_id])
                         );
                     '
+                ),
+                "1.04" => array(
+                    '
+                        ALTER TABLE [USER] ADD `is_administrator` VARCHAR(1) NOT NULL DEFAULT "N"
+                    '
                 )
             ),
         );
