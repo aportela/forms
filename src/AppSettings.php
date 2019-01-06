@@ -27,6 +27,9 @@
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/database.log',
                 'level' => \Monolog\Logger::DEBUG
             ],
+            'common' => [
+                'allowSignUp' => true // allow user public sign-ups
+            ]
         ],
     ];
 
