@@ -91,11 +91,11 @@
          */
         public function delete(\Forms\Database\DB $dbh) {
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
-                return($dbh->execute(" UPDATE USER SET deleted = CURRENT_TIMESTAMP WHERE id = :id ", array(
+                return($dbh->execute(" UPDATE USER SET deletion_date = CURRENT_TIMESTAMP WHERE id = :id ", array(
                     (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)))
                 ));
             } else if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
-                return($dbh->execute(" UPDATE USER SET deleted = CURRENT_TIMESTAMP WHERE email = :email ", array(
+                return($dbh->execute(" UPDATE USER SET deletion_date = CURRENT_TIMESTAMP WHERE email = :email ", array(
                     (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email)))
                 ));
             } else {
