@@ -61,6 +61,16 @@
             $this->assertTrue((new \Forms\Group($id, $id, "group description"))->add(self::$dbh));
         }
 
+        public function testAddWithUsers(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $g = new \Forms\Group($id, $id, "group description");
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Forms\User($id, $id . "@server.com", "secret");
+            $u->add(self::$dbh);
+            $g->users = array($u);
+            $this->assertTrue($g->add(self::$dbh));
+        }
+
         public function testUpdateWithoutId(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("id");
@@ -77,6 +87,16 @@
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $g = new \Forms\Group($id, $id, "group description");
             $this->assertTrue($g->add(self::$dbh) && $g->update(self::$dbh));
+        }
+
+        public function testUpdateWithUsers(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $g = new \Forms\Group($id, $id, "group description");
+            $g->add(self::$dbh);
+            $u = new \Forms\User($id, $id . "@server.com", "secret");
+            $u->add(self::$dbh);
+            $g->users = array($u);
+            $this->assertTrue($g->update(self::$dbh));
         }
 
         public function testDeleteWithoutId(): void {

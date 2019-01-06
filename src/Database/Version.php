@@ -50,6 +50,15 @@
                             [deletion_date] INTEGER
                         );
                     '
+                ),
+                "1.03" => array(
+                    '
+                        CREATE TABLE [USER_GROUP] (
+                            [user_id] VARCHAR(36) NOT NULL,
+                            [group_id] VARCHAR(36) NOT NULL,
+                            PRIMARY KEY([user_id], [group_id])
+                        );
+                    '
                 )
             ),
         );
