@@ -29,6 +29,16 @@
 
         private $upgradeQueries = array(
             "PDO_SQLITE" => array(
+                "1.01" => array(
+                    '
+                        CREATE TABLE [USER] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [email] VARCHAR(255) UNIQUE NOT NULL,
+                            [password_hash] VARCHAR(60) NOT NULL,
+                            [creation_date] INTEGER NOT NULL
+                        );
+                    '
+                )
             ),
         );
 
