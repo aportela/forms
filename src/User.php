@@ -13,6 +13,8 @@
         public $email;
         public $password;
         public $passwordHash;
+        public $creationDate;
+        public $deletionDate;
 
         public function __construct (string $id = "", string $email = "", string $password = "") {
             $this->id = $id;
@@ -94,12 +96,8 @@
                 return($dbh->execute(" UPDATE USER SET deletion_date = CURRENT_TIMESTAMP WHERE id = :id ", array(
                     (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)))
                 ));
-            } else if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
-                return($dbh->execute(" UPDATE USER SET deletion_date = CURRENT_TIMESTAMP WHERE email = :email ", array(
-                    (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email)))
-                ));
             } else {
-                throw new \Forms\Exception\InvalidParamsException("id,email");
+                throw new \Forms\Exception\InvalidParamsException("id");
             }
         }
 
@@ -112,11 +110,11 @@
         public function get(\Forms\Database\DB $dbh) {
             $results = null;
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
-                $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash FROM USER WHERE id = :id ", array(
+                $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash, creation_date AS creationDate, deletion_date AS deletionDate FROM USER WHERE id = :id ", array(
                     (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id))
                 ));
             } else if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
-                $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash FROM USER WHERE email = :email ", array(
+                $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash, creation_date AS creationDate, deletion_date AS deletionDate FROM USER WHERE email = :email ", array(
                     (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email))
                 ));
             } else {
@@ -126,6 +124,10 @@
                 $this->id = $results[0]->id;
                 $this->email = $results[0]->email;
                 $this->passwordHash = $results[0]->passwordHash;
+                $this->creationDate = $results[0]->creationDate;
+                if (! empty($results[0]->deletionDate)) {
+                    throw new \Forms\Exception\DeletedException("");
+                }
             } else {
                 throw new \Forms\Exception\NotFoundException("");
             }
