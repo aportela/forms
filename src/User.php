@@ -130,6 +130,36 @@
                 throw new \Forms\Exception\NotFoundException("");
             }
         }
+
+        /**
+         * try sign in with specified credentials
+         * id || email & password must be set
+         *
+         * @param \Forms\Database\DB $dbh database handler
+         *
+         * @return bool password match (true | false)
+         */
+        public function login(\Forms\Database\DB $dbh): bool {
+            if (! empty($this->password)) {
+                $this->get($dbh);
+                if (password_verify($this->password, $this->passwordHash)) {
+                    \Forms\UserSession::set($this->id, $this->email);
+                    return(true);
+                } else {
+                    return(false);
+                }
+            } else {
+                throw new \Forms\Exception\InvalidParamsException("password");
+            }
+        }
+
+        /**
+         * sign out (close session)
+         */
+        public static function logout(): bool {
+            \Forms\UserSession::clear();
+            return(true);
+        }
     }
 
 ?>

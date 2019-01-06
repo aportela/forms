@@ -161,6 +161,51 @@
             $this->assertTrue($id == $u->id);
         }
 
+        public function testLoginWithoutIdOrEmail(): void {
+            $this->expectException(\Forms\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("id,email");
+            $this->assertTrue((new \Forms\User("", "", "secret", "", ""))->login(self::$dbh));
+        }
+
+        public function testLoginWithoutPassword(): void {
+            $this->expectException(\Forms\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("password");
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $this->assertTrue((new \Forms\User($id, $id . "@server.com", "", "", ""))->login(self::$dbh));
+        }
+
+        public function testLoginWithoutExistentEmail(): void {
+            $this->expectException(\Forms\Exception\NotFoundException::class);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $this->assertTrue((new \Forms\User($id, $id . "@server.com", "secret", "", ""))->login(self::$dbh));
+        }
+
+        public function testLoginWithoutValidEmail(): void {
+            $this->expectException(\Forms\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("email");
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $this->assertTrue((new \Forms\User("", $id, "secret", "", ""))->login(self::$dbh));
+        }
+
+        public function testLoginWithInvalidPassword(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Forms\User($id, $id . "@server.com", "secret", $id, "");
+            $u->add(self::$dbh);
+            $u->password = "other";
+            $this->assertFalse($u->login(self::$dbh));
+        }
+
+        public function testLogin(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Forms\User($id, $id . "@server.com", "secret", $id, "");
+            $u->add(self::$dbh);
+            $this->assertTrue($u->login(self::$dbh));
+        }
+
+        public function testLogout(): void {
+            $this->assertTrue(\Forms\User::logout());
+        }
+
     }
 
 ?>
