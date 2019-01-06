@@ -56,6 +56,13 @@
             (new \Forms\Group((\Ramsey\Uuid\Uuid::uuid4())->toString(), "", ""))->add(self::$dbh);
         }
 
+        public function testAddWithInvalidDescription(): void {
+            $this->expectException(\Forms\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("description");
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Forms\Group($id, $id, str_repeat("A", 256)))->add(self::$dbh);
+        }
+
         public function testAdd(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $this->assertTrue((new \Forms\Group($id, $id, "group description"))->add(self::$dbh));
@@ -81,6 +88,16 @@
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("name");
             (new \Forms\Group((\Ramsey\Uuid\Uuid::uuid4())->toString(), "", ""))->update(self::$dbh);
+        }
+
+        public function testUpdateWithInvalidDescription(): void {
+            $this->expectException(\Forms\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("description");
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $g = new \Forms\Group($id, $id, "group description");
+            $g->add(self::$dbh);
+            $g->description = str_repeat("A", 256);
+            $this->assertTrue($g->update(self::$dbh));
         }
 
         public function testUpdate(): void {
