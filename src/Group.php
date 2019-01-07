@@ -15,12 +15,14 @@
         public $creationDate;
         public $deletionDate;
         public $users;
+        public $userCount = 0;
 
         public function __construct (string $id = "", string $name = "", string $description = "", $users = array()) {
             $this->id = $id;
             $this->name = $name;
             $this->description = $description;
             $this->users = $users;
+            $this->userCount = count($users);
         }
 
         public function __destruct() {
@@ -167,6 +169,11 @@
             }
         }
 
+        /**
+         * get group users
+         *
+         * @param \Forms\Database\DB $dbh database handler
+         */
         private function getUsers(\Forms\Database\DB $dbh) {
             $results = $dbh->query(" SELECT USER.id, USER.email FROM USER_GROUP LEFT JOIN USER ON USER.id = USER_GROUP.user_id WHERE USER_GROUP.group_id = :id AND USER.deletion_date IS NULL ", array(
                 (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id))
@@ -178,6 +185,29 @@
             } else {
                 $this->users = array();
             }
+        }
+
+        /**
+         * search groups
+         *
+         * @param \Forms\Database\DB $dbh database handler
+         */
+        public function search(\Forms\Database\DB $dbh, string $emailFilter = "") {
+            $groups = $dbh->query("
+                    SELECT G.id, G.name, G.description, G.creation_date AS creationDate, COALESCE(TMP_GROUP_USER_COUNT.totalUsers, 0) AS userCount
+                    FROM [GROUP] G
+                    LEFT JOIN (
+                        SELECT COUNT(USER_GROUP.user_id) AS totalUsers, USER_GROUP.group_id
+                        FROM USER_GROUP
+                        LEFT JOIN USER ON USER.id = USER_GROUP.user_id
+                        WHERE USER.deletion_date IS NULL
+                        GROUP BY USER_GROUP.group_id
+                    ) TMP_GROUP_USER_COUNT ON TMP_GROUP_USER_COUNT.group_id = G.id
+                    WHERE G.deletion_date IS NULL
+                    ORDER BY G.name
+                ", array()
+            );
+            return($groups);
         }
 
     }
