@@ -16,6 +16,7 @@
                 array(
                     'upgradeAvailable' => $v->hasUpgradeAvailable(),
                     'logged' => \Forms\UserSession::isLogged(),
+                    'isAdministrator' => \Forms\UserSession::isAdministrator(),
                     'allowSignUp' => $this->get('settings')['common']['allowSignUp'],
                     'sessionTimeout' => ini_get("session.gc_maxlifetime")
                 )
@@ -32,6 +33,7 @@
                     array(
                         'upgradeAvailable' => $v->hasUpgradeAvailable(),
                         'logged' => \Forms\UserSession::isLogged(),
+                        'isAdministrator' => \Forms\UserSession::isAdministrator(),
                         'allowSignUp' => $this->get('settings')['common']['allowSignUp'],
                         'sessionTimeout' => ini_get("session.gc_maxlifetime")
                     )
