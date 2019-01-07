@@ -76,21 +76,22 @@ const app = new Vue({
         console.log("[app]: created");
         if (! initialState.logged) {
             console.debug("[app]: user not logged, auth redirect");
-            this.$router.push({ name: 'auth' });
+            this.changeRoute("auth");
         } else {
             console.log("[app]: user logged, main redirect to home or app route");
-            this.$router.push({ name: 'home' });
+            this.changeRoute("home");
         }
-        bus.$on("signout", () => {
-            console.log("[app] signout received");
+        bus.$on("signOut", () => {
+            console.log("[app] signOut received");
             this.signOut();
         });
     },
+    mixins: [ mixinRoutes ],
     methods: {
         signOut: function() {
             formsAPI.user.signOut((response) => {
                 if (response.ok) {
-                    this.$router.push({ name: 'auth' });
+                    this.changeRoute("auth");
                 } else {
                     // TODO: show error
                 }

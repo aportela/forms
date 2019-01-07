@@ -38,7 +38,7 @@ var vueFormsTopMenu = (function () {
                         </div>
                     </div>
                     <div class="navbar-end">
-                        <a class="navbar-item is-tab is-active">
+                        <a class="navbar-item is-tab" v-on:click.prevent="changeRoute('home')" v-bind:class="{ 'is-active': isRouteActive('home') }">
                             <p class="control">
                                 <span class="icon is-small">
                                     <i class="fas fa-home"></i>
@@ -46,6 +46,36 @@ var vueFormsTopMenu = (function () {
                                 <span>Home</span>
                             </p>
                         </a>
+                        <div class="navbar-item has-dropdown is-hoverable">
+                            <a class="navbar-link">
+                                <p class="control">
+                                    <span class="icon is-small">
+                                        <i class="fas fa-tools"></i>
+                                    </span>
+                                    <span>Administration</span>
+                                </p>
+                            </a>
+                            <div class="navbar-dropdown">
+                                <div class="navbar-item">
+                                    <a v-on:click.prevent="changeRoute('users')" v-bind:class="{ 'is-active': isRouteActive('users') }">
+                                        <span class="icon is-small"><i class="fas fa-user"></i> </span>
+                                        <span>Users</span>
+                                    </a>
+                                </div>
+                                <div class="navbar-item">
+                                    <a v-on:click.prevent="changeRoute('groups')" v-bind:class="{ 'is-active': isRouteActive('groups') }">
+                                        <span class="icon is-small"><i class="fas fa-users"></i> </span>
+                                        <span>Groups</span>
+                                    </a>
+                                </div>
+                                <div class="navbar-item">
+                                    <a v-on:click.prevent="changeRoute('attributes')" v-bind:class="{ 'is-active': isRouteActive('attributes') }">
+                                        <span class="icon is-small"><i class="fas fa-tags"></i> </span>
+                                        <span>Attributes</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                         <a class="navbar-item is-tab" v-on:click.prevent="signOut();">
                             <p class="control">
                                 <span class="icon is-small">
@@ -82,11 +112,7 @@ var vueFormsTopMenu = (function () {
         created: function () {
             console.log("[topmenu]: created");
         },
-        methods: {
-            signOut: function() {
-                bus.$emit('signout');
-            }
-        }
+        mixins: [ mixinSession, mixinRoutes ]
     });
 
     return (module);
