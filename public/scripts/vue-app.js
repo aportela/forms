@@ -5,13 +5,6 @@
  */
 const bus = new Vue();
 
-/**
- * set routes
- */
-const routes = [
-    { path: '/auth', name: 'auth', component: vueFormsAuth },
-    { path: '/home', name: 'home', component: vueFormsHome }
-];
 
 /**
  * init vue router component

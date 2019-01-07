@@ -1,22 +1,22 @@
 /**
- * home section component
+ * group management component
  */
-var vueFormsHome = (function () {
+var vueFormsGroups = (function () {
     "use strict";
 
     var template = function () {
         return `
-            <h1>Welcome home</h1>
+            <h1>Group management</h1>
         `;
     };
 
-    var module = Vue.component('home', {
+    var module = Vue.component('groups', {
         template: template(),
         data: function () {
             return ({
             });
         }, created: function () {
-            console.log("[home]: created");
+            console.log("[groups]: created");
         }
     });
 

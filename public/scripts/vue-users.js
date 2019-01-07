@@ -1,22 +1,22 @@
 /**
- * home section component
+ * user management component
  */
-var vueFormsHome = (function () {
+var vueFormsUsers = (function () {
     "use strict";
 
     var template = function () {
         return `
-            <h1>Welcome home</h1>
+            <h1>User management</h1>
         `;
     };
 
-    var module = Vue.component('home', {
+    var module = Vue.component('users', {
         template: template(),
         data: function () {
             return ({
             });
         }, created: function () {
-            console.log("[home]: created");
+            console.log("[users]: created");
         }
     });
 

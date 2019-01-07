@@ -1,22 +1,22 @@
 /**
- * home section component
+ * attribute management component
  */
-var vueFormsHome = (function () {
+var vueFormsAttributes = (function () {
     "use strict";
 
     var template = function () {
         return `
-            <h1>Welcome home</h1>
+            <h1>Attribute management</h1>
         `;
     };
 
-    var module = Vue.component('home', {
+    var module = Vue.component('attributes', {
         template: template(),
         data: function () {
             return ({
             });
         }, created: function () {
-            console.log("[home]: created");
+            console.log("[attributes]: created");
         }
     });
 
