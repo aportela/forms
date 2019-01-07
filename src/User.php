@@ -139,7 +139,12 @@
             }
         }
 
-        public function search(\Forms\Database\DB $dbh, string $emailFilter = "") {
+        /**
+         * search users
+         *
+         * @param \Forms\Database\DB $dbh database handler
+         */
+        public function search(\Forms\Database\DB $dbh) {
             $users = $dbh->query(" SELECT id, email, creation_date AS creationDate, is_administrator AS isAdministrator FROM USER WHERE deletion_date IS NULL ORDER BY email ", array());
             foreach($users as $user) {
                 $user->isAdministrator = $user->isAdministrator == "Y";
