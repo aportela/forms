@@ -19,8 +19,6 @@ var vueFormsHome = (function () {
         template: template(),
         data: function () {
             return ({
-                defaultBoard: null,
-                boards: []
             });
         }, created: function () {
             console.log("[home]: created");
