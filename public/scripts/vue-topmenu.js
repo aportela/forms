@@ -103,16 +103,24 @@ var vueFormsTopMenu = (function () {
         data: function () {
             return ({
                 isSearching: false,
-                searchText: null,
-                isAddingNewBoard: false,
-                addError: false,
-                newBoardName: null
+                searchText: null
             });
         },
         created: function () {
             console.log("[topmenu]: created");
         },
-        mixins: [ mixinSession, mixinRoutes ]
+        mixins: [ mixinSession, mixinRoutes ],
+        methods: {
+            search: function () {
+                console.log("[topmenu]: searching: " + this.searchText);
+                this.isSearching = true;
+                var self = this;
+                setTimeout(function () {
+                    self.isSearching = false;
+                    self.$nextTick(() => self.$refs.search.focus());
+                }, 500);
+            }
+        }
     });
 
     return (module);
