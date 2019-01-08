@@ -64,6 +64,14 @@
                     '
                         ALTER TABLE [USER] ADD `is_administrator` VARCHAR(1) NOT NULL DEFAULT "N"
                     '
+                ),
+                "1.05" => array(
+                    '
+                        ALTER TABLE [USER] ADD `creator` VARCHAR(36) NOT NULL DEFAULT ""
+                    ',
+                    '
+                        ALTER TABLE [GROUP] ADD `creator` VARCHAR(36) NOT NULL DEFAULT ""
+                    '
                 )
             ),
         );

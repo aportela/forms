@@ -39,7 +39,7 @@
                     $params = array(
                         (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
                         (new \Forms\Database\DBParam())->str(":name", mb_strtolower($this->name)),
-
+                        (new \Forms\Database\DBParam())->str(":creator", \Forms\UserSession::getUserId())
                     );
                     if (! empty($this->description)) {
                         if (mb_strlen($this->description) <= 255) {
@@ -50,7 +50,7 @@
                     } else {
                         $params[] = (new \Forms\Database\DBParam())->null(":description");
                     }
-                    if ($dbh->execute("INSERT INTO [GROUP] (id, name, description, creation_date) VALUES(:id, :name, :description, CURRENT_TIMESTAMP)", $params)) {
+                    if ($dbh->execute("INSERT INTO [GROUP] (id, name, description, creation_date, creator) VALUES(:id, :name, :description, CURRENT_TIMESTAMP, :creator)", $params)) {
                         return($this->setUsers($dbh));
                     } else {
                         return(false);

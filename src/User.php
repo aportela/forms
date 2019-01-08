@@ -49,9 +49,10 @@
                             (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
                             (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email)),
                             (new \Forms\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password)),
-                            (new \Forms\Database\DBParam())->str(":is_administrator", $this->isAdministrator ? "Y": "N")
+                            (new \Forms\Database\DBParam())->str(":is_administrator", $this->isAdministrator ? "Y": "N"),
+                            (new \Forms\Database\DBParam())->str(":creator", \Forms\UserSession::isLogged() ? \Forms\UserSession::getUserId() : $this->id)
                         );
-                        return($dbh->execute("INSERT INTO USER (id, email, password_hash, creation_date, is_administrator) VALUES(:id, :email, :password_hash, CURRENT_TIMESTAMP, :is_administrator)", $params));
+                        return($dbh->execute("INSERT INTO USER (id, email, password_hash, creation_date, creator, is_administrator) VALUES(:id, :email, :password_hash, CURRENT_TIMESTAMP, :creator, :is_administrator)", $params));
                     } else {
                         throw new \Forms\Exception\InvalidParamsException("password");
                     }
