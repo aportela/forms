@@ -6,7 +6,7 @@
 
     require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-    final class AppRoutesTest extends APITest
+    final class AppRoutesTest extends \Forms\Test\APITest
     {
         /**
          * Called once just like normal constructor
