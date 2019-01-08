@@ -163,25 +163,10 @@
             $u->get(self::$dbh);
         }
 
-        /*
-
-        public function testSearchWithoutResults(): void {
+        public function testSearchWithoutFilter(): void {
             $users = \Forms\User::search(self::$dbh);
-            $this->assertTrue(count($users) == 0);
+            $this->assertTrue(count($users) >= 0);
         }
-
-        public function testSearchWithResults(): void {
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server1.com", "secret", false);
-            $u->add(self::$dbh);
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server2.com", "secret", true);
-            $u->add(self::$dbh);
-            $users = \Forms\User::search(self::$dbh);
-            $this->assertTrue(count($users) == 2);
-        }
-
-        */
 
         public function testLoginWithoutIdOrEmail(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
