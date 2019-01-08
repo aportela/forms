@@ -148,7 +148,7 @@
         public function get(\Forms\Database\DB $dbh) {
             $results = null;
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
-                $results = $dbh->query(" SELECT id, name, description, creation_date AS creationDate, deletion_date AS deletionDate FROM [GROUP] WHERE id = :id ", array(
+                $results = $dbh->query(" SELECT [GROUP].id, [GROUP].name, [GROUP].description, [GROUP].creation_date AS creationDate, [GROUP].deletion_date AS deletionDate, [GROUP].creator AS creatorId, USER.email AS creatorEmail FROM [GROUP] LEFT JOIN USER ON USER.id = [GROUP].creator WHERE [GROUP].id = :id ", array(
                     (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id))
                 ));
                 if (count($results) == 1) {
@@ -156,6 +156,9 @@
                     $this->name = $results[0]->name;
                     $this->description = $results[0]->description;
                     $this->creationDate = $results[0]->creationDate;
+                    $this->creator = new \stdclass();
+                    $this->creator->id = $results[0]->creatorId;
+                    $this->creator->email = $results[0]->creatorEmail;
                     if (! empty($results[0]->deletionDate)) {
                         throw new \Forms\Exception\DeletedException("");
                     } else {
@@ -194,7 +197,7 @@
          */
         public function search(\Forms\Database\DB $dbh, string $emailFilter = "") {
             $groups = $dbh->query("
-                    SELECT G.id, G.name, G.description, G.creation_date AS creationDate, COALESCE(TMP_GROUP_USER_COUNT.totalUsers, 0) AS userCount
+                    SELECT G.id, G.name, G.description, G.creation_date AS creationDate, COALESCE(TMP_GROUP_USER_COUNT.totalUsers, 0) AS userCount, G.creator AS creatorId, USER.email AS creatorEmail
                     FROM [GROUP] G
                     LEFT JOIN (
                         SELECT COUNT(USER_GROUP.user_id) AS totalUsers, USER_GROUP.group_id
@@ -203,10 +206,18 @@
                         WHERE USER.deletion_date IS NULL
                         GROUP BY USER_GROUP.group_id
                     ) TMP_GROUP_USER_COUNT ON TMP_GROUP_USER_COUNT.group_id = G.id
+                    LEFT JOIN USER ON USER.id = G.creator
                     WHERE G.deletion_date IS NULL
                     ORDER BY G.name
                 ", array()
             );
+            foreach($groups as $group) {
+                $creatorId = $group->creatorId;
+                $creatorEmail = $group->creatorEmail;
+                $group->creator = new \stdclass();
+                $group->creator->id = $creatorId;
+                $group->creator->email = $creatorEmail;
+            }
             return($groups);
         }
 
