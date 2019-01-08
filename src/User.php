@@ -115,11 +115,11 @@
         public function get(\Forms\Database\DB $dbh) {
             $results = null;
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
-                $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash, creation_date AS creationDate, deletion_date AS deletionDate, is_administrator AS isAdministrator FROM USER WHERE id = :id ", array(
+                $results = $dbh->query(" SELECT USER.id, USER.email, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.is_administrator AS isAdministrator, USER.creator AS creatorId, U.email AS creatorEmail FROM USER LEFT JOIN USER U ON USER.creator = U.id WHERE USER.id = :id ", array(
                     (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id))
                 ));
             } else if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
-                $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash, creation_date AS creationDate, deletion_date AS deletionDate, is_administrator AS isAdministrator FROM USER WHERE email = :email ", array(
+                $results = $dbh->query(" SELECT USER.id, USER.email, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.is_administrator AS isAdministrator, USER.creator AS creatorId, U.email AS creatorEmail FROM USER LEFT JOIN USER U ON USER.creator = U.id WHERE USER.email = :email ", array(
                     (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email))
                 ));
             } else {
@@ -135,6 +135,9 @@
                 } else {
                     $this->isAdministrator = $results[0]->isAdministrator == "Y";
                 }
+                $this->creator = new \stdclass();
+                $this->creator->id = $results[0]->creatorId;
+                $this->creator->email = $results[0]->creatorEmail;
             } else {
                 throw new \Forms\Exception\NotFoundException("");
             }
@@ -146,9 +149,14 @@
          * @param \Forms\Database\DB $dbh database handler
          */
         public function search(\Forms\Database\DB $dbh) {
-            $users = $dbh->query(" SELECT id, email, creation_date AS creationDate, is_administrator AS isAdministrator FROM USER WHERE deletion_date IS NULL ORDER BY email ", array());
+            $users = $dbh->query(" SELECT USER.id, USER.email, USER.creation_date AS creationDate, USER.is_administrator AS isAdministrator, USER.creator AS creatorId, U.email AS creatorEmail FROM USER LEFT JOIN USER U ON USER.creator = U.id WHERE USER.deletion_date IS NULL ORDER BY USER.email ", array());
             foreach($users as $user) {
                 $user->isAdministrator = $user->isAdministrator == "Y";
+                $creatorId = $user->creatorId;
+                $creatorEmail = $user->creatorEmail;
+                $user->creator = new \stdclass();
+                $user->creator->id = $creatorId;
+                $user->creator->email = $creatorEmail;
             }
             return($users);
         }
