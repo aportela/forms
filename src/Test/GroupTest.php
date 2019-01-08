@@ -6,43 +6,7 @@
 
     require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-    final class GroupTest extends \PHPUnit\Framework\TestCase {
-        static private $app = null;
-        static private $container = null;
-        static private $dbh = null;
-
-        /**
-         * Called once just like normal constructor
-         */
-        public static function setUpBeforeClass () {
-            self::$app = (new \Forms\App())->get();
-            self::$container = self::$app->getContainer();
-            self::$dbh = new \Forms\Database\DB(self::$container);
-        }
-
-        /**
-         * Initialize the test case
-         * Called for every defined test
-         */
-        public function setUp() {
-            self::$dbh->beginTransaction();
-        }
-
-        /**
-         * Clean up the test case, called for every defined test
-         */
-        public function tearDown() {
-            self::$dbh->rollBack();
-        }
-
-        /**
-         * Clean up the whole test class
-         */
-        public static function tearDownAfterClass() {
-            self::$dbh = null;
-            self::$container = null;
-            self::$app = null;
-        }
+    final class GroupTest extends \Forms\Test\BaseTest {
 
         public function testAddWithoutId(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
@@ -64,11 +28,13 @@
         }
 
         public function testAdd(): void {
+            (new \Forms\UserSession())->set("00000000-0000-0000-0000-000000000000", "admin@localhost.localnet", true);
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $this->assertTrue((new \Forms\Group($id, $id, "group description"))->add(self::$dbh));
         }
 
         public function testAddWithUsers(): void {
+            (new \Forms\UserSession())->set("00000000-0000-0000-0000-000000000000", "admin@localhost.localnet", true);
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $g = new \Forms\Group($id, $id, "group description");
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
@@ -101,12 +67,14 @@
         }
 
         public function testUpdate(): void {
+            (new \Forms\UserSession())->set("00000000-0000-0000-0000-000000000000", "admin@localhost.localnet", true);
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $g = new \Forms\Group($id, $id, "group description");
             $this->assertTrue($g->add(self::$dbh) && $g->update(self::$dbh));
         }
 
         public function testUpdateWithUsers(): void {
+            (new \Forms\UserSession())->set("00000000-0000-0000-0000-000000000000", "admin@localhost.localnet", true);
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $g = new \Forms\Group($id, $id, "group description");
             $g->add(self::$dbh);
@@ -158,6 +126,8 @@
             $g->get(self::$dbh);
         }
 
+        /*
+
         public function testSearchWithoutResults(): void {
             $groups = \Forms\Group::search(self::$dbh);
             $this->assertTrue(count($groups) == 0);
@@ -175,6 +145,8 @@
             $groups = \Forms\Group::search(self::$dbh);
             $this->assertTrue(count($groups) == 2);
         }
+
+        */
 
     }
 
