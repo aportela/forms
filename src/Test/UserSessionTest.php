@@ -6,36 +6,8 @@
 
     require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-    final class UserSessionTest extends \PHPUnit\Framework\TestCase
+    final class UserSessionTest extends \Forms\Test\BaseTest
     {
-        static private $app = null;
-        static private $container = null;
-        static private $dbh = null;
-
-        /**
-         * Called once just like normal constructor
-         */
-        public static function setUpBeforeClass () {
-            self::$app = (new \Forms\App())->get();
-            self::$container = self::$app->getContainer();
-            self::$dbh = new \Forms\Database\DB(self::$container);
-        }
-
-        /**
-         * Initialize the test case
-         * Called for every defined test
-         */
-        public function setUp() {
-            self::$dbh->beginTransaction();
-        }
-
-        /**
-         * Clean up the test case, called for every defined test
-         */
-        public function tearDown() {
-            self::$dbh->rollBack();
-        }
-
         /**
          * Clean up the whole test class
          */
