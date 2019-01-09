@@ -12,7 +12,8 @@
             if (self::$container->get('settings')['common']['allowSignUp']) {
                 $this->expectException(\Forms\Exception\InvalidParamsException::class);
                 $this->expectExceptionMessage("id");
-                (new \Forms\User("", "", ""))->add(self::$dbh);
+                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                (new \Forms\User("", $id . "@localhost.localnet", "name of " . $id, $id, \Forms\User::ACCOUNT_TYPE_USER))->add(self::$dbh);
             } else {
                 $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
             }
@@ -22,7 +23,19 @@
             if (self::$container->get('settings')['common']['allowSignUp']) {
                 $this->expectException(\Forms\Exception\InvalidParamsException::class);
                 $this->expectExceptionMessage("email");
-                (new \Forms\User((\Ramsey\Uuid\Uuid::uuid4())->toString(), "", ""))->add(self::$dbh);
+                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                (new \Forms\User($id, "", "name of " . $id, $id, \Forms\User::ACCOUNT_TYPE_USER))->add(self::$dbh);
+            } else {
+                $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
+            }
+        }
+
+        public function testAddWithoutValidEmailLength(): void {
+            if (self::$container->get('settings')['common']['allowSignUp']) {
+                $this->expectException(\Forms\Exception\InvalidParamsException::class);
+                $this->expectExceptionMessage("email");
+                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                (new \Forms\User($id, str_repeat($id, 10) . "@localhost.localnet", "name of " . $id, $id , \Forms\User::ACCOUNT_TYPE_USER))->add(self::$dbh);
             } else {
                 $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
             }
@@ -33,7 +46,7 @@
                 $this->expectException(\Forms\Exception\InvalidParamsException::class);
                 $this->expectExceptionMessage("email");
                 $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                (new \Forms\User($id, $id, ""))->add(self::$dbh);
+                (new \Forms\User($id, $id, "name of " . $id, $id, \Forms\User::ACCOUNT_TYPE_USER))->add(self::$dbh);
             } else {
                 $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
             }
@@ -44,25 +57,36 @@
                 $this->expectException(\Forms\Exception\InvalidParamsException::class);
                 $this->expectExceptionMessage("password");
                 $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                (new \Forms\User($id, $id . "@server.com", ""))->add(self::$dbh);
+                (new \Forms\User($id, $id . "@localhost.localnet", "name of " . $id, "", \Forms\User::ACCOUNT_TYPE_USER))->add(self::$dbh);
             } else {
                 $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
             }
         }
 
-        public function testAdd(): void {
+        public function testAddWithoutAccountType(): void {
             if (self::$container->get('settings')['common']['allowSignUp']) {
+                $this->expectException(\Forms\Exception\InvalidParamsException::class);
+                $this->expectExceptionMessage("accountType");
                 $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                $this->assertTrue((new \Forms\User($id, $id . "@server.com", "secret"))->add(self::$dbh));
+                (new \Forms\User($id, $id . "@localhost.localnet", "name of " . $id, $id, ""))->add(self::$dbh);
             } else {
                 $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
             }
         }
 
-        public function testAddWithAdministratorPrivileges(): void {
+        public function testAddUserAccount(): void {
             if (self::$container->get('settings')['common']['allowSignUp']) {
                 $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                $this->assertTrue((new \Forms\User($id, $id . "@server.com", "secret", true))->add(self::$dbh));
+                $this->assertTrue((new \Forms\User($id, $id . "@localhost.localnet", "name of " . $id, $id, \Forms\User::ACCOUNT_TYPE_USER))->add(self::$dbh));
+            } else {
+                $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
+            }
+        }
+
+        public function testAddAdministratorAccount(): void {
+            if (self::$container->get('settings')['common']['allowSignUp']) {
+                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                $this->assertTrue((new \Forms\User($id, $id . "@localhost.localnet", "name of " . $id, $id, \Forms\User::ACCOUNT_TYPE_ADMINISTRATOR))->add(self::$dbh));
             } else {
                 $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
             }
@@ -71,96 +95,114 @@
         public function testUpdateWithoutId(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("id");
-            (new \Forms\User("", "", ""))->update(self::$dbh);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Forms\User("", $id . "@localhost.localnet", "name of " . $id, $id, \Forms\User::ACCOUNT_TYPE_USER))->update(self::$dbh);
         }
 
         public function testUpdateWithoutEmail(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("email");
-            (new \Forms\User((\Ramsey\Uuid\Uuid::uuid4())->toString(), "", ""))->update(self::$dbh);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Forms\User($id, "", "name of " . $id, $id, \Forms\User::ACCOUNT_TYPE_USER))->update(self::$dbh);
+        }
+
+        public function testUpdateWithoutValidEmailLength(): void {
+            $this->expectException(\Forms\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("email");
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Forms\User($id, str_repeat($id, 10) . "@localhost.localnet", "name of " . $id, $id, \Forms\User::ACCOUNT_TYPE_USER))->update(self::$dbh);
         }
 
         public function testUpdateWithoutValidEmail(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("email");
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            (new \Forms\User($id, $id, ""))->update(self::$dbh);
+
+            (new \Forms\User($id, $id, "name of " . $id, $id, \Forms\User::ACCOUNT_TYPE_USER))->update(self::$dbh);
         }
 
         public function testUpdateWithoutPassword(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("password");
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            (new \Forms\User($id, $id . "@server.com", ""))->update(self::$dbh);
+            (new \Forms\User($id, $id . "@localhost.localnet", "name of " . $id, "", \Forms\User::ACCOUNT_TYPE_USER))->update(self::$dbh);
         }
 
-        public function testUpdate(): void {
+        public function testUpdateUserAccount(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server.com", "secret");
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
             $this->assertTrue($u->add(self::$dbh) && $u->update(self::$dbh));
         }
 
-        public function testUpdateWithAdministrationPrivileges(): void {
+        public function testUpdateAdministratorAccountAccount(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server.com", "secret");
-            $u->add(self::$dbh);
-            $u->isAdministrator = true;
-            $this->assertTrue($u->update(self::$dbh));
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_ADMINISTRATOR);
+            $this->assertTrue($u->add(self::$dbh) && $u->update(self::$dbh));
         }
 
         public function testDeleteWithoutId(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("id");
-            (new \Forms\User("", "", ""))->delete(self::$dbh);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Forms\User("", $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER))->delete(self::$dbh);
         }
 
         public function testDelete(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server.com", "secret");
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
             $this->assertTrue($u->add(self::$dbh) && $u->delete(self::$dbh));
         }
+
 
         public function testGetWithoutIdOrEmail(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("id,email");
-            $u = new \Forms\User("", "", "");
-            $u->get(self::$dbh);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Forms\User("", "", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER))->get(self::$dbh);
+        }
+
+
+        public function testGetWithoutValidEmailLength(): void {
+            $this->expectException(\Forms\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("id,email");
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Forms\User("", str_repeat($id, 10) . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER))->get(self::$dbh);
         }
 
         public function testGetWithoutValidEmail(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("id,email");
-            $u = new \Forms\User("", (\Ramsey\Uuid\Uuid::uuid4())->toString(), "");
-            $u->get(self::$dbh);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Forms\User("", $id, "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER))->get(self::$dbh);
         }
 
         public function testGetWithNonExistentId(): void {
             $this->expectException(\Forms\Exception\NotFoundException::class);
-            $u = new \Forms\User((\Ramsey\Uuid\Uuid::uuid4())->toString(), "", "");
-            $u->get(self::$dbh);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Forms\User($id, $id, "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER))->get(self::$dbh);
         }
 
         public function testGetWithNonExistentEmail(): void {
             $this->expectException(\Forms\Exception\NotFoundException::class);
-            $u = new \Forms\User("", (\Ramsey\Uuid\Uuid::uuid4())->toString() . "@server.com", "");
-            $u->get(self::$dbh);
-        }
-
-        public function testGet(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server.com", "secret");
-            $u->add(self::$dbh);
-            $u->get(self::$dbh);
-            $this->assertTrue($id == $u->id);
+            (new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER))->get(self::$dbh);
         }
 
         public function testGetDeleted(): void {
             $this->expectException(\Forms\Exception\DeletedException::class);
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server.com", "secret");
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
             $u->add(self::$dbh);
             $u->delete(self::$dbh);
             $u->get(self::$dbh);
+        }
+
+        public function testGet(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
+            $u->add(self::$dbh);
+            $u->get(self::$dbh);
+            $this->assertTrue($id == $u->id);
         }
 
         public function testSearchWithoutFilter(): void {
@@ -171,32 +213,46 @@
         public function testLoginWithoutIdOrEmail(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("id,email");
-            $this->assertTrue((new \Forms\User("", "", "secret"))->login(self::$dbh));
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Forms\User("", "", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER))->login(self::$dbh);
         }
 
         public function testLoginWithoutPassword(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("password");
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $this->assertTrue((new \Forms\User($id, $id . "@server.com", ""))->login(self::$dbh));
+            (new \Forms\User($id, $id . "@server.com", "name of " . $id, "", \Forms\User::ACCOUNT_TYPE_USER))->login(self::$dbh);
         }
 
         public function testLoginWithoutExistentEmail(): void {
             $this->expectException(\Forms\Exception\NotFoundException::class);
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $this->assertTrue((new \Forms\User($id, $id . "@server.com", "secret"))->login(self::$dbh));
+            (new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER))->login(self::$dbh);
+        }
+
+        public function testLoginWithoutValidEmailLength(): void {
+            $this->expectException(\Forms\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("email");
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Forms\User($id, $id, "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
+            $u->add(self::$dbh);
+            $u->email = str_repeat($id, 10) . "@server.com";
+            $u->login(self::$dbh);
         }
 
         public function testLoginWithoutValidEmail(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("email");
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $this->assertTrue((new \Forms\User("", $id, "secret"))->login(self::$dbh));
+            $u = new \Forms\User($id, $id, "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
+            $u->add(self::$dbh);
+            $u->email = $id;
+            $u->login(self::$dbh);
         }
 
         public function testLoginWithInvalidPassword(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server.com", "secret");
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
             $u->add(self::$dbh);
             $u->password = "other";
             $this->assertFalse($u->login(self::$dbh));
@@ -204,7 +260,7 @@
 
         public function testLogin(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server.com", "secret");
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
             $u->add(self::$dbh);
             $this->assertTrue($u->login(self::$dbh));
         }

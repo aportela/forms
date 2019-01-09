@@ -6,10 +6,11 @@
 
     class UserSession {
 
-        public static function set($userId = "", string $email = "", bool $isAdministrator) {
+        public static function set($userId = "", string $email = "", string $name = "", string $accountType = "") {
             $_SESSION["userId"] = $userId;
             $_SESSION["email"] = $email;
-            $_SESSION["isAdministrator"] = $isAdministrator;
+            $_SESSION["name"] = $name;
+            $_SESSION["accountType"] = $accountType;
         }
 
         public static function clear() {
@@ -51,10 +52,19 @@
         }
 
         /**
+         * return logged user name
+         *
+         * @return string name || null
+         */
+        public static function getName() {
+            return(isset($_SESSION["name"]) ? $_SESSION["name"]: null);
+        }
+
+        /**
          * return logged user administrator flag
          */
         public static function isAdministrator() {
-            return(isset($_SESSION["isAdministrator"]) ? $_SESSION["isAdministrator"]: false);
+            return(isset($_SESSION["accountType"]) && $_SESSION["accountType"] == \Forms\User::ACCOUNT_TYPE_ADMINISTRATOR);
         }
 
     }

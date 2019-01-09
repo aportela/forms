@@ -25,7 +25,7 @@
 
         public function testIsLogged(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server.com", "secret");
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
             $u->add(self::$dbh);
             $u->login(self::$dbh);
             $this->assertTrue(\Forms\UserSession::isLogged());
@@ -40,7 +40,7 @@
         public function testGetUserId(): void {
             \Forms\User::logout();
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server.com", "secret");
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
             $u->add(self::$dbh);
             $u->login(self::$dbh);
             $this->assertEquals($u->id, \Forms\UserSession::getUserId());
@@ -54,16 +54,25 @@
         public function testGetEmail(): void {
             \Forms\User::logout();
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server.com", "secret");
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
             $u->add(self::$dbh);
             $u->login(self::$dbh);
             $this->assertEquals($u->email, \Forms\UserSession::getEmail());
         }
 
+        public function testGetUserFlag(): void {
+            \Forms\User::logout();
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
+            $u->add(self::$dbh);
+            $u->login(self::$dbh);
+            $this->assertTrue(! \Forms\UserSession::isAdministrator());
+        }
+
         public function testGetAdministrationFlag(): void {
             \Forms\User::logout();
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server.com", "secret", true);
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_ADMINISTRATOR);
             $u->add(self::$dbh);
             $u->login(self::$dbh);
             $this->assertTrue(\Forms\UserSession::isAdministrator());

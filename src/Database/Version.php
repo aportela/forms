@@ -72,7 +72,25 @@
                     '
                         ALTER TABLE [GROUP] ADD `creator` VARCHAR(36) NOT NULL DEFAULT ""
                     '
+                ),
+                "1.06" => array(
+                    '
+                        DROP TABLE [USER]
+                    ',
+                    '
+                        CREATE TABLE [USER] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [email] VARCHAR(255) UNIQUE NOT NULL,
+                            [name] VARCHAR(255) UNIQUE NOT NULL,
+                            [password_hash] VARCHAR(60) NOT NULL,
+                            [account_type] VARCHAR(1) NOT NULL DEFAULT "U",
+                            [creation_date] INTEGER NOT NULL,
+                            [creator] VARCHAR(36) NOT NULL,
+                            [deletion_date] INTEGER
+                        );
+                    '
                 )
+
             ),
         );
 

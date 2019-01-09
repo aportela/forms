@@ -9,19 +9,24 @@
      */
     class User {
 
+        const ACCOUNT_TYPE_USER = "U";
+        const ACCOUNT_TYPE_ADMINISTRATOR = "A";
+
         public $id;
         public $email;
+        public $name;
         public $password;
         public $passwordHash;
+        public $accountType;
         public $creationDate;
         public $deletionDate;
-        public $isAdministrator;
 
-        public function __construct (string $id = "", string $email = "", string $password = "", bool $isAdministrator = false) {
+        public function __construct (string $id = "", string $email = "", string $name = "", string $password = "", string $accountType = "") {
             $this->id = $id;
             $this->email = $email;
+            $this->name = $name;
             $this->password = $password;
-            $this->isAdministrator = $isAdministrator;
+            $this->accountType = $accountType;
         }
 
         public function __destruct() {
@@ -43,18 +48,27 @@
          */
         public function add(\Forms\Database\DB $dbh) {
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
-                if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
-                    if (! empty($this->password)) {
-                        $params = array(
-                            (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
-                            (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email)),
-                            (new \Forms\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password)),
-                            (new \Forms\Database\DBParam())->str(":is_administrator", $this->isAdministrator ? "Y": "N"),
-                            (new \Forms\Database\DBParam())->str(":creator", \Forms\UserSession::isLogged() ? \Forms\UserSession::getUserId() : $this->id)
-                        );
-                        return($dbh->execute("INSERT INTO USER (id, email, password_hash, creation_date, creator, is_administrator) VALUES(:id, :email, :password_hash, CURRENT_TIMESTAMP, :creator, :is_administrator)", $params));
+                if (! empty($this->email) && mb_strlen($this->email) <= 255 && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+                    if (! empty($this->name) && mb_strlen($this->name) <= 255) {
+                        if (! empty($this->password)) {
+                            if ($this->accountType == self::ACCOUNT_TYPE_USER || $this->accountType == self::ACCOUNT_TYPE_ADMINISTRATOR) {
+                                $params = array(
+                                    (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
+                                    (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email)),
+                                    (new \Forms\Database\DBParam())->str(":name", mb_strtolower($this->name)),
+                                    (new \Forms\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password)),
+                                    (new \Forms\Database\DBParam())->str(":account_type", $this->accountType),
+                                    (new \Forms\Database\DBParam())->str(":creator", \Forms\UserSession::isLogged() ? \Forms\UserSession::getUserId() : $this->id)
+                                );
+                                return($dbh->execute("INSERT INTO USER (id, email, name, password_hash, creation_date, creator, account_type) VALUES(:id, :email, :name, :password_hash, CURRENT_TIMESTAMP, :creator, :account_type)", $params));
+                            } else {
+                                throw new \Forms\Exception\InvalidParamsException("accountType");
+                            }
+                        } else {
+                            throw new \Forms\Exception\InvalidParamsException("password");
+                        }
                     } else {
-                        throw new \Forms\Exception\InvalidParamsException("password");
+                        throw new \Forms\Exception\InvalidParamsException("name");
                     }
                 } else {
                     throw new \Forms\Exception\InvalidParamsException("email");
@@ -72,16 +86,25 @@
         public function update(\Forms\Database\DB $dbh) {
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
                 if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
-                    if (! empty($this->password)) {
-                        $params = array(
-                            (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
-                            (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email)),
-                            (new \Forms\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password)),
-                            (new \Forms\Database\DBParam())->str(":is_administrator", $this->isAdministrator ? "Y": "N")
-                        );
-                        return($dbh->execute(" UPDATE USER SET email = :email, password_hash = :password_hash, is_administrator = :is_administrator WHERE id = :id ", $params));
+                    if (! empty($this->name) && mb_strlen($this->name) <= 255) {
+                        if (! empty($this->password)) {
+                            if ($this->accountType == self::ACCOUNT_TYPE_USER || $this->accountType == self::ACCOUNT_TYPE_ADMINISTRATOR) {
+                                $params = array(
+                                    (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
+                                    (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email)),
+                                    (new \Forms\Database\DBParam())->str(":name", mb_strtolower($this->name)),
+                                    (new \Forms\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password)),
+                                    (new \Forms\Database\DBParam())->str(":account_type", $this->accountType),
+                                );
+                                return($dbh->execute(" UPDATE USER SET email = :email, name = :name, password_hash = :password_hash, account_type = :account_type WHERE id = :id ", $params));
+                            } else {
+                                throw new \Forms\Exception\InvalidParamsException("accountType");
+                            }
+                        } else {
+                            throw new \Forms\Exception\InvalidParamsException("password");
+                        }
                     } else {
-                        throw new \Forms\Exception\InvalidParamsException("password");
+                        throw new \Forms\Exception\InvalidParamsException("name");
                     }
                 } else {
                     throw new \Forms\Exception\InvalidParamsException("email");
@@ -115,11 +138,11 @@
         public function get(\Forms\Database\DB $dbh) {
             $results = null;
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
-                $results = $dbh->query(" SELECT USER.id, USER.email, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.is_administrator AS isAdministrator, USER.creator AS creatorId, U.email AS creatorEmail FROM USER LEFT JOIN USER U ON USER.creator = U.id WHERE USER.id = :id ", array(
+                $results = $dbh->query(" SELECT USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail FROM USER LEFT JOIN USER U ON USER.creator = U.id WHERE USER.id = :id ", array(
                     (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id))
                 ));
             } else if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
-                $results = $dbh->query(" SELECT USER.id, USER.email, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.is_administrator AS isAdministrator, USER.creator AS creatorId, U.email AS creatorEmail FROM USER LEFT JOIN USER U ON USER.creator = U.id WHERE USER.email = :email ", array(
+                $results = $dbh->query(" SELECT USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail FROM USER LEFT JOIN USER U ON USER.creator = U.id WHERE USER.email = :email ", array(
                     (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email))
                 ));
             } else {
@@ -128,12 +151,11 @@
             if (count($results) == 1) {
                 $this->id = $results[0]->id;
                 $this->email = $results[0]->email;
+                $this->name = $results[0]->name;
                 $this->passwordHash = $results[0]->passwordHash;
                 $this->creationDate = $results[0]->creationDate;
                 if (! empty($results[0]->deletionDate)) {
                     throw new \Forms\Exception\DeletedException("");
-                } else {
-                    $this->isAdministrator = $results[0]->isAdministrator == "Y";
                 }
                 $this->creator = new \stdclass();
                 $this->creator->id = $results[0]->creatorId;
@@ -149,9 +171,8 @@
          * @param \Forms\Database\DB $dbh database handler
          */
         public function search(\Forms\Database\DB $dbh) {
-            $users = $dbh->query(" SELECT USER.id, USER.email, USER.creation_date AS creationDate, USER.is_administrator AS isAdministrator, USER.creator AS creatorId, U.email AS creatorEmail FROM USER LEFT JOIN USER U ON USER.creator = U.id WHERE USER.deletion_date IS NULL ORDER BY USER.email ", array());
+            $users = $dbh->query(" SELECT USER.id, USER.email, USER.name, USER.creation_date AS creationDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail FROM USER LEFT JOIN USER U ON USER.creator = U.id WHERE USER.deletion_date IS NULL ORDER BY USER.email ", array());
             foreach($users as $user) {
-                $user->isAdministrator = $user->isAdministrator == "Y";
                 $creatorId = $user->creatorId;
                 $creatorEmail = $user->creatorEmail;
                 $user->creator = new \stdclass();
@@ -173,7 +194,7 @@
             if (! empty($this->password)) {
                 $this->get($dbh);
                 if (password_verify($this->password, $this->passwordHash)) {
-                    \Forms\UserSession::set($this->id, $this->email, $this->isAdministrator);
+                    \Forms\UserSession::set($this->id, $this->email, $this->name, $this->accountType);
                     return(true);
                 } else {
                     return(false);
