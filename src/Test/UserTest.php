@@ -205,6 +205,32 @@
             $this->assertTrue($id == $u->id);
         }
 
+        public function testExistsEmailWithNonExistentEmail(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $this->assertFalse(\Forms\User::existsEmail(self::$dbh, $id . "@server.com"));
+        }
+
+        public function testExistsEmailWithExistentEmail(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
+            $u->add(self::$dbh);
+            $this->assertTrue(\Forms\User::existsEmail(self::$dbh, $u->email));
+        }
+
+        public function testExistsEmailWithNonExistentName(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $this->assertFalse(\Forms\User::existsName(self::$dbh, $id));
+        }
+
+        public function testExistsEmailWithExistentName(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
+            $u->add(self::$dbh);
+            $this->assertTrue(\Forms\User::existsName(self::$dbh, $u->name));
+        }
+
         public function testSearchWithoutFilter(): void {
             $users = \Forms\User::search(self::$dbh);
             $this->assertTrue(count($users) >= 0);
