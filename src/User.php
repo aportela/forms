@@ -55,7 +55,7 @@
                                 $params = array(
                                     (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
                                     (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email)),
-                                    (new \Forms\Database\DBParam())->str(":name", mb_strtolower($this->name)),
+                                    (new \Forms\Database\DBParam())->str(":name", $this->name),
                                     (new \Forms\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password)),
                                     (new \Forms\Database\DBParam())->str(":account_type", $this->accountType),
                                     (new \Forms\Database\DBParam())->str(":creator", \Forms\UserSession::isLogged() ? \Forms\UserSession::getUserId() : $this->id)
@@ -92,7 +92,7 @@
                                 $params = array(
                                     (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
                                     (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email)),
-                                    (new \Forms\Database\DBParam())->str(":name", mb_strtolower($this->name)),
+                                    (new \Forms\Database\DBParam())->str(":name", $this->name),
                                     (new \Forms\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password)),
                                     (new \Forms\Database\DBParam())->str(":account_type", $this->accountType),
                                 );
@@ -163,6 +163,33 @@
             } else {
                 throw new \Forms\Exception\NotFoundException("");
             }
+        }
+
+
+        /**
+         * check email existence
+         *
+         * @param \Forms\Database\DB $dbh database handler
+         * @param string $email email to check existence
+         */
+        public static function existsEmail(\Forms\Database\DB $dbh, string $email = "") {
+            $results = $dbh->query(" SELECT COUNT(id) AS total FROM USER WHERE email = :email", array(
+                (new \Forms\Database\DBParam())->str(":email", mb_strtolower($email))
+            ));
+            return($results[0]->total > 0);
+        }
+
+        /**
+         * check name existence
+         *
+         * @param \Forms\Database\DB $dbh database handler
+         * @param string $name name to check existence
+         */
+        public static function existsName(\Forms\Database\DB $dbh, string $name = "") {
+            $results = $dbh->query(" SELECT COUNT(id) AS total FROM USER WHERE name = :name", array(
+                (new \Forms\Database\DBParam())->str(":name", $name)
+            ));
+            return($results[0]->total > 0);
         }
 
         /**
