@@ -6,9 +6,10 @@
  */
 const formsAPI = {
     user: {
-        signUp: function (email, password, callback) {
+        signUp: function (email, name, password, callback) {
             var params = {
                 email: email,
+                name: name,
                 password: password
             }
             Vue.http.post("api/user/signup", params).then(
