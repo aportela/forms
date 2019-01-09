@@ -32,11 +32,11 @@ var vueFormsAuth = (function () {
                         <form v-on:submit.prevent="submitSignIn" v-if="tab == 'signin'">
                             <div class="box">
                                 <label class="label">Email</label>
-                                <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidSignInUsername }">
-                                    <input class="input" type="email" name="email" maxlength="255" ref="signInEmail" required autofocus v-bind:class="{ 'is-danger': invalidSignInUsername }" v-bind:disabled="loading ? true: false" v-model="signInEmail">
+                                <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidSignInEmail }">
+                                    <input class="input" type="email" name="email" maxlength="255" ref="signInEmail" required autofocus v-bind:class="{ 'is-danger': invalidSignInEmail }" v-bind:disabled="loading ? true: false" v-model="signInEmail">
                                     <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
-                                    <span class="icon is-small is-right" v-show="invalidSignInUsername"><i class="fa fa-warning"></i></span>
-                                    <p class="help is-danger" v-show="invalidSignInUsername">Invalid email</p>
+                                    <span class="icon is-small is-right" v-show="invalidSignInEmail"><i class="fa fa-warning"></i></span>
+                                    <p class="help is-danger" v-show="invalidSignInEmail">Invalid email</p>
                                 </p>
                                 <label class="label">Password</label>
                                 <p class="control has-icons-left" id="password-container" v-bind:class="{ 'has-icons-right' : invalidSignInPassword }">
@@ -57,11 +57,18 @@ var vueFormsAuth = (function () {
                         <form v-on:submit.prevent="submitSignUp" v-if="tab == 'signup'">
                             <div class="box">
                                 <label class="label">Email</label>
-                                <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidSignUpUsername }">
-                                    <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': invalidSignUpUsername }" v-bind:disabled="loading ? true: false" v-model="signUpEmail">
+                                <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidSignUpEmail }">
+                                    <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': invalidSignUpEmail }" v-bind:disabled="loading ? true: false" v-model="signUpEmail">
                                     <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
-                                    <span class="icon is-small is-right" v-show="invalidSignUpUsername"><i class="fa fa-warning"></i></span>
-                                    <p class="help is-danger" v-show="invalidSignUpUsername">Email already used</p>
+                                    <span class="icon is-small is-right" v-show="invalidSignUpEmail"><i class="fa fa-warning"></i></span>
+                                    <p class="help is-danger" v-show="invalidSignUpEmail">Email already used</p>
+                                </p>
+                                <label class="label">Name</label>
+                                <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidSignUpName }">
+                                    <input class="input" type="test" name="name" maxlength="255" required v-bind:class="{ 'is-danger': invalidSignUpName }" v-bind:disabled="loading ? true: false" v-model="signUpName">
+                                    <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
+                                    <span class="icon is-small is-right" v-show="invalidSignUpName"><i class="fa fa-warning"></i></span>
+                                    <p class="help is-danger" v-show="invalidSignUpName">Name already used</p>
                                 </p>
                                 <label class="label">Password</label>
                                 <p class="control has-icons-left" id="password-container" v-bind:class="{ 'has-icons-right' : invalidSignUpPassword }">
@@ -103,29 +110,32 @@ var vueFormsAuth = (function () {
                 loading: false,
                 signInEmail: null,
                 signInPassword: null,
-                invalidSignInUsername: false,
+                invalidSignInEmail: false,
+                invalidSignInName: false,
                 invalidSignInPassword: false,
                 signUpEmail: null,
+                signUpName: null,
                 signUpPassword: null,
-                invalidSignUpUsername: false,
+                invalidSignUpEmail: false,
+                invalidSignUpName: false,
                 invalidSignUpPassword: false,
                 errors: false,
                 apiError: null,
                 tab: 'signin'
             });
         },
-        created: function() {
+        created: function () {
             this.$nextTick(() => this.$refs.signInEmail.focus());
         },
         computed: {
-            allowSignUp: function() {
-                return(initialState.allowSignUp);
+            allowSignUp: function () {
+                return (initialState.allowSignUp);
             }
         },
         methods: {
             submitSignIn: function () {
                 var self = this;
-                self.invalidSignInUsername = false;
+                self.invalidSignInEmail = false;
                 self.invalidSignInPassword = false;
                 self.loading = true;
                 self.errors = false;
@@ -136,7 +146,7 @@ var vueFormsAuth = (function () {
                         switch (response.status) {
                             case 400:
                                 if (response.body.invalidOrMissingParams.find(function (e) { return (e === "email"); })) {
-                                    self.invalidSignInUsername = true;
+                                    self.invalidSignInEmail = true;
                                 } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "password"); })) {
                                     self.invalidSignInPassword = true;
                                 } else {
@@ -145,7 +155,7 @@ var vueFormsAuth = (function () {
                                 }
                                 break;
                             case 404:
-                                self.invalidSignInUsername = true;
+                                self.invalidSignInEmail = true;
                                 break;
                             case 401:
                                 self.invalidSignInPassword = true;
@@ -161,11 +171,12 @@ var vueFormsAuth = (function () {
             },
             submitSignUp: function () {
                 var self = this;
-                self.invalidSignUpUsername = false;
+                self.invalidSignUpEmail = false;
+                self.invalidSignUpName = false;
                 self.invalidSignUpPassword = false;
                 self.loading = true;
                 self.errors = false;
-                formsAPI.user.signUp(this.signUpEmail, this.signUpPassword, function (response) {
+                formsAPI.user.signUp(this.signUpEmail, this.signUpName, this.signUpPassword, function (response) {
                     if (response.ok) {
                         self.signInEmail = self.signUpEmail;
                         self.signInPassword = self.signUpPassword;
@@ -176,7 +187,9 @@ var vueFormsAuth = (function () {
                         switch (response.status) {
                             case 400:
                                 if (response.body.invalidOrMissingParams.find(function (e) { return (e === "email"); })) {
-                                    self.invalidSignInUsername = true;
+                                    self.invalidSignInEmail = true;
+                                } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "name"); })) {
+                                    self.invalidSignInName = true;
                                 } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "password"); })) {
                                     self.invalidSignInPassword = true;
                                 } else {
@@ -185,7 +198,11 @@ var vueFormsAuth = (function () {
                                 }
                                 break;
                             case 409:
-                                self.invalidSignUpUsername = true;
+                                if (response.body.invalidParams.find(function (e) { return (e === "email"); })) {
+                                    self.invalidSignUpEmail = true;
+                                } else if (response.body.invalidParams.find(function (e) { return (e === "name"); })) {
+                                    self.invalidSignUpName = true;
+                                }
                                 break;
                             default:
                                 //self.apiError = response.getApiErrorData();
