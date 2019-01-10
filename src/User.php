@@ -196,17 +196,87 @@
          * search users
          *
          * @param \Forms\Database\DB $dbh database handler
+         * @param array $filter results filtering conditions
+         * @param int $page results page index to retrieve
+         * @param int $resultsPage number of results / page
+         * @param string $sortBy sort by field (name)
+         * @param string $sortOrder sort type (ASC / DESC)
          */
-        public function search(\Forms\Database\DB $dbh) {
-            $users = $dbh->query(" SELECT USER.id, USER.email, USER.name, USER.creation_date AS creationDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail FROM USER LEFT JOIN USER U ON USER.creator = U.id WHERE USER.deletion_date IS NULL ORDER BY USER.email ", array());
-            foreach($users as $user) {
+        public function search(\Forms\Database\DB $dbh, array $filter = array(), int $currentPage, int $resultsPage, string $sortBy = "", string $sortOrder = "ASC") {
+            $params = array();
+            $whereCondition = "";
+            if (isset($filter)) {
+                $conditions = array();
+                if (isset($filter["accountType"]) && ! empty($filter["accountType"])) {
+                    $conditions[] = " USER.account_type = :account_type ";
+                    $params[] = (new \Forms\Database\DBParam())->str(":account_type", $filter["accountType"]);
+                }
+                if (isset($filter["email"]) && ! empty($filter["email"])) {
+                    $conditions[] = " USER.email LIKE :email ";
+                    $params[] = (new \Forms\Database\DBParam())->str(":email", "%" . $filter["email"] . "%");
+                }
+                if (isset($filter["name"]) && ! empty($filter["name"])) {
+                    $conditions[] = " USER.name LIKE :name ";
+                    $params[] = (new \Forms\Database\DBParam())->str(":name", "%" . $filter["name"] . "%");
+                }
+                $whereCondition = count($conditions) > 0 ? " AND " .  implode(" AND ", $conditions) : "";
+            }
+
+            $results = $dbh->query(
+                sprintf(
+                    "
+                        SELECT COUNT(USER.id) AS total
+                        FROM USER
+                        WHERE USER.deletion_date IS NULL
+                        %s
+                    ", $whereCondition
+                ), $params
+            );
+
+            $data = new \Forms\SearchResult($currentPage, $resultsPage, intval($results[0]->total));
+
+            $sqlSortBy = "";
+            switch($sortBy) {
+                case "name":
+                    $sqlSortBy = "USER.name";
+                break;
+                case "creationDate":
+                    $sqlSortBy = "USER.creation_date";
+                break;
+                case "accountType":
+                    $sqlSortBy = "USER.account_type";
+                break;
+                case "email":
+                default:
+                    $sqlSortBy = "USER.email";
+                break;
+            }
+            $data->results = $dbh->query(
+                    sprintf(
+                        "
+                            SELECT USER.id, USER.email, USER.name, USER.creation_date AS creationDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail
+                            FROM USER
+                            LEFT JOIN USER U ON USER.creator = U.id
+                            WHERE USER.deletion_date IS NULL
+                            %s
+                            ORDER BY %s %s
+                            %s
+                        ",
+                        $whereCondition,
+                        $sqlSortBy,
+                        $sortOrder == "DESC" ? "DESC": "ASC",
+                        $data->isPaginationEnabled() ? sprintf("LIMIT %d OFFSET %d", $data->resultsPage, $data->getSQLPageOffset()) : null
+                    ),
+                $params
+            );
+            foreach($data->results as $user) {
                 $creatorId = $user->creatorId;
                 $creatorEmail = $user->creatorEmail;
                 $user->creator = new \stdclass();
                 $user->creator->id = $creatorId;
                 $user->creator->email = $creatorEmail;
             }
-            return($users);
+            return($data);
         }
 
         /**
