@@ -41,7 +41,8 @@
                 'level' => \Monolog\Logger::DEBUG
             ],
             'common' => [
-                'allowSignUp' => true // allow user public sign-ups
+                'allowSignUp' => true, // allow user public sign-ups
+                'defaultResultsPage' => 32 // default pagination results
             ]
         ],
     ];
