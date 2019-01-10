@@ -18,7 +18,8 @@
                     'logged' => \Forms\UserSession::isLogged(),
                     'isAdministrator' => \Forms\UserSession::isAdministrator(),
                     'allowSignUp' => $this->get('settings')['common']['allowSignUp'],
-                    'sessionTimeout' => ini_get("session.gc_maxlifetime")
+                    'sessionTimeout' => ini_get("session.gc_maxlifetime"),
+                    'defaultResultsPage' => $this->get('settings')['common']['defaultResultsPage']
                 )
             )
         ));
@@ -35,7 +36,8 @@
                         'logged' => \Forms\UserSession::isLogged(),
                         'isAdministrator' => \Forms\UserSession::isAdministrator(),
                         'allowSignUp' => $this->get('settings')['common']['allowSignUp'],
-                        'sessionTimeout' => ini_get("session.gc_maxlifetime")
+                        'sessionTimeout' => ini_get("session.gc_maxlifetime"),
+                        'defaultResultsPage' => $this->get('settings')['common']['defaultResultsPage']
                     )
             ], 200);
         });
@@ -45,7 +47,7 @@
          */
         $this->group("/user", function() {
             $this->post('/signin', function (Request $request, Response $response, array $args) {
-                $u = new \Forms\User("", $request->getParam("email", ""), $request->getParam("password", ""));
+                $u = new \Forms\User("", $request->getParam("email", ""), "", $request->getParam("password", \Forms\User::ACCOUNT_TYPE_USER));
                 if ($u->login(new \Forms\Database\DB($this))) {
                     return $response->withJson(['logged' => true], 200);
                 } else {
@@ -59,16 +61,14 @@
                     $u = new \Forms\User(
                         "",
                         $request->getParam("email", ""),
-                        $request->getParam("password", "")
+                        $request->getParam("name", ""),
+                        $request->getParam("password", ""),
+                        \Forms\User::ACCOUNT_TYPE_USER
                     );
-                    $exists = false;
-                    try {
-                        $u->get($dbh);
-                        $exists = true;
-                    } catch (\Forms\Exception\NotFoundException $e) {
-                    }
-                    if ($exists) {
-                        return $response->withJson([], 409);
+                    if (\Forms\User::existsEmail($dbh, $u->email)) {
+                        throw new \Forms\Exception\AlreadyExistsException("email");
+                    } else if (\Forms\User::existsName($dbh, $u->name)) {
+                        throw new \Forms\Exception\AlreadyExistsException("name");
                     } else {
                         $u->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
                         $u->add($dbh);
@@ -83,6 +83,40 @@
                 \Forms\User::logout();
                 return $response->withJson(['logged' => false], 200);
             });
+
+            $this->post('/search', function (Request $request, Response $response, array $args) {
+                $requestFilter = $request->getParam("filter");
+                $filter = array();
+                if (isset($requestFilter["email"]) && ! empty($requestFilter["email"])) {
+                    $filter["email"] = $requestFilter["email"];
+                }
+                if (isset($requestFilter["name"]) && ! empty($requestFilter["name"])) {
+                    $filter["name"] = $requestFilter["name"];
+                }
+                if (isset($requestFilter["accountType"]) && ! empty($requestFilter["accountType"])) {
+                    $filter["accountType"] = $requestFilter["accountType"];
+                }
+                $data = \Forms\User::search(
+                    new \Forms\Database\DB(
+                        $this
+                    ),
+                    $filter,
+                    $request->getParam("currentPage", 1),
+                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    $request->getParam("sortBy", ""),
+                    $request->getParam("sortOrder", "")
+                );
+                return $response->withJson([
+                    'users' => $data->results,
+                    "pagination" => array(
+                        'totalResults' => $data->totalResults,
+                        'currentPage' => $data->currentPage,
+                        'resultsPage' => $data->resultsPage,
+                        'totalPages' => $data->totalPages
+                    )
+                ], 200);
+            });
+
         });
         /**
          * USER API routes (END)
