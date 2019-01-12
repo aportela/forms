@@ -14,7 +14,7 @@ const vueFormsTableControls = (function () {
                                 </a>
                             </p>
                             <p class="control is-expanded" v-if="configuration.showRefreshButton">
-                                <a class="button is-fullwidth is-info" title="Click for refresh elements" v-bind:disabled="loading" v-on:click.prevent="$emit('onRefreshButtonClicked')">
+                                <a class="button is-fullwidth is-info" v-bind:class="{ 'is-loading': loading }" title="Click for refresh elements" v-bind:disabled="loading" v-on:click.prevent="$emit('onRefreshButtonClicked')">
                                     <span class="icon is-small"><i class="fas fa-sync-alt"></i></span>
                                     <span>Refresh</span>
                                 </a>
