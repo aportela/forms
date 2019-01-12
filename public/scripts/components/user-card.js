@@ -4,7 +4,6 @@ const vueFormsUserCard = (function () {
     let template = function () {
         return `
             <div>
-                <f-sections-breadcrumb></f-sections-breadcrumb>
                 <p>User card</p>
             </div>
         `;

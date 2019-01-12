@@ -8,8 +8,6 @@ const vueFormsUsers = (function () {
         return `
             <div>
 
-                <f-sections-breadcrumb></f-sections-breadcrumb>
-
                 <f-table-controls v-bind:loading="loading" v-bind:paginationData="pager" v-bind:configuration="{ showAddButton: false, showRefreshButton: true, showExportButton: true, showPaginationControls: true }" v-on:onAddButtonClicked="onAdd" v-on:onRefreshButtonClicked="onRefresh" v-on:onExportButtonClicked="onExport" v-on:onPaginationRefreshRequired="search(false)"></f-table-controls>
 
                 <table class="table is-striped is-narrow is-fullwidth is-unselectable">
