@@ -6,7 +6,7 @@ const vueFormsExportButton = (function () {
             <div class="field has-addons">
                 <p class="control">
                     <span class="select">
-                        <select v-model="format" v-bind:disabled="loading">
+                        <select v-model="format" v-bind:disabled="disabled">
                             <option value="">select format</option>
                             <option value="json">json</option>
                             <option value="csv">csv</option>
@@ -31,12 +31,12 @@ const vueFormsExportButton = (function () {
             });
         },
         props: [
-            'loading',
+            'disabled',
             'configuration'
         ],
         computed: {
             isExportDisabled: function () {
-                return (this.loading || this.format == "");
+                return (this.disabled || this.format == "");
             }
         }
     });
