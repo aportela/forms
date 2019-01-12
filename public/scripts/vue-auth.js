@@ -88,16 +88,13 @@ var vueFormsAuth = (function () {
                             </div>
                         </form>
 
-                        <p class="has-text-centered mk-margin-top-1rem">
+                        <p class="has-text-centered f-mt-1rem">
                             <a href="https://github.com/aportela/forms" target="_blank"><span class="icon is-small"><i class="fab fa-github"></i></span>Project page</a> | <a href="mailto:766f6964+github@gmail.com">by alex</a>
                         </p>
                     </div>
                 </div>
             </div>
         </div>
-        <footer class="footer" v-if="errors">
-            <spieldose-api-error-component v-bind:apiError="apiError"></spieldose-api-error-component>
-        </footer>
     </section>
     `;
     };
@@ -120,10 +117,12 @@ var vueFormsAuth = (function () {
                 invalidSignUpName: false,
                 invalidSignUpPassword: false,
                 errors: false,
-                apiError: null,
                 tab: 'signin'
             });
         },
+        mixins: [
+            mixinRoutes
+        ],
         created: function () {
             this.$nextTick(() => this.$refs.signInEmail.focus());
         },
@@ -138,9 +137,9 @@ var vueFormsAuth = (function () {
                 self.invalidSignInEmail = false;
                 self.invalidSignInPassword = false;
                 self.loading = true;
-                self.errors = false;
                 formsAPI.user.signIn(this.signInEmail, this.signInPassword, function (response) {
                     if (response.ok) {
+                        initialState.session = response.body.session;
                         self.$router.push({ name: 'home' });
                     } else {
                         switch (response.status) {
@@ -150,8 +149,7 @@ var vueFormsAuth = (function () {
                                 } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "password"); })) {
                                     self.invalidSignInPassword = true;
                                 } else {
-                                    self.apiError = response.getApiErrorData();
-                                    self.errors = true;
+                                    self.showApiError(response.getApiErrorData());
                                 }
                                 break;
                             case 404:
@@ -161,8 +159,7 @@ var vueFormsAuth = (function () {
                                 self.invalidSignInPassword = true;
                                 break;
                             default:
-                                self.apiError = response.getApiErrorData();
-                                self.errors = true;
+                                self.showApiError(response.getApiErrorData());
                                 break;
                         }
                         self.loading = false;
@@ -194,7 +191,6 @@ var vueFormsAuth = (function () {
                                     self.invalidSignInPassword = true;
                                 } else {
                                     self.apiError = response.getApiErrorData();
-                                    self.errors = true;
                                 }
                                 break;
                             case 409:
@@ -207,6 +203,7 @@ var vueFormsAuth = (function () {
                             default:
                                 //self.apiError = response.getApiErrorData();
                                 //self.errors = true;
+                                self.setAPIError(response.getApiErrorData());
                                 break;
                         }
                         self.loading = false;
