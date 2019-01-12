@@ -53,8 +53,8 @@
         });
 
         $this->post('/signin', function (Request $request, Response $response, array $args) {
-            $u = new \Forms\User("", $request->getParam("email", ""), "", $request->getParam("password", \Forms\User::ACCOUNT_TYPE_USER));
-            if ($u->login(new \Forms\Database\DB($this))) {
+            $user = new \Forms\User("", $request->getParam("email", ""), "", $request->getParam("password", \Forms\User::ACCOUNT_TYPE_USER));
+            if ($user->login(new \Forms\Database\DB($this))) {
                 return $response->withJson(
                     [
                         'session' => array(
@@ -76,20 +76,20 @@
         $this->post('/signup', function (Request $request, Response $response, array $args) {
             if ($this->get('settings')['common']['allowSignUp']) {
                 $dbh = new \Forms\Database\DB($this);
-                $u = new \Forms\User(
+                $user = new \Forms\User(
                     "",
                     $request->getParam("email", ""),
                     $request->getParam("name", ""),
                     $request->getParam("password", ""),
                     \Forms\User::ACCOUNT_TYPE_USER
                 );
-                if (\Forms\User::existsEmail($dbh, $u->email)) {
+                if (\Forms\User::existsEmail($dbh, $user->email)) {
                     throw new \Forms\Exception\AlreadyExistsException("email");
-                } else if (\Forms\User::existsName($dbh, $u->name)) {
+                } else if (\Forms\User::existsName($dbh, $user->name)) {
                     throw new \Forms\Exception\AlreadyExistsException("name");
                 } else {
-                    $u->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                    $u->add($dbh);
+                    $user->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                    $user->add($dbh);
                     return $response->withJson([], 200);
                 }
             } else {
@@ -145,7 +145,7 @@
                 $user = new \Forms\User(
                     $route->getArgument("id"),
                     "",
-                    "",
+                    "" ,
                     "",
                     ""
                 );
@@ -154,12 +154,68 @@
                 return $response->withJson([
                     "user" => array(
                         "id" => $user->id,
-                        "name" => $user->name,
                         "email" => $user->email,
+                        "name" => $user->name,
                         "accountType" => $user->accountType,
                         "creationDate" => $user->creationDate
                     )
                 ], 200);
+            });
+
+            $this->post('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $user = new \Forms\User(
+                    $route->getArgument("id"),
+                    $request->getParam("email", ""),
+                    $request->getParam("name", ""),
+                    $request->getParam("password", ""),
+                    $request->getParam("accountType", "")
+                );
+                $dbh = new \Forms\Database\DB($this);
+                if (\Forms\User::existsEmail($dbh, $user->email)) {
+                    throw new \Forms\Exception\AlreadyExistsException("email");
+                } else if (\Forms\User::existsName($dbh, $user->name)) {
+                    throw new \Forms\Exception\AlreadyExistsException("name");
+                } else {
+                    $user->add($dbh);
+                    return $response->withJson([
+                        "user" => array(
+                            "id" => $user->id,
+                            "name" => $user->name,
+                            "email" => $user->email,
+                            "accountType" => $user->accountType,
+                            "creationDate" => $user->creationDate
+                        )
+                    ], 200);
+                }
+            });
+
+            $this->put('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $user = new \Forms\User(
+                    $route->getArgument("id"),
+                    $request->getParam("email", ""),
+                    $request->getParam("name", ""),
+                    $request->getParam("password", ""),
+                    $request->getParam("accountType", "")
+                );
+                $dbh = new \Forms\Database\DB($this);
+                if (\Forms\User::existsEmail($dbh, $user->email, $user->id)) {
+                    throw new \Forms\Exception\AlreadyExistsException("email");
+                } else if (\Forms\User::existsName($dbh, $user->name, $user->id)) {
+                    throw new \Forms\Exception\AlreadyExistsException("name");
+                } else {
+                    $user->update($dbh);
+                    return $response->withJson([
+                        "user" => array(
+                            "id" => $user->id,
+                            "name" => $user->name,
+                            "email" => $user->email,
+                            "accountType" => $user->accountType,
+                            "creationDate" => $user->creationDate
+                        )
+                    ], 200);
+                }
             });
 
         });
