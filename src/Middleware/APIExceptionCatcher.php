@@ -40,6 +40,9 @@
             } catch (\Forms\Exception\DeletedException $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
                 return $response->withJson(['keyDeleted' => $e->getMessage()], 410);
+            } catch (\Forms\Exception\UnauthorizedException $e) {
+                $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
+                return $response->withJson([], 401);
             } catch (\Forms\Exception\AccessDenied $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
                 return $response->withJson([], 403);
