@@ -4,7 +4,7 @@
 const vueFormsUsers = (function () {
     "use strict";
 
-    let template = function () {
+    const template = function () {
         return `
             <div>
 
@@ -47,13 +47,13 @@ const vueFormsUsers = (function () {
                             <td>
                                 <div class="field is-grouped">
                                     <p class="control is-expanded">
-                                        <a class="button is-small is-fullwidth is-info" v-bind:disabled="true || loading">
+                                        <a class="button is-small is-fullwidth is-info" v-bind:disabled="loading" v-on:click="$router.push({ name: 'userCard', params: { id: user.id } })">
                                             <span class="icon is-small"><i class="fas fa-user-cog"></i></span>
                                             <span>Open</span>
                                         </a>
                                     </p>
                                     <p class="control is-expanded">
-                                        <a class="button is-small is-fullwidth is-danger" v-bind:disabled="true || loading">
+                                        <a class="button is-small is-fullwidth is-danger" v-bind:disabled="loading">
                                             <span class="icon is-small"><i class="fas fa-user-times"></i></span>
                                             <span>Remove</span>
                                         </a>
@@ -72,7 +72,7 @@ const vueFormsUsers = (function () {
         `;
     };
 
-    let module = Vue.component('users', {
+    let module = Vue.component('f-users-management', {
         template: template(),
         data: function () {
             return ({
@@ -85,6 +85,7 @@ const vueFormsUsers = (function () {
             });
         },
         mixins: [
+            mixinRoutes,
             mixinTableControls,
             mixinUtils
         ],
@@ -112,7 +113,9 @@ const vueFormsUsers = (function () {
                         self.pager.totalPages = response.body.pagination.totalPages;
                         self.pager.totalResults = response.body.pagination.totalResults;
                         self.items = response.body.users;
+                        self.loading = false;
                     } else {
+                        self.showApiError(response.getApiErrorData());
                     }
                 });
             },
