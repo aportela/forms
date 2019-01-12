@@ -43,13 +43,13 @@ const vueFormsGroups = (function () {
                                 <div class="field is-grouped">
                                     <p class="control is-expanded">
                                         <a class="button is-small is-fullwidth is-info" v-bind:disabled="loading" v-on:click="$router.push({ name: 'updateGroup', params: { id: group.id } })">
-                                            <span class="icon is-small"><i class="fas fa-users-cog"></i></span>
-                                            <span>Open</span>
-                                        </a>
+                                            <span class="icon is-small"><i class="fas fa-pen"></i></span>
+                                            <span>Update</span>
+                                            </a>
                                     </p>
                                     <p class="control is-expanded">
                                         <a class="button is-small is-fullwidth is-danger" v-bind:disabled="loading">
-                                            <span class="icon is-small"><i class="fas fa-users-times"></i></span>
+                                            <span class="icon is-small"><i class="fas fa-trash-alt"></i></span>
                                             <span>Remove</span>
                                         </a>
                                     </p>
