@@ -153,7 +153,6 @@
             $this->assertTrue($u->add(self::$dbh) && $u->delete(self::$dbh));
         }
 
-
         public function testGetWithoutIdOrEmail(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("id,email");
@@ -231,8 +230,13 @@
             $this->assertTrue(\Forms\User::existsName(self::$dbh, $u->name));
         }
 
-        public function testSearchWithoutFilter(): void {
-            $users = \Forms\User::search(self::$dbh);
+        public function testSearchWithoutPagination(): void {
+            $users = \Forms\User::search(self::$dbh, array(), 1, 0, "", "ASC");
+            $this->assertTrue(count($users) >= 0);
+        }
+
+        public function testSearchWithPagination(): void {
+            $users = \Forms\User::search(self::$dbh, array(), 1, 16, "", "ASC");
             $this->assertTrue(count($users) >= 0);
         }
 
