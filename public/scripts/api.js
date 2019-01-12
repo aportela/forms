@@ -71,6 +71,34 @@ const formsAPI = {
                 }
             );
         },
+        add: function (user, callback) {
+            Vue.http.post("api/users/" + user.id, user).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        update: function (user, callback) {
+            Vue.http.put("api/users/" + user.id, user).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
         search: function (searchByEmail, searchByName, searchByAccountType, searchFromCreationDate, searchToCreationDate, currentPage, resultsPage, sortBy, sortOrder, callback) {
             let params = {
                 filter: {},
