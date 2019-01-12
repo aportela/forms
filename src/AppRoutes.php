@@ -59,9 +59,21 @@
             $this->post('/signin', function (Request $request, Response $response, array $args) {
                 $u = new \Forms\User("", $request->getParam("email", ""), "", $request->getParam("password", \Forms\User::ACCOUNT_TYPE_USER));
                 if ($u->login(new \Forms\Database\DB($this))) {
-                    return $response->withJson(['logged' => true], 200);
+                    return $response->withJson(
+                        [
+                            'session' => array(
+                                'logged' => \Forms\UserSession::isLogged(),
+                                'isAdministrator' => \Forms\UserSession::isAdministrator(),
+                                'userId' => \Forms\UserSession::getUserId(),
+                                'userEmail' => \Forms\UserSession::getEmail(),
+                                'userName' => \Forms\UserSession::getName(),
+                                'sessionTimeout' => ini_get("session.gc_maxlifetime")
+                            )
+                        ],
+                        200
+                    );
                 } else {
-                    return $response->withJson(['logged' => false], 401);
+                    throw new \Forms\Exception\UnauthorizedException();
                 }
             });
 
