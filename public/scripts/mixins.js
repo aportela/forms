@@ -19,6 +19,11 @@ const mixinRoutes = {
  * session mixins
  */
 const mixinSession = {
+    computed: {
+        isAdministrator: function() {
+            return(initialState.session.isAdministrator);
+        }
+    },
     methods: {
         signOut: function () {
             bus.$emit("signOut");
