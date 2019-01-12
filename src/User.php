@@ -89,22 +89,34 @@
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
                 if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
                     if (! empty($this->name) && mb_strlen($this->name) <= 255) {
-                        if ($this->accountType == self::ACCOUNT_TYPE_USER || $this->accountType == self::ACCOUNT_TYPE_ADMINISTRATOR) {
-                            $params = array(
-                                (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
-                                (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email)),
-                                (new \Forms\Database\DBParam())->str(":name", $this->name),
-                                (new \Forms\Database\DBParam())->str(":account_type", $this->accountType),
-                            );
-                            if (! empty($password)) {
-                                $params[] = (new \Forms\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password));
-                                return($dbh->execute(" UPDATE USER SET email = :email, name = :name, password_hash = :password_hash, account_type = :account_type WHERE id = :id ", $params));
-                            } else {
-                                return($dbh->execute(" UPDATE USER SET email = :email, name = :name, account_type = :account_type WHERE id = :id ", $params));
+                        $fields = array(
+                            "email = :email ",
+                            "name = :name ",
+                        );
+                        $params = array(
+                            (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
+                            (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email)),
+                            (new \Forms\Database\DBParam())->str(":name", $this->name)
+                        );
+                        if (! empty($this->accountType)) {
+                            if (\Forms\UserSession::isAdministrator() && mb_strtolower($this->id) != \Forms\UserSession::getUserId()) {
+                                if ($this->accountType == self::ACCOUNT_TYPE_USER || $this->accountType == self::ACCOUNT_TYPE_ADMINISTRATOR) {
+                                    $fields[] = "account_type = :account_type";
+                                    $params[] = (new \Forms\Database\DBParam())->str(":account_type", $this->accountType);
+                                } else {
+                                    throw new \Forms\Exception\InvalidParamsException("accountType");
+                                }
                             }
+                        }
+                        if (! empty($password)) {
+                            $fields[] = "password_hash = :password_hash";
+                            $params[] = (new \Forms\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password));
 
+                        }
+                        if (mb_strtolower($this->id) == \Forms\UserSession::getUserId() || \Forms\UserSession::isAdministrator()) {
+                            return($dbh->execute(sprintf(" UPDATE USER SET %s WHERE id = :id ", implode(", ", $fields)), $params));
                         } else {
-                            throw new \Forms\Exception\InvalidParamsException("accountType");
+                            throw new \Forms\Exception\AccessDeniedException("");
                         }
                     } else {
                         throw new \Forms\Exception\InvalidParamsException("name");
