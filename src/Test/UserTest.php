@@ -217,17 +217,33 @@
             $this->assertTrue(\Forms\User::existsEmail(self::$dbh, $u->email));
         }
 
-        public function testExistsEmailWithNonExistentName(): void {
+        public function testExistsEmailWithExistentEmailIgnoringId(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
+            $u->add(self::$dbh);
+            $this->assertFalse(\Forms\User::existsEmail(self::$dbh, $u->email, $u->id));
+        }
+
+        public function testExistsNameWithNonExistentName(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $this->assertFalse(\Forms\User::existsName(self::$dbh, $id));
         }
 
-        public function testExistsEmailWithExistentName(): void {
+        public function testExistsNameWithExistentName(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
             $u->add(self::$dbh);
             $this->assertTrue(\Forms\User::existsName(self::$dbh, $u->name));
+        }
+
+        public function testExistsNameWithExistentNameIgnoringId(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
+            $u->add(self::$dbh);
+            $this->assertFalse(\Forms\User::existsName(self::$dbh, $u->name, $u->id));
         }
 
         public function testSearchWithoutPagination(): void {

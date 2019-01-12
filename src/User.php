@@ -191,16 +191,25 @@
          * @param \Forms\Database\DB $dbh database handler
          * @param string $email email to check existence
          */
-        public static function existsEmail(\Forms\Database\DB $dbh, string $email = "") {
-            $results = $dbh->query(
-                "
-                    SELECT
-                        COUNT(id) AS total
-                    FROM USER
-                    WHERE email = :email
-                ", array(
-                    (new \Forms\Database\DBParam())->str(":email", mb_strtolower($email))
-                )
+        public static function existsEmail(\Forms\Database\DB $dbh, string $email = "", string $ignoreId = "") {
+            $params = array(
+                (new \Forms\Database\DBParam())->str(":email", mb_strtolower($email))
+            );
+            $whereCondition = null;
+            if (! empty($ignoreId)) {
+                $whereCondition = " AND USER.id <> :id ";
+                $params[] = (new \Forms\Database\DBParam())->str(":id", mb_strtolower($ignoreId));
+            }
+            $results = $dbh->query(sprintf
+                (
+                    "
+                        SELECT
+                            COUNT(id) AS total
+                        FROM USER
+                        WHERE email = :email
+                        %s
+                    ", $whereCondition
+                ), $params
             );
             return($results[0]->total == 1);
         }
@@ -211,16 +220,25 @@
          * @param \Forms\Database\DB $dbh database handler
          * @param string $name name to check existence
          */
-        public static function existsName(\Forms\Database\DB $dbh, string $name = "") {
-            $results = $dbh->query(
-                "
-                    SELECT
-                        COUNT(id) AS total
-                    FROM USER
-                    WHERE name = :name
-                ", array(
-                    (new \Forms\Database\DBParam())->str(":name", $name)
-                )
+        public static function existsName(\Forms\Database\DB $dbh, string $name = "", string $ignoreId = "") {
+            $params = array(
+                (new \Forms\Database\DBParam())->str(":name", $name)
+            );
+            $whereCondition = null;
+            if (! empty($ignoreId)) {
+                $whereCondition = " AND USER.id <> :id ";
+                $params[] = (new \Forms\Database\DBParam())->str(":id", mb_strtolower($ignoreId));
+            }
+            $results = $dbh->query(sprintf
+                (
+                    "
+                        SELECT
+                            COUNT(id) AS total
+                        FROM USER
+                        WHERE name = :name
+                        %s
+                    ", $whereCondition
+                ), $params
             );
             return($results[0]->total == 1);
         }
