@@ -160,6 +160,7 @@
                 $this->creator = new \stdclass();
                 $this->creator->id = $results[0]->creatorId;
                 $this->creator->email = $results[0]->creatorEmail;
+                $this->accountType = $results[0]->accountType;
             } else {
                 throw new \Forms\Exception\NotFoundException("");
             }
