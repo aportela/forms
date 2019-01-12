@@ -76,6 +76,14 @@ var vueFormsTopMenu = (function () {
                                 </div>
                             </div>
                         </div>
+                        <a class="navbar-item is-tab" v-on:click.prevent="changeRoute('profile')" v-bind:class="{ 'is-active': isRouteActive('profile') }">
+                            <p class="control">
+                                <span class="icon is-small">
+                                    <i class="fas fa-user-cog"></i>
+                                </span>
+                                <span>My profile</span>
+                            </p>
+                        </a>
                         <a class="navbar-item is-tab" v-on:click.prevent="signOut();">
                             <p class="control">
                                 <span class="icon is-small">
