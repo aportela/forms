@@ -22,7 +22,7 @@ const vueFormsUserCard = (function () {
                         </p>
                         <label class="label">Password</label>
                         <p class="control has-icons-left" id="password-container" v-bind:class="{ 'has-icons-right' : invalidPassword }">
-                            <input class="input" type="password" name="password" required v-bind:class="{ 'is-danger': invalidPassword }" v-bind:disabled="loading ? true: false" v-model="user.password">
+                            <input class="input" type="password" name="password" v-bind:class="{ 'is-danger': invalidPassword }" v-bind:disabled="loading ? true: false" v-model="user.password">
                             <span class="icon is-small is-left"><i class="fa fa-key"></i></span>
                             <span class="icon is-small is-right" v-show="invalidPassword"><i class="fa fa-warning"></i></span>
                             <p class="help is-danger" v-show="invalidPassword">Invalid password</p>
