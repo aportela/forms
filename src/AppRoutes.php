@@ -257,6 +257,51 @@
                 ], 200);
             });
 
+            $this->get('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $group = new \Forms\Group(
+                    $route->getArgument("id"),
+                    "",
+                    "" ,
+                    array()
+                );
+                $dbh = new \Forms\Database\DB($this);
+                $group->get($dbh);
+                return $response->withJson([
+                    "group" => $group
+                ], 200);
+            });
+
+            $this->post('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $group = new \Forms\Group(
+                    $route->getArgument("id"),
+                    $request->getParam("name", ""),
+                    $request->getParam("description", ""),
+                    array()
+                );
+                $dbh = new \Forms\Database\DB($this);
+                $group->add($dbh);
+                return $response->withJson([
+                    "group" => $group
+                ], 200);
+            });
+
+            $this->put('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $group = new \Forms\Group(
+                    $route->getArgument("id"),
+                    $request->getParam("name", ""),
+                    $request->getParam("description", ""),
+                    array()
+                );
+                $dbh = new \Forms\Database\DB($this);
+                $group->update($dbh);
+                return $response->withJson([
+                    "group" => $group
+                ], 200);
+            });
+
         });
         /**
          * GROUP API routes (END)
