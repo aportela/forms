@@ -51,7 +51,7 @@ const vueFormsUsers = (function () {
                                         </a>
                                     </p>
                                     <p class="control is-expanded">
-                                        <a class="button is-small is-fullwidth is-danger" v-bind:disabled="loading">
+                                        <a class="button is-small is-fullwidth is-danger" v-bind:disabled="loading || isCurrentUser(user.id)">
                                             <span class="icon is-small"><i class="fas fa-user-times"></i></span>
                                             <span>Remove</span>
                                         </a>
@@ -98,6 +98,9 @@ const vueFormsUsers = (function () {
             }
         },
         methods: {
+            isCurrentUser(userId) {
+                return(initialState.session.userId == userId);
+            },
             search(resetPager) {
                 let self = this;
                 if (resetPager) {
