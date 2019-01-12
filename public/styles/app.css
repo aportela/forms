@@ -1,3 +1,8 @@
 .f-cursor-pointer {
     cursor: pointer;
 }
+
+.f-mt-1rem
+{
+    margin-top: 1rem !important;
+}
