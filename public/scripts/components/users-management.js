@@ -13,8 +13,8 @@ const vueFormsUsers = (function () {
                 <table class="table is-striped is-narrow is-fullwidth is-unselectable">
                     <thead>
                         <tr>
-                            <f-table-header-field v-bind:name="'email'" v-bind:isSorted="sortBy == 'email'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('email');"></f-table-header-field>
-                            <f-table-header-field v-bind:name="'name'" v-bind:isSorted="sortBy == 'name'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('name');"></f-table-header-field>
+                            <f-table-header-field v-bind:name="'Email'" v-bind:isSorted="sortBy == 'email'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('email');"></f-table-header-field>
+                            <f-table-header-field v-bind:name="'Name'" v-bind:isSorted="sortBy == 'name'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('name');"></f-table-header-field>
                             <f-table-header-field v-bind:name="'Account type'" v-bind:isSorted="sortBy == 'accountType'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('accountType');"></f-table-header-field>
                             <f-table-header-field v-bind:name="'Created'" v-bind:isSorted="sortBy == 'creationDate'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('creationDate');"></f-table-header-field>
                             <th class="has-text-centered">Operations</th>
@@ -46,13 +46,13 @@ const vueFormsUsers = (function () {
                                 <div class="field is-grouped">
                                     <p class="control is-expanded">
                                         <a class="button is-small is-fullwidth is-info" v-bind:disabled="loading" v-on:click="$router.push({ name: 'updateUser', params: { id: user.id } })">
-                                            <span class="icon is-small"><i class="fas fa-user-cog"></i></span>
-                                            <span>Open</span>
+                                            <span class="icon is-small"><i class="fas fa-pen"></i></span>
+                                            <span>Update</span>
                                         </a>
                                     </p>
                                     <p class="control is-expanded">
                                         <a class="button is-small is-fullwidth is-danger" v-bind:disabled="loading || isCurrentUser(user.id)">
-                                            <span class="icon is-small"><i class="fas fa-user-times"></i></span>
+                                            <span class="icon is-small"><i class="fas fa-trash-alt"></i></span>
                                             <span>Remove</span>
                                         </a>
                                     </p>
