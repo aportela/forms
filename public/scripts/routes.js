@@ -12,5 +12,6 @@ const routes = [
             { path: '/groups', name: 'groups', component: vueFormsGroups },
             { path: '/attributes', name: 'attributes', component: vueFormsAttributes }
         ]
-    }
+    },
+    { path: '/api-error', name: 'apiError', component: vueFormsSectionAPIError }
 ];
