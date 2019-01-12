@@ -89,8 +89,22 @@
                             [deletion_date] INTEGER
                         );
                     '
+                ),
+                "1.07" => array(
+                    '
+                        DROP TABLE [GROUP]
+                    ',
+                    '
+                        CREATE TABLE [GROUP] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [name] VARCHAR(64) UNIQUE NOT NULL,
+                            [description] VARCHAR(255),
+                            [creation_date] INTEGER NOT NULL,
+                            [creator] VARCHAR(36) NOT NULL,
+                            [deletion_date] INTEGER
+                        );
+                    '
                 )
-
             ),
         );
 
