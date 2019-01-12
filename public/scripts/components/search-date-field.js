@@ -64,7 +64,6 @@ const vueFormsSearchDateField = (function () {
                 return (date);
             },
             changeDate: function (date, daysChanged, monthsChanged, yearsChanged) {
-                console.log(daysChanged);
                 date = dateFns.addDays(date, daysChanged);
                 date = dateFns.addMonths(date, monthsChanged);
                 date = dateFns.addYears(date, yearsChanged);
