@@ -6,6 +6,7 @@
 
     return [
         'settings' => [
+            'displayErrorDetails' => true, // disable on production environments
             'phpRequiredExtensions' => array('pdo_sqlite', 'mbstring'),
             'twigParams' => [
                 'production' => false,
