@@ -217,13 +217,51 @@
                     ], 200);
                 }
             });
-
         });
-
-
         /**
          * USER API routes (END)
          */
+
+        /**
+         * GROUP API routes (BEGIN)
+         */
+        $this->group("/groups", function() {
+
+            $this->post('/search', function (Request $request, Response $response, array $args) {
+                $requestFilter = $request->getParam("filter");
+                $filter = array();
+                if (isset($requestFilter["name"]) && ! empty($requestFilter["name"])) {
+                    $filter["name"] = $requestFilter["name"];
+                }
+                if (isset($requestFilter["description"]) && ! empty($requestFilter["description"])) {
+                    $filter["description"] = $requestFilter["description"];
+                }
+                $data = \Forms\Group::search(
+                    new \Forms\Database\DB(
+                        $this
+                    ),
+                    $filter,
+                    $request->getParam("currentPage", 1),
+                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    $request->getParam("sortBy", ""),
+                    $request->getParam("sortOrder", "")
+                );
+                return $response->withJson([
+                    'groups' => $data->results,
+                    "pagination" => array(
+                        'totalResults' => $data->totalResults,
+                        'currentPage' => $data->currentPage,
+                        'resultsPage' => $data->resultsPage,
+                        'totalPages' => $data->totalPages
+                    )
+                ], 200);
+            });
+
+        });
+        /**
+         * GROUP API routes (END)
+         */
+
 
     })->add(new \Forms\Middleware\APIExceptionCatcher($this->app->getContainer()));
 ?>
