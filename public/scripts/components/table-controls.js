@@ -27,6 +27,7 @@ const vueFormsTableControls = (function () {
                 </div>
                 <div class="level-right" v-if="configuration.showPaginationControls">
                     <div class="level-item">
+                        <f-pagination-controls v-bind:disabled="loading" v-bind:data="paginationData" v-on:refreshRequired="$emit('onPaginationRefreshRequired')"></f-pagination-controls>
                     </div>
                 </div>
             </nav>
@@ -41,7 +42,8 @@ const vueFormsTableControls = (function () {
         },
         props: [
             'loading',
-            'configuration'
+            'configuration',
+            'paginationData'
         ]
     });
 
