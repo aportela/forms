@@ -1,10 +1,7 @@
-/**
- * board (list container) component
- */
-var vueFormsTopMenu = (function () {
+const vueFormsTopMenu = (function () {
     "use strict";
 
-    var template = function () {
+    let template = function () {
         return `
             <nav class="navbar is-light is-unselectable" role="navigation" aria-label="main navigation">
                 <div class="navbar-brand">
@@ -46,7 +43,7 @@ var vueFormsTopMenu = (function () {
                                 <span>Home</span>
                             </p>
                         </a>
-                        <div class="navbar-item has-dropdown is-hoverable">
+                        <div class="navbar-item has-dropdown is-hoverable" v-if="showAdministrationMenu">
                             <a class="navbar-link">
                                 <p class="control">
                                     <span class="icon is-small">
@@ -106,7 +103,7 @@ var vueFormsTopMenu = (function () {
         `;
     };
 
-    var module = Vue.component('topmenu', {
+    let module = Vue.component('topmenu', {
         template: template(),
         data: function () {
             return ({
@@ -117,7 +114,15 @@ var vueFormsTopMenu = (function () {
         created: function () {
             console.log("[topmenu]: created");
         },
-        mixins: [ mixinSession, mixinRoutes ],
+        mixins: [
+            mixinSession,
+            mixinRoutes
+        ],
+        computed: {
+            showAdministrationMenu: function () {
+                return (initialState.session.isAdministrator);
+            }
+        },
         methods: {
             search: function () {
                 console.log("[topmenu]: searching: " + this.searchText);
