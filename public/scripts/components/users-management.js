@@ -8,7 +8,7 @@ const vueFormsUsers = (function () {
         return `
             <div>
 
-                <f-table-controls v-bind:loading="loading" v-bind:paginationData="pager" v-bind:configuration="{ showAddButton: false, showRefreshButton: true, showExportButton: true, showPaginationControls: true }" v-on:onAddButtonClicked="onAdd" v-on:onRefreshButtonClicked="onRefresh" v-on:onExportButtonClicked="onExport" v-on:onPaginationRefreshRequired="search(false)"></f-table-controls>
+                <f-table-controls v-bind:loading="loading" v-bind:paginationData="pager" v-bind:configuration="{ showAddButton: true, showRefreshButton: true, showExportButton: true, showPaginationControls: true }" v-on:onAddButtonClicked="onAdd" v-on:onRefreshButtonClicked="onRefresh" v-on:onExportButtonClicked="onExport" v-on:onPaginationRefreshRequired="search(false)"></f-table-controls>
 
                 <table class="table is-striped is-narrow is-fullwidth is-unselectable">
                     <thead>
@@ -45,7 +45,7 @@ const vueFormsUsers = (function () {
                             <td>
                                 <div class="field is-grouped">
                                     <p class="control is-expanded">
-                                        <a class="button is-small is-fullwidth is-info" v-bind:disabled="loading" v-on:click="$router.push({ name: 'userCard', params: { id: user.id } })">
+                                        <a class="button is-small is-fullwidth is-info" v-bind:disabled="loading" v-on:click="$router.push({ name: 'updateUser', params: { id: user.id } })">
                                             <span class="icon is-small"><i class="fas fa-user-cog"></i></span>
                                             <span>Open</span>
                                         </a>
@@ -118,7 +118,7 @@ const vueFormsUsers = (function () {
                 });
             },
             onAdd: function () {
-                // TODO
+                this.$router.push({ name: 'addUser' });
             },
             onRefresh: function () {
                 this.search(false);
