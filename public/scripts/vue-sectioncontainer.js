@@ -9,6 +9,7 @@ var vueFormsSectionContainer = (function () {
             <div>
                 <topmenu></topmenu>
                 <div class="section">
+                    <f-sections-breadcrumb></f-sections-breadcrumb>
                     <router-view></router-view>
                 </div>
             </div>
