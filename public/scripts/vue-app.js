@@ -5,7 +5,6 @@
  */
 const bus = new Vue();
 
-
 /**
  * init vue router component
  */
@@ -67,7 +66,7 @@ const app = new Vue({
     router,
     created: function () {
         console.log("[app]: created");
-        if (! initialState.logged) {
+        if (! initialState.session.logged) {
             console.debug("[app]: user not logged, auth redirect");
             this.changeRoute("auth");
         } else {
