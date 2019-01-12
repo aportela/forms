@@ -7,7 +7,7 @@ const vueFormsSectionAPIError = (function () {
                 <div class="message-header">
                     <p><i class="fas fa-bomb" aria-hidden="true"></i> Error</p>
                 </div>
-                <div class="message-body">
+                <div class="message-body" v-if="error">
                     <div class="content">
                         <h1 class="has-text-centered">“I'm sorry Dave. I'm afraid I can't do that”</h1>
                         <h2 v-if="serverReturnError">Uh oh! ...the server sent a <strong>invalid response</strong> ({{ error.response.status }} - {{ error.response.statusText }})</h2>
@@ -104,11 +104,13 @@ const vueFormsSectionAPIError = (function () {
             });
         },
         created: function () {
-            this.error = this.$route.params.error;
+            if (this.$route.params.error) {
+                this.error = this.$route.params.error;
+            }
         },
         computed: {
             serverReturnError: function () {
-                return (this.error && this.error.response.status != 0);
+                return (this.error && this.error.response && this.error.response.status != 0);
             }
         },
         methods: {
