@@ -15,10 +15,15 @@
             'initialState' => json_encode(
                 array(
                     'upgradeAvailable' => $v->hasUpgradeAvailable(),
-                    'logged' => \Forms\UserSession::isLogged(),
-                    'isAdministrator' => \Forms\UserSession::isAdministrator(),
                     'allowSignUp' => $this->get('settings')['common']['allowSignUp'],
-                    'sessionTimeout' => ini_get("session.gc_maxlifetime"),
+                    'session' => array(
+                        'logged' => \Forms\UserSession::isLogged(),
+                        'isAdministrator' => \Forms\UserSession::isAdministrator(),
+                        'userId' => \Forms\UserSession::getUserId(),
+                        'userEmail' => \Forms\UserSession::getEmail(),
+                        'userName' => \Forms\UserSession::getName(),
+                        'sessionTimeout' => ini_get("session.gc_maxlifetime")
+                    ),
                     'defaultResultsPage' => $this->get('settings')['common']['defaultResultsPage']
                 )
             )
@@ -31,14 +36,19 @@
             $v = new \Forms\Database\Version(new \Forms\Database\DB($this), $this->get('settings')['database']['type']);
             return $response->withJson([
                 'initialState' =>
-                    array(
-                        'upgradeAvailable' => $v->hasUpgradeAvailable(),
+                array(
+                    'upgradeAvailable' => $v->hasUpgradeAvailable(),
+                    'allowSignUp' => $this->get('settings')['common']['allowSignUp'],
+                    'session' => array(
                         'logged' => \Forms\UserSession::isLogged(),
                         'isAdministrator' => \Forms\UserSession::isAdministrator(),
-                        'allowSignUp' => $this->get('settings')['common']['allowSignUp'],
-                        'sessionTimeout' => ini_get("session.gc_maxlifetime"),
-                        'defaultResultsPage' => $this->get('settings')['common']['defaultResultsPage']
-                    )
+                        'userId' => \Forms\UserSession::getUserId(),
+                        'userEmail' => \Forms\UserSession::getEmail(),
+                        'userName' => \Forms\UserSession::getName(),
+                        'sessionTimeout' => ini_get("session.gc_maxlifetime")
+                    ),
+                    'defaultResultsPage' => $this->get('settings')['common']['defaultResultsPage']
+                )
             ], 200);
         });
 
