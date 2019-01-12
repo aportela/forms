@@ -27,12 +27,14 @@ const vueFormsUserCard = (function () {
                             <span class="icon is-small is-right" v-show="invalidPassword"><i class="fa fa-warning"></i></span>
                             <p class="help is-danger" v-show="invalidPassword">Invalid password</p>
                         </p>
-                        <label class="label">Account type</label>
-                        <div class="select">
-                            <select required v-bind:disabled="disabled" v-model="user.accountType">
-                                <option value="A">Administrator</option>
-                                <option value="U">Normal user</option>
-                            </select>
+                        <div v-if="showAccountTypeField">
+                            <label class="label">Account type</label>
+                            <div class="select">
+                                <select required v-bind:disabled="disabled" v-model="user.accountType">
+                                    <option value="A">Administrator</option>
+                                    <option value="U">Normal user</option>
+                                </select>
+                            </div>
                         </div>
                         <hr>
                         <p class="control">
@@ -70,11 +72,23 @@ const vueFormsUserCard = (function () {
         ],
         mixins: [
             mixinRoutes,
+            mixinSession,
             mixinUtils
         ],
         created: function() {
             if (this.$route.params.id) {
                 this.load(this.$route.params.id);
+            } else if (this.isRouteActive('profile')) {
+                this.load(initialState.session.userId);
+            }
+        },
+        computed: {
+            showAccountTypeField: function()  {
+                if (this.isAdministrator) {
+                    return(this.user.id != initialState.session.userId);
+                } else {
+                    return(false);
+                }
             }
         },
         methods: {
@@ -91,7 +105,7 @@ const vueFormsUserCard = (function () {
                 });
             },
             save: function() {
-                if (this.$route.params.id) {
+                if (this.$route.params.id || this.isRouteActive('profile')) {
                     this.update();
                 } else {
                     this.add();
