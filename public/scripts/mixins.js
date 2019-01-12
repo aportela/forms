@@ -8,6 +8,9 @@ const mixinRoutes = {
         },
         changeRoute: function (routeName) {
             this.$router.push({ name: routeName });
+        },
+        showApiError: function(error) {
+            this.$router.push({ name: "apiError", params: { error: error }});
         }
     }
 };
