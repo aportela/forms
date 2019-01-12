@@ -43,7 +43,7 @@
             } catch (\Forms\Exception\UnauthorizedException $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
                 return $response->withJson([], 401);
-            } catch (\Forms\Exception\AccessDenied $e) {
+            } catch (\Forms\Exception\AccessDeniedException $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
                 return $response->withJson([], 403);
             } catch (\Throwable $e) {
