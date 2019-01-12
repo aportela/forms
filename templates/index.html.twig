@@ -42,20 +42,24 @@
         <script src="vendor/vue/2.5.21/vue.min.js" integrity="sha256-ui3vFTgbIIvd9ePh+wF+ju05O3jympV4FyFlpNMV2cw=" crossorigin="anonymous"></script>
         <script src="vendor/vue-router/3.0.2/vue-router.min.js" integrity="sha256-DbgluxFcJqBgeVJwF1idcvA2aeayczQBWJPGn4KZIEc=" crossorigin="anonymous"></script>
         <script src="vendor/vue-resource-1.5.0/vue-resource.min.js" integrity="sha256-e9WxLR4DOP5XKMT4mflXVovZS4mVdiMkAFSDHF+6q80=" crossorigin="anonymous"></script>
+        <script src="vendor/FileSaver.js-2.0.0/dist/FileSaver.min.js" integrity="sha256-5Fv+LQlkb6dD3pAHzJb7FLI1iSqJE9GCza+HQtcI06k=" crossorigin="anonymous"></script>
             {% else %}
         <script src="vendor/vue/2.5.21/vue.js" integrity="sha256-TuNPk8D8FMWPo5dDIBWwBuu+lxtA7yyN+i8LmHQudrc=" crossorigin="anonymous"></script>
         <script src="vendor/vue-router/3.0.2/vue-router.js" integrity="sha256-ZXuDnCcIq0+1FwNaovtHEPcdRFEQK10rzx+lYtxxJh8=" crossorigin="anonymous"></script>
         <script src="vendor/vue-resource-1.5.0/vue-resource.js" integrity="sha256-65r7bET363amdMrrizpE4H+N9OWh/aDrLWq2UWoqxlg=" crossorigin="anonymous"></script>
+        <script src="vendor/FileSaver.js-2.0.0/dist/FileSaver.js" integrity="sha256-MNQjKIWLZPsLeq3j0xMBYPNDh1Q/+1YeX171Msc6WqI=" crossorigin="anonymous"></script>
             {% endif %}
         {% else %}
             {% if settings.production %}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.21/vue.min.js" integrity="sha256-ui3vFTgbIIvd9ePh+wF+ju05O3jympV4FyFlpNMV2cw=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.0.2/vue-router.min.js" integrity="sha256-DbgluxFcJqBgeVJwF1idcvA2aeayczQBWJPGn4KZIEc=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.5.1/vue-resource.min.js" integrity="sha256-e9WxLR4DOP5XKMT4mflXVovZS4mVdiMkAFSDHF+6q80=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.0/dist/FileSaver.min.js" integrity="sha256-5Fv+LQlkb6dD3pAHzJb7FLI1iSqJE9GCza+HQtcI06k=" crossorigin="anonymous"></script>
             {% else %}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.21/vue.js" integrity="sha256-TuNPk8D8FMWPo5dDIBWwBuu+lxtA7yyN+i8LmHQudrc=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.0.2/vue-router.js" integrity="sha256-ZXuDnCcIq0+1FwNaovtHEPcdRFEQK10rzx+lYtxxJh8=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.5.1/vue-resource.js" integrity="sha256-65r7bET363amdMrrizpE4H+N9OWh/aDrLWq2UWoqxlg=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.0/dist/FileSaver.js" integrity="sha256-MNQjKIWLZPsLeq3j0xMBYPNDh1Q/+1YeX171Msc6WqI=" crossorigin="anonymous"></script>
             {% endif %}
         {% endif %}
 
@@ -66,6 +70,9 @@
         <script src="scripts/vue-sectioncontainer.js"></script>
         <script src="scripts/vue-home.js"></script>
         <script src="scripts/vue-topmenu.js"></script>
+        <script src="scripts/components/export-button.js"></script>
+        <script src="scripts/components/pagination-controls.js"></script>
+        <script src="scripts/components/table-controls.js"></script>
         <script src="scripts/vue-users.js"></script>
         <script src="scripts/vue-groups.js"></script>
         <script src="scripts/vue-attributes.js"></script>
