@@ -178,7 +178,7 @@
          * @param \Forms\Database\DB $dbh database handler
          */
         private function getUsers(\Forms\Database\DB $dbh) {
-            $results = $dbh->query(" SELECT USER.id, USER.email FROM USER_GROUP LEFT JOIN USER ON USER.id = USER_GROUP.user_id WHERE USER_GROUP.group_id = :id AND USER.deletion_date IS NULL ", array(
+            $results = $dbh->query(" SELECT USER.id, USER.email, USER.name FROM USER_GROUP LEFT JOIN USER ON USER.id = USER_GROUP.user_id WHERE USER_GROUP.group_id = :id AND USER.deletion_date IS NULL ", array(
                 (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id))
             ));
             if (count($results) > 0) {
@@ -191,34 +191,94 @@
         }
 
         /**
-         * search groups
+         * search users
          *
          * @param \Forms\Database\DB $dbh database handler
+         * @param array $filter results filtering conditions
+         * @param int $page results page index to retrieve
+         * @param int $resultsPage number of results / page
+         * @param string $sortBy sort by field (name)
+         * @param string $sortOrder sort type (ASC / DESC)
          */
-        public function search(\Forms\Database\DB $dbh, string $emailFilter = "") {
-            $groups = $dbh->query("
-                    SELECT G.id, G.name, G.description, G.creation_date AS creationDate, COALESCE(TMP_GROUP_USER_COUNT.totalUsers, 0) AS userCount, G.creator AS creatorId, USER.email AS creatorEmail
-                    FROM [GROUP] G
-                    LEFT JOIN (
-                        SELECT COUNT(USER_GROUP.user_id) AS totalUsers, USER_GROUP.group_id
-                        FROM USER_GROUP
-                        LEFT JOIN USER ON USER.id = USER_GROUP.user_id
-                        WHERE USER.deletion_date IS NULL
-                        GROUP BY USER_GROUP.group_id
-                    ) TMP_GROUP_USER_COUNT ON TMP_GROUP_USER_COUNT.group_id = G.id
-                    LEFT JOIN USER ON USER.id = G.creator
-                    WHERE G.deletion_date IS NULL
-                    ORDER BY G.name
-                ", array()
+        public function search(\Forms\Database\DB $dbh, array $filter = array(), int $currentPage, int $resultsPage, string $sortBy = "", string $sortOrder = "ASC") {
+            $params = array();
+            $whereCondition = "";
+            if (isset($filter)) {
+                $conditions = array();
+                if (isset($filter["name"]) && ! empty($filter["name"])) {
+                    $conditions[] = " [GROUP].name LIKE :name ";
+                    $params[] = (new \Forms\Database\DBParam())->str(":name", "%" . $filter["name"] . "%");
+                }
+                if (isset($filter["description"]) && ! empty($filter["description"])) {
+                    $conditions[] = " [GROUP].description LIKE :description ";
+                    $params[] = (new \Forms\Database\DBParam())->str(":description", "%" . $filter["description"] . "%");
+                }
+                $whereCondition = count($conditions) > 0 ? " AND " .  implode(" AND ", $conditions) : "";
+            }
+
+            $results = $dbh->query(
+                sprintf(
+                    "
+                        SELECT
+                        COUNT([GROUP].id) AS total
+                        FROM [GROUP]
+                        WHERE [GROUP].deletion_date IS NULL
+                        %s
+                    ", $whereCondition
+                ), $params
             );
-            foreach($groups as $group) {
-                $creatorId = $group->creatorId;
-                $creatorEmail = $group->creatorEmail;
+
+            $data = new \Forms\SearchResult($currentPage, $resultsPage, intval($results[0]->total));
+
+            $sqlSortBy = "";
+            switch($sortBy) {
+                case "description":
+                    $sqlSortBy = "[GROUP].description";
+                break;
+                case "creationDate":
+                    $sqlSortBy = "[GROUP].creation_date";
+                break;
+                case "accountType":
+                    $sqlSortBy = "[GROUP].account_type";
+                break;
+                case "name":
+                default:
+                    $sqlSortBy = "[GROUP].name";
+                break;
+            }
+            $data->results = $dbh->query(
+                sprintf(
+                    "
+                        SELECT
+                        [GROUP].id, [GROUP].name, [GROUP].description, COALESCE(TMP_GROUP_USER_COUNT.totalUsers, 0) AS userCount, [GROUP].creation_date AS creationDate, [GROUP].creator AS creatorId, U.email AS creatorEmail
+                        FROM [GROUP]
+                        LEFT JOIN (
+                            SELECT COUNT(USER_GROUP.user_id) AS totalUsers, USER_GROUP.group_id
+                            FROM USER_GROUP
+                            LEFT JOIN USER ON USER.id = USER_GROUP.user_id
+                            WHERE USER.deletion_date IS NULL
+                            GROUP BY USER_GROUP.group_id
+                        ) TMP_GROUP_USER_COUNT ON TMP_GROUP_USER_COUNT.group_id = [GROUP].id
+                        LEFT JOIN USER U ON [GROUP].creator = U.id
+                        WHERE [GROUP].deletion_date IS NULL
+                        %s
+                        ORDER BY %s %s
+                        %s
+                    ",
+                    $whereCondition,
+                    $sqlSortBy,
+                    $sortOrder == "DESC" ? "DESC": "ASC",
+                    $data->isPaginationEnabled() ? sprintf("LIMIT %d OFFSET %d", $data->resultsPage, $data->getSQLPageOffset()) : null
+                ), $params
+            );
+            foreach($data->results as $group) {
+                $creatorId = $user->creatorId;
+                $creatorEmail = $user->creatorEmail;
                 $group->creator = new \stdclass();
                 $group->creator->id = $creatorId;
                 $group->creator->email = $creatorEmail;
             }
-            return($groups);
+            return($data);
         }
 
     }
