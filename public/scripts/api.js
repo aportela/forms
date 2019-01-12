@@ -137,6 +137,48 @@ const formsAPI = {
         }
     },
     group: {
+        get: function (id, callback) {
+            Vue.http.get("api/groups/" + id).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        add: function (group, callback) {
+            Vue.http.post("api/groups/" + group.id, group).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        update: function (group, callback) {
+            Vue.http.put("api/groups/" + group.id, group).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
         search: function (searchByName, searchByDescription, searchFromCreationDate, searchToCreationDate, currentPage, resultsPage, sortBy, sortOrder, callback) {
             let params = {
                 filter: {},
