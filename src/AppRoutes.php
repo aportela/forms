@@ -106,6 +106,28 @@
                 return $response->withJson(['logged' => false], 200);
             });
 
+            $this->get('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $user = new \Forms\User(
+                    $route->getArgument("id"),
+                    "",
+                    "",
+                    "",
+                    ""
+                );
+                $dbh = new \Forms\Database\DB($this);
+                $user->get($dbh);
+                return $response->withJson([
+                    "user" => array(
+                        "id" => $user->id,
+                        "name" => $user->name,
+                        "email" => $user->email,
+                        "accountType" => $user->accountType,
+                        "creationDate" => $user->creationDate
+                    )
+                ], 200);
+            });
+
             $this->post('/search', function (Request $request, Response $response, array $args) {
                 $requestFilter = $request->getParam("filter");
                 $filter = array();
