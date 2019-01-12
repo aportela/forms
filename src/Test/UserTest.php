@@ -121,23 +121,20 @@
             (new \Forms\User($id, $id, "name of " . $id, $id, \Forms\User::ACCOUNT_TYPE_USER))->update(self::$dbh);
         }
 
-        public function testUpdateWithoutPassword(): void {
-            $this->expectException(\Forms\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("password");
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            (new \Forms\User($id, $id . "@localhost.localnet", "name of " . $id, "", \Forms\User::ACCOUNT_TYPE_USER))->update(self::$dbh);
-        }
-
-        public function testUpdateUserAccount(): void {
+        public function testUpdateMyProfile(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
-            $this->assertTrue($u->add(self::$dbh) && $u->update(self::$dbh));
+            $u->add(self::$dbh);
+            $u->login(self::$dbh);
+            $this->assertTrue($u->update(self::$dbh));
         }
 
         public function testUpdateAdministratorAccountAccount(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_ADMINISTRATOR);
-            $this->assertTrue($u->add(self::$dbh) && $u->update(self::$dbh));
+            $u->add(self::$dbh);
+            $u->login(self::$dbh);
+            $this->assertTrue($u->update(self::$dbh));
         }
 
         public function testDeleteWithoutId(): void {
