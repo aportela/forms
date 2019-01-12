@@ -12,7 +12,7 @@ const formsAPI = {
                 name: name,
                 password: password
             }
-            Vue.http.post("api/user/signup", params).then(
+            Vue.http.post("api/signup", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -30,7 +30,7 @@ const formsAPI = {
                 email: email,
                 password: password
             }
-            Vue.http.post("api/user/signin", params).then(
+            Vue.http.post("api/signin", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -44,7 +44,7 @@ const formsAPI = {
             );
         },
         signOut: function (callback) {
-            Vue.http.get("api/user/signout").then(
+            Vue.http.get("api/signout").then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -57,7 +57,21 @@ const formsAPI = {
                 }
             );
         },
-        search: function(searchByEmail, searchByName, searchByAccountType, searchFromCreationDate, searchToCreationDate, currentPage, resultsPage, sortBy, sortOrder, callback) {
+        get: function (id, callback) {
+            Vue.http.get("api/users/" + id).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        search: function (searchByEmail, searchByName, searchByAccountType, searchFromCreationDate, searchToCreationDate, currentPage, resultsPage, sortBy, sortOrder, callback) {
             let params = {
                 filter: {},
                 currentPage: currentPage,
@@ -80,7 +94,7 @@ const formsAPI = {
             if (searchToCreationDate) {
                 params.filter.toCreationDate = searchToCreationDate;
             }
-            Vue.http.post("api/user/search", params).then(
+            Vue.http.post("api/users/search", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);

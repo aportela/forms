@@ -52,81 +52,60 @@
             ], 200);
         });
 
+        $this->post('/signin', function (Request $request, Response $response, array $args) {
+            $u = new \Forms\User("", $request->getParam("email", ""), "", $request->getParam("password", \Forms\User::ACCOUNT_TYPE_USER));
+            if ($u->login(new \Forms\Database\DB($this))) {
+                return $response->withJson(
+                    [
+                        'session' => array(
+                            'logged' => \Forms\UserSession::isLogged(),
+                            'isAdministrator' => \Forms\UserSession::isAdministrator(),
+                            'userId' => \Forms\UserSession::getUserId(),
+                            'userEmail' => \Forms\UserSession::getEmail(),
+                            'userName' => \Forms\UserSession::getName(),
+                            'sessionTimeout' => ini_get("session.gc_maxlifetime")
+                        )
+                    ],
+                    200
+                );
+            } else {
+                throw new \Forms\Exception\UnauthorizedException();
+            }
+        });
+
+        $this->post('/signup', function (Request $request, Response $response, array $args) {
+            if ($this->get('settings')['common']['allowSignUp']) {
+                $dbh = new \Forms\Database\DB($this);
+                $u = new \Forms\User(
+                    "",
+                    $request->getParam("email", ""),
+                    $request->getParam("name", ""),
+                    $request->getParam("password", ""),
+                    \Forms\User::ACCOUNT_TYPE_USER
+                );
+                if (\Forms\User::existsEmail($dbh, $u->email)) {
+                    throw new \Forms\Exception\AlreadyExistsException("email");
+                } else if (\Forms\User::existsName($dbh, $u->name)) {
+                    throw new \Forms\Exception\AlreadyExistsException("name");
+                } else {
+                    $u->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                    $u->add($dbh);
+                    return $response->withJson([], 200);
+                }
+            } else {
+                throw new \Forms\Exception\AccessDeniedException("");
+            }
+        });
+
+        $this->get('/signout', function (Request $request, Response $response, array $args) {
+            \Forms\User::logout();
+            return $response->withJson(['logged' => false], 200);
+        });
+
         /**
          * USER API routes (BEGIN)
          */
-        $this->group("/user", function() {
-            $this->post('/signin', function (Request $request, Response $response, array $args) {
-                $u = new \Forms\User("", $request->getParam("email", ""), "", $request->getParam("password", \Forms\User::ACCOUNT_TYPE_USER));
-                if ($u->login(new \Forms\Database\DB($this))) {
-                    return $response->withJson(
-                        [
-                            'session' => array(
-                                'logged' => \Forms\UserSession::isLogged(),
-                                'isAdministrator' => \Forms\UserSession::isAdministrator(),
-                                'userId' => \Forms\UserSession::getUserId(),
-                                'userEmail' => \Forms\UserSession::getEmail(),
-                                'userName' => \Forms\UserSession::getName(),
-                                'sessionTimeout' => ini_get("session.gc_maxlifetime")
-                            )
-                        ],
-                        200
-                    );
-                } else {
-                    throw new \Forms\Exception\UnauthorizedException();
-                }
-            });
-
-            $this->post('/signup', function (Request $request, Response $response, array $args) {
-                if ($this->get('settings')['common']['allowSignUp']) {
-                    $dbh = new \Forms\Database\DB($this);
-                    $u = new \Forms\User(
-                        "",
-                        $request->getParam("email", ""),
-                        $request->getParam("name", ""),
-                        $request->getParam("password", ""),
-                        \Forms\User::ACCOUNT_TYPE_USER
-                    );
-                    if (\Forms\User::existsEmail($dbh, $u->email)) {
-                        throw new \Forms\Exception\AlreadyExistsException("email");
-                    } else if (\Forms\User::existsName($dbh, $u->name)) {
-                        throw new \Forms\Exception\AlreadyExistsException("name");
-                    } else {
-                        $u->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                        $u->add($dbh);
-                        return $response->withJson([], 200);
-                    }
-                } else {
-                    throw new \Forms\Exception\AccessDeniedException("");
-                }
-            });
-
-            $this->get('/signout', function (Request $request, Response $response, array $args) {
-                \Forms\User::logout();
-                return $response->withJson(['logged' => false], 200);
-            });
-
-            $this->get('/{id}', function (Request $request, Response $response, array $args) {
-                $route = $request->getAttribute('route');
-                $user = new \Forms\User(
-                    $route->getArgument("id"),
-                    "",
-                    "",
-                    "",
-                    ""
-                );
-                $dbh = new \Forms\Database\DB($this);
-                $user->get($dbh);
-                return $response->withJson([
-                    "user" => array(
-                        "id" => $user->id,
-                        "name" => $user->name,
-                        "email" => $user->email,
-                        "accountType" => $user->accountType,
-                        "creationDate" => $user->creationDate
-                    )
-                ], 200);
-            });
+        $this->group("/users", function() {
 
             $this->post('/search', function (Request $request, Response $response, array $args) {
                 $requestFilter = $request->getParam("filter");
@@ -161,7 +140,31 @@
                 ], 200);
             });
 
+            $this->get('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $user = new \Forms\User(
+                    $route->getArgument("id"),
+                    "",
+                    "",
+                    "",
+                    ""
+                );
+                $dbh = new \Forms\Database\DB($this);
+                $user->get($dbh);
+                return $response->withJson([
+                    "user" => array(
+                        "id" => $user->id,
+                        "name" => $user->name,
+                        "email" => $user->email,
+                        "accountType" => $user->accountType,
+                        "creationDate" => $user->creationDate
+                    )
+                ], 200);
+            });
+
         });
+
+
         /**
          * USER API routes (END)
          */
