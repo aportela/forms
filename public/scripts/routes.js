@@ -13,6 +13,8 @@ const routes = [
             { path: 'administration/users/update/:id', name: 'updateUser', component: vueFormsUserCard },
             { path: 'profile', name: 'profile', component: vueFormsUserCard },
             { path: 'administration/groups/search', name: 'groups', component: vueFormsGroups },
+            { path: 'administration/groups/add', name: 'addGroup', component: vueFormsGroupCard },
+            { path: 'administration/groups/update/:id', name: 'updateGroup', component: vueFormsGroupCard },
             { path: 'administration/attributes', name: 'attributes', component: vueFormsAttributes }
         ]
     },
