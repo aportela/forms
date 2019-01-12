@@ -78,11 +78,14 @@ const app = new Vue({
             this.signOut();
         });
     },
-    mixins: [ mixinRoutes ],
+    mixins: [
+        mixinRoutes
+    ],
     methods: {
         signOut: function() {
             formsAPI.user.signOut((response) => {
                 if (response.ok) {
+                    initialState.session = {};
                     this.changeRoute("auth");
                 } else {
                     // TODO: show error
