@@ -36,8 +36,10 @@
          * helper for hashing password (predefined algorithm)
          *
          * @param string $password string the password to hash
+         *
+         * @return string hashed password
          */
-        private function passwordHash(string $password = "") {
+        private function passwordHash(string $password = ""): string {
             return(password_hash($password, PASSWORD_BCRYPT, array('cost' => 12)));
         }
 
@@ -60,7 +62,7 @@
                                     (new \Forms\Database\DBParam())->str(":account_type", $this->accountType),
                                     (new \Forms\Database\DBParam())->str(":creator", \Forms\UserSession::isLogged() ? \Forms\UserSession::getUserId() : $this->id)
                                 );
-                                return($dbh->execute("INSERT INTO USER (id, email, name, password_hash, creation_date, creator, account_type) VALUES(:id, :email, :name, :password_hash, CURRENT_TIMESTAMP, :creator, :account_type)", $params));
+                                return($dbh->execute(" INSERT INTO USER (id, email, name, password_hash, creation_date, creator, account_type) VALUES(:id, :email, :name, :password_hash, CURRENT_TIMESTAMP, :creator, :account_type) ", $params));
                             } else {
                                 throw new \Forms\Exception\InvalidParamsException("accountType");
                             }
@@ -138,13 +140,29 @@
         public function get(\Forms\Database\DB $dbh) {
             $results = null;
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
-                $results = $dbh->query(" SELECT USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail FROM USER LEFT JOIN USER U ON USER.creator = U.id WHERE USER.id = :id ", array(
-                    (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id))
-                ));
+                $results = $dbh->query(
+                    "
+                        SELECT
+                            USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail
+                        FROM USER
+                        LEFT JOIN USER U ON USER.creator = U.id
+                        WHERE USER.id = :id
+                    ", array(
+                        (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id))
+                    )
+                );
             } else if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
-                $results = $dbh->query(" SELECT USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail FROM USER LEFT JOIN USER U ON USER.creator = U.id WHERE USER.email = :email ", array(
-                    (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email))
-                ));
+                $results = $dbh->query(
+                    "
+                        SELECT
+                            USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail
+                        FROM USER
+                        LEFT JOIN USER U ON USER.creator = U.id
+                        WHERE USER.email = :email
+                    ", array(
+                        (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email))
+                    )
+                );
             } else {
                 throw new \Forms\Exception\InvalidParamsException("id,email");
             }
@@ -174,10 +192,17 @@
          * @param string $email email to check existence
          */
         public static function existsEmail(\Forms\Database\DB $dbh, string $email = "") {
-            $results = $dbh->query(" SELECT COUNT(id) AS total FROM USER WHERE email = :email", array(
-                (new \Forms\Database\DBParam())->str(":email", mb_strtolower($email))
-            ));
-            return($results[0]->total > 0);
+            $results = $dbh->query(
+                "
+                    SELECT
+                        COUNT(id) AS total
+                    FROM USER
+                    WHERE email = :email
+                ", array(
+                    (new \Forms\Database\DBParam())->str(":email", mb_strtolower($email))
+                )
+            );
+            return($results[0]->total == 1);
         }
 
         /**
@@ -187,10 +212,17 @@
          * @param string $name name to check existence
          */
         public static function existsName(\Forms\Database\DB $dbh, string $name = "") {
-            $results = $dbh->query(" SELECT COUNT(id) AS total FROM USER WHERE name = :name", array(
-                (new \Forms\Database\DBParam())->str(":name", $name)
-            ));
-            return($results[0]->total > 0);
+            $results = $dbh->query(
+                "
+                    SELECT
+                        COUNT(id) AS total
+                    FROM USER
+                    WHERE name = :name
+                ", array(
+                    (new \Forms\Database\DBParam())->str(":name", $name)
+                )
+            );
+            return($results[0]->total == 1);
         }
 
         /**
@@ -226,7 +258,8 @@
             $results = $dbh->query(
                 sprintf(
                     "
-                        SELECT COUNT(USER.id) AS total
+                        SELECT
+                        COUNT(USER.id) AS total
                         FROM USER
                         WHERE USER.deletion_date IS NULL
                         %s
@@ -253,22 +286,22 @@
                 break;
             }
             $data->results = $dbh->query(
-                    sprintf(
-                        "
-                            SELECT USER.id, USER.email, USER.name, USER.creation_date AS creationDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail
-                            FROM USER
-                            LEFT JOIN USER U ON USER.creator = U.id
-                            WHERE USER.deletion_date IS NULL
-                            %s
-                            ORDER BY %s %s
-                            %s
-                        ",
-                        $whereCondition,
-                        $sqlSortBy,
-                        $sortOrder == "DESC" ? "DESC": "ASC",
-                        $data->isPaginationEnabled() ? sprintf("LIMIT %d OFFSET %d", $data->resultsPage, $data->getSQLPageOffset()) : null
-                    ),
-                $params
+                sprintf(
+                    "
+                        SELECT
+                            USER.id, USER.email, USER.name, USER.creation_date AS creationDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail
+                        FROM USER
+                        LEFT JOIN USER U ON USER.creator = U.id
+                        WHERE USER.deletion_date IS NULL
+                        %s
+                        ORDER BY %s %s
+                        %s
+                    ",
+                    $whereCondition,
+                    $sqlSortBy,
+                    $sortOrder == "DESC" ? "DESC": "ASC",
+                    $data->isPaginationEnabled() ? sprintf("LIMIT %d OFFSET %d", $data->resultsPage, $data->getSQLPageOffset()) : null
+                ), $params
             );
             foreach($data->results as $user) {
                 $creatorId = $user->creatorId;
