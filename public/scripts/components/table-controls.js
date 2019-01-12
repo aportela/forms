@@ -9,7 +9,7 @@ const vueFormsTableControls = (function () {
                         <div class="field is-grouped">
                             <p class="control is-expanded" v-if="configuration.showAddButton">
                                 <a class="button is-fullwidth is-link" title="Click for add new element" v-bind:disabled="loading" v-on:click.prevent="$emit('onAddButtonClicked')">
-                                    <span class="icon is-small"><i class="fas fa-user-plus"></i></span>
+                                    <span class="icon is-small"><i class="fas fa-plus"></i></span>
                                     <span>Add</span>
                                 </a>
                             </p>
