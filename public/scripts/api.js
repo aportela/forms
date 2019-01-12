@@ -135,5 +135,40 @@ const formsAPI = {
                 }
             );
         }
+    },
+    group: {
+        search: function (searchByName, searchByDescription, searchFromCreationDate, searchToCreationDate, currentPage, resultsPage, sortBy, sortOrder, callback) {
+            let params = {
+                filter: {},
+                currentPage: currentPage,
+                resultsPage: resultsPage,
+                sortBy: sortBy,
+                sortOrder: sortOrder,
+            };
+            if (searchByName) {
+                params.filter.name = searchByName;
+            }
+            if (searchByDescription) {
+                params.filter.description = searchByDescription;
+            }
+            if (searchFromCreationDate) {
+                params.filter.fromCreationDate = searchFromCreationDate;
+            }
+            if (searchToCreationDate) {
+                params.filter.toCreationDate = searchToCreationDate;
+            }
+            Vue.http.post("api/groups/search", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        }
     }
 };
