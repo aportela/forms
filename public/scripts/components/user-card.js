@@ -15,7 +15,7 @@ const vueFormsUserCard = (function () {
                         </p>
                         <label class="label">Name</label>
                         <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidName }">
-                            <input class="input" type="test" name="name" maxlength="255" required v-bind:class="{ 'is-danger': invalidName }" v-bind:disabled="loading ? true: false" v-model="user.name">
+                            <input class="input" type="text" name="name" maxlength="255" required v-bind:class="{ 'is-danger': invalidName }" v-bind:disabled="loading ? true: false" v-model="user.name">
                             <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
                             <span class="icon is-small is-right" v-show="invalidName"><i class="fa fa-warning"></i></span>
                             <p class="help is-danger" v-show="invalidName">Name already used</p>
