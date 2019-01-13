@@ -46,7 +46,7 @@ const getApiErrorDataFromResponse = function (r) {
  */
 Vue.http.interceptors.push((request, next) => {
     next((response) => {
-        if (!response.ok) {
+        if (!response.ok || ! response.body.success) {
             response.rBody = request.body;
             response.rUrl = request.url;
             response.rMethod = request.method;
@@ -71,7 +71,7 @@ const app = new Vue({
             this.changeRoute("auth");
         } else {
             console.log("[app]: user logged, main redirect to home or app route");
-            this.changeRoute("home");
+            //this.changeRoute("home");
         }
         bus.$on("signOut", () => {
             console.log("[app] signOut received");
