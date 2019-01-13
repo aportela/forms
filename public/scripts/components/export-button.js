@@ -14,10 +14,10 @@ const vueFormsExportButton = (function () {
                     </span>
                 </p>
                 <p class="control is-expanded">
-                    <a class="button is-fullwidth is-warning" title="Click for export elements" v-bind:disabled="isExportDisabled" v-on:click.prevent="$emit('buttonClicked', format)">
+                    <button type="button" class="button is-fullwidth is-warning" title="Click for export elements" v-bind:disabled="isExportDisabled" v-on:click.prevent="$emit('buttonClicked', format)">
                         <span class="icon is-small"><i class="fas fa-database"></i></span>
                         <span>Export</span>
-                    </a>
+                    </button>
                 </p>
             </div>
         `;

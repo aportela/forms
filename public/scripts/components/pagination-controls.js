@@ -4,8 +4,8 @@ const vueFormsPaginationControls = (function () {
     let template = function () {
         return `
             <nav class="pagination has-text-weight-normal is-right" role="navigation" aria-label="pagination">
-                <a class="pagination-previous" title="Click for navigate to previous page" v-show="isEnabled" v-bind:disabled="disabled || this.data.currentPage <= 1" v-on:click.prevent="navigateToPreviousPage"><span class="icon is-small"><i class="fas fa-caret-left"></i></span> <span>Previous page</span></a>
-                <a class="pagination-next" title="Click for navigate to next page" v-show="isEnabled" v-bind:disabled="disabled || this.data.currentPage >= this.data.totalPages" v-on:click.prevent="navigateToNextPage">Next page <span class="icon is-small"><i class="fas fa-caret-right"></i></span></a>
+                <button type="button" class="pagination-previous" title="Click for navigate to previous page" v-show="isEnabled" v-bind:disabled="disabled || this.data.currentPage <= 1" v-on:click.prevent="navigateToPreviousPage"><span class="icon is-small"><i class="fas fa-caret-left"></i></span> <span>Previous page</span></button>
+                <button type="button" class="pagination-next" title="Click for navigate to next page" v-show="isEnabled" v-bind:disabled="disabled || this.data.currentPage >= this.data.totalPages" v-on:click.prevent="navigateToNextPage">Next page <span class="icon is-small"><i class="fas fa-caret-right"></i></span></button>
                 <ul class="pagination-list" v-show="isEnabled">
                     <!-- vuejs pagination inspired by Jeff (https://stackoverflow.com/a/35706926) -->
                     <li v-for="pageNumber in data.totalPages" v-if="pageNumber < 3 || Math.abs(pageNumber - data.currentPage) < 3 || data.totalPages - 2 < pageNumber">

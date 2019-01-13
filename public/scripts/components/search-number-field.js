@@ -14,11 +14,11 @@ const vueFormsSearchNumberField = (function () {
                     <input class="input" min="0" type="number" v-bind:placeholder="placeholderto" v-bind:disabled="disabled" v-model.number.trim="range.to" v-on:keyup.enter.prevent="$emit('searchTriggered', range)">
                 </div>
                 <div class="control">
-                    <a class="button" v-bind:disabled="disabled" v-on:click.prevent="$emit('searchTriggered', range)">
+                    <button type="button" class="button" v-bind:disabled="disabled" v-on:click.prevent="$emit('searchTriggered', text)">
                         <span class="icon">
                             <i class="fas fa-search"></i>
                         </span>
-                    </a>
+                    </button>
                 </div>
             </div>
         `;

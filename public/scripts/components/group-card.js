@@ -34,10 +34,10 @@ const vueFormsGroupCard = (function () {
                                     <td>{{ user.name }}</td>
                                     <td>
                                         <p class="control has-text-centered">
-                                            <a class="button is-small is-danger" v-bind:disabled="loading" v-on:click.prevent="removeUser(user.id)">
+                                            <button type="button" class="button is-small is-danger" v-bind:disabled="loading" v-on:click.prevent="removeUser(user.id)">
                                                 <span class="icon is-small"><i class="fas fa-trash-alt"></i></span>
                                                 <span>Remove</span>
-                                            </a>
+                                            </button>
                                         </p>
                                     </td>
                                 </tr>

@@ -17,11 +17,11 @@ const vueFormsSearchUserAccountTypeField = (function () {
                     </span >
                 </div>
                 <div class="control">
-                    <a class="button" v-bind:disabled="disabled" v-on:click.prevent="$emit('searchTriggered', selected)">
+                    <button type="button" class="button" v-bind:disabled="disabled" v-on:click.prevent="$emit('searchTriggered', selected)">
                         <span class="icon">
                             <i class="fas fa-search"></i>
                         </span>
-                    </a>
+                    </button>
                 </div>
             </div>
         `;

@@ -8,16 +8,16 @@ const vueFormsTableControls = (function () {
                     <div class="level-item">
                         <div class="field is-grouped">
                             <p class="control is-expanded" v-if="configuration.showAddButton">
-                                <a class="button is-fullwidth is-link" title="Click for add new element" v-bind:disabled="loading" v-on:click.prevent="$emit('onAddButtonClicked')">
+                                <button type="button" class="button is-fullwidth is-link" title="Click for add new element" v-bind:disabled="loading" v-on:click.prevent="$emit('onAddButtonClicked')">
                                     <span class="icon is-small"><i class="fas fa-plus"></i></span>
                                     <span>Add</span>
-                                </a>
+                                </button>
                             </p>
                             <p class="control is-expanded" v-if="configuration.showRefreshButton">
-                                <a class="button is-fullwidth is-info" v-bind:class="{ 'is-loading': loading }" title="Click for refresh elements" v-bind:disabled="loading" v-on:click.prevent="$emit('onRefreshButtonClicked')">
+                                <button type="button" class="button is-fullwidth is-info" v-bind:class="{ 'is-loading': loading }" title="Click for refresh elements" v-bind:disabled="loading" v-on:click.prevent="$emit('onRefreshButtonClicked')">
                                     <span class="icon is-small"><i class="fas fa-sync-alt"></i></span>
                                     <span>Refresh</span>
-                                </a>
+                                </button>
                             </p>
                             <p class="control" v-if="configuration.showExportButton">
                                 <f-export-button v-bind:disabled="loading" v-on:buttonClicked="$emit('onExportButtonClicked', $event)"></f-export-button>

@@ -30,7 +30,7 @@ const vueFormsUsers = (function () {
                                 <f-search-user-account-type-field v-bind:disabled="loading" v-on:searchTriggered="searchByAccountType = $event; search(true);"></f-search-user-account-type-field>
                             </th>
                             <th>
-                                <f-search-date-field v-bind:disabled="loading" v-on:searchTriggered="searchFromCreationDate = $event.from; searchToCreationDate = $event.to; search(true);"></f-search-date-field>
+                                <f-search-date-field v-bind:disabled="loading || true" v-on:searchTriggered="searchFromCreationDate = $event.from; searchToCreationDate = $event.to; search(true);"></f-search-date-field>
                             </th>
                             <th>
                             </th>
@@ -45,16 +45,16 @@ const vueFormsUsers = (function () {
                             <td>
                                 <div class="field is-grouped">
                                     <p class="control is-expanded">
-                                        <a class="button is-small is-fullwidth is-info" v-bind:disabled="loading" v-on:click="$router.push({ name: 'updateUser', params: { id: user.id } })">
+                                        <button type="button" class="button is-small is-fullwidth is-info" v-bind:disabled="loading" v-on:click="$router.push({ name: 'updateUser', params: { id: user.id } })">
                                             <span class="icon is-small"><i class="fas fa-pen"></i></span>
                                             <span>Update</span>
-                                        </a>
+                                        </button>
                                     </p>
                                     <p class="control is-expanded">
-                                        <a class="button is-small is-fullwidth is-danger" v-bind:disabled="loading || isCurrentUser(user.id)">
+                                        <button type="button" class="button is-small is-fullwidth is-danger" v-bind:disabled="loading || isCurrentUser(user.id)">
                                             <span class="icon is-small"><i class="fas fa-trash-alt"></i></span>
                                             <span>Remove</span>
-                                        </a>
+                                        </button>
                                     </p>
                                 </div>
                             </td>

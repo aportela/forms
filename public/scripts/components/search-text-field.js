@@ -11,11 +11,11 @@ const vueFormsSearchTextField = (function () {
                     </span >
                 </div>
                 <div class="control">
-                    <a class="button" v-bind:disabled="disabled" v-on:click.prevent="$emit('searchTriggered', text)">
+                    <button type="button" class="button" v-bind:disabled="disabled" v-on:click.prevent="$emit('searchTriggered', text)">
                         <span class="icon">
                             <i class="fas fa-search"></i>
                         </span>
-                    </a>
+                    </button>
                 </div>
             </div>
         `;
