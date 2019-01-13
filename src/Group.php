@@ -191,6 +191,36 @@
         }
 
         /**
+         * check name existence
+         *
+         * @param \Forms\Database\DB $dbh database handler
+         * @param string $name name to check existence
+         */
+        public static function existsName(\Forms\Database\DB $dbh, string $name = "", string $ignoreId = "") {
+            $params = array(
+                (new \Forms\Database\DBParam())->str(":name", $name)
+            );
+            $whereCondition = null;
+            if (! empty($ignoreId)) {
+                $whereCondition = " AND [GROUP].id <> :id ";
+                $params[] = (new \Forms\Database\DBParam())->str(":id", mb_strtolower($ignoreId));
+            }
+            $results = $dbh->query(sprintf
+                (
+                    "
+                        SELECT
+                            COUNT(id) AS total
+                        FROM [GROUP]
+                        WHERE name = :name
+                        %s
+                    ", $whereCondition
+                ), $params
+            );
+            return($results[0]->total == 1);
+        }
+
+
+        /**
          * search users
          *
          * @param \Forms\Database\DB $dbh database handler

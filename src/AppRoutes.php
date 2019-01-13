@@ -281,10 +281,14 @@
                     array()
                 );
                 $dbh = new \Forms\Database\DB($this);
-                $group->add($dbh);
-                return $response->withJson([
-                    "group" => $group
-                ], 200);
+                if (\Forms\Group::existsName($dbh, $group->name)) {
+                    throw new \Forms\Exception\AlreadyExistsException("name");
+                } else {
+                    $group->add($dbh);
+                    return $response->withJson([
+                        "group" => $group
+                    ], 200);
+                }
             });
 
             $this->put('/{id}', function (Request $request, Response $response, array $args) {
@@ -296,10 +300,14 @@
                     array()
                 );
                 $dbh = new \Forms\Database\DB($this);
-                $group->update($dbh);
-                return $response->withJson([
+                if (\Forms\Group::existsName($dbh, $group->name, $group->id)) {
+                    throw new \Forms\Exception\AlreadyExistsException("name");
+                } else {
+                    $group->update($dbh);
+                    return $response->withJson([
                     "group" => $group
-                ], 200);
+                    ], 200);
+                }
             });
 
         });
