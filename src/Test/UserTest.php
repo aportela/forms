@@ -208,14 +208,12 @@
 
         public function testExistsEmailWithExistentEmail(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
             $u->add(self::$dbh);
             $this->assertTrue(\Forms\User::existsEmail(self::$dbh, $u->email));
         }
 
         public function testExistsEmailWithExistentEmailIgnoringId(): void {
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
             $u->add(self::$dbh);
@@ -229,14 +227,12 @@
 
         public function testExistsNameWithExistentName(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
             $u->add(self::$dbh);
             $this->assertTrue(\Forms\User::existsName(self::$dbh, $u->name));
         }
 
         public function testExistsNameWithExistentNameIgnoringId(): void {
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER);
             $u->add(self::$dbh);
