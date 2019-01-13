@@ -1,24 +1,24 @@
 const vueFormsGroupCard = (function () {
     "use strict";
 
-    let template = function () {
+    const template = function () {
         return `
             <div>
                 <form v-on:submit.prevent="save()">
                     <div class="box">
                         <label class="label">Name</label>
-                        <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidName }">
-                            <input class="input" type="text" maxlength="255" required v-bind:class="{ 'is-danger': invalidName }" v-bind:disabled="loading ? true: false" v-model="group.name">
+                        <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('name') }">
+                            <input class="input" type="text" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('name') }" v-bind:disabled="loading ? true: false" v-model="group.name">
                             <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
-                            <span class="icon is-small is-right" v-show="invalidName"><i class="fa fa-warning"></i></span>
-                            <p class="help is-danger" v-show="invalidName">Name already used</p>
+                            <span class="icon is-small is-right" v-show="validator.hasInvalidField('name')"><i class="fa fa-warning"></i></span>
+                            <p class="help is-danger" v-show="validator.hasInvalidField('name')">{{ validator.getInvalidFieldMessage('name') }}</p>
                         </p>
                         <label class="label">Description</label>
-                        <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidDescription }">
-                            <input class="input" type="text" maxlength="255" v-bind:class="{ 'is-danger': invalidDescription }" v-bind:disabled="loading ? true: false" v-model="group.description">
+                        <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('description') }">
+                            <input class="input" type="text" maxlength="255" v-bind:class="{ 'is-danger': validator.hasInvalidField('description') }" v-bind:disabled="loading ? true: false" v-model="group.description">
                             <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
-                            <span class="icon is-small is-right" v-show="invalidDescription"><i class="fa fa-warning"></i></span>
-                            <p class="help is-danger" v-show="invalidDescription">Invalid description</p>
+                            <span class="icon is-small is-right" v-show="validator.hasInvalidField('description')"><i class="fa fa-warning"></i></span>
+                            <p class="help is-danger" v-show="validator.hasInvalidField('description')">{{ validator.getInvalidFieldMessage('description') }}</p>
                         </p>
                         <hr>
                         <p class="control">
@@ -39,14 +39,13 @@ const vueFormsGroupCard = (function () {
         data: function () {
             return ({
                 loading: false,
+                validator: getValidator(),
                 group: {
                     id: null,
                     name: null,
                     description: null,
                     users: []
-                },
-                invalidName: false,
-                invalidDescription: false
+                }
             });
         },
         props: [
@@ -84,8 +83,7 @@ const vueFormsGroupCard = (function () {
             },
             add: function () {
                 let self = this;
-                self.invalidName = false;
-                self.invalidDescription = false;
+                self.validator.clear();
                 self.loading = true;
                 this.group.id = self.uuid();
                 formsAPI.group.add(this.group, function (response) {
@@ -95,16 +93,18 @@ const vueFormsGroupCard = (function () {
                         switch (response.status) {
                             case 400:
                                 if (response.body.invalidOrMissingParams.find(function (e) { return (e === "name"); })) {
-                                    self.invalidName = true;
+                                    self.validator.setInvalid("name", "Invalid name");
                                 } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "description"); })) {
-                                    self.invalidDescription = true;
+                                    self.validator.setInvalid("description", "Invalid description");
                                 } else {
-                                    self.apiError = response.getApiErrorData();
+                                    self.showApiError(response.getApiErrorData());
                                 }
                                 break;
                             case 409:
                                 if (response.body.invalidParams.find(function (e) { return (e === "name"); })) {
-                                    self.invalidName = true;
+                                    self.validator.setInvalid("name", "Name already used");
+                                } else {
+                                    self.showApiError(response.getApiErrorData());
                                 }
                                 break;
                             default:
@@ -117,8 +117,6 @@ const vueFormsGroupCard = (function () {
             },
             update: function () {
                 let self = this;
-                self.invalidName = false;
-                self.invalidDescription = false;
                 self.loading = true;
                 formsAPI.group.update(this.group, function (response) {
                     if (response.ok) {
@@ -127,16 +125,18 @@ const vueFormsGroupCard = (function () {
                         switch (response.status) {
                             case 400:
                                 if (response.body.invalidOrMissingParams.find(function (e) { return (e === "name"); })) {
-                                    self.invalidName = true;
+                                    self.validator.setInvalid("name", "Invalid name");
                                 } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "description"); })) {
-                                    self.invalidDescription = true;
+                                    self.validator.setInvalid("description", "Invalid description");
                                 } else {
-                                    self.apiError = response.getApiErrorData();
+                                    self.showApiError(response.getApiErrorData());
                                 }
                                 break;
                             case 409:
                                 if (response.body.invalidParams.find(function (e) { return (e === "name"); })) {
-                                    self.invalidName = true;
+                                    self.validator.setInvalid("name", "Name already used");
+                                } else {
+                                    self.showApiError(response.getApiErrorData());
                                 }
                                 break;
                             default:
