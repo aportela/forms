@@ -10,6 +10,8 @@ const vueFormsUsers = (function () {
 
                 <f-table-controls v-bind:loading="loading" v-bind:paginationData="pager" v-bind:configuration="{ showAddButton: true, showRefreshButton: true, showExportButton: true, showPaginationControls: true }" v-on:onAddButtonClicked="onAdd" v-on:onRefreshButtonClicked="onRefresh" v-on:onExportButtonClicked="onExport" v-on:onPaginationRefreshRequired="search(false)"></f-table-controls>
 
+                <f-dialog-confirm-remove v-if="removeConfirmationDialogVisible" v-on:ok="remove" v-on:close="hideRemoveConfirmationDialog" v-on:cancel="hideRemoveConfirmationDialog"></f-dialog-confirm-remove>
+
                 <table class="table is-striped is-narrow is-fullwidth is-unselectable">
                     <thead>
                         <tr>
@@ -37,6 +39,28 @@ const vueFormsUsers = (function () {
                                 <f-search-date-field v-bind:disabled="loading || true" v-on:searchTriggered="searchFromCreationDate = $event.from; searchToCreationDate = $event.to; search(true);"></f-search-date-field>
                             </th>
                             <th>
+                                <!--
+                                <div class="field is-grouped">
+                                    <p class="control is-expanded">
+                                        <button type="button" class="button is-fullwidth is-info" title="Click for add new element" v-bind:disabled="loading">
+                                            <span class="icon is-small"><i class="fas fa-plus"></i></span>
+                                            <span>Add</span>
+                                        </button>
+                                    </p>
+                                    <p class="control is-expanded">
+                                        <button type="button" class="button is-fullwidth is-link" v-bind:class="{ 'is-loading': loading }" title="Click for refresh elements" v-bind:disabled="loading">
+                                            <span class="icon is-small"><i class="fas fa-sync-alt"></i></span>
+                                            <span>Refresh</span>
+                                        </button>
+                                    </p>
+                                    <p class="control is-expanded">
+                                        <button type="button" class="button is-fullwidth is-warning" v-bind:class="{ 'is-loading': loading }" title="Click for export elements" v-bind:disabled="loading">
+                                            <span class="icon is-small"><i class="fas fa-database"></i></span>
+                                            <span>Export</span>
+                                        </button>
+                                    </p>
+                                </div>
+                                -->
                             </th>
                         </tr>
                     </thead>
@@ -56,7 +80,7 @@ const vueFormsUsers = (function () {
                                         </button>
                                     </p>
                                     <p class="control is-expanded">
-                                        <button type="button" class="button is-small is-fullwidth is-danger" v-bind:disabled="loading || isCurrentUser(user.id)">
+                                        <button type="button" class="button is-small is-fullwidth is-danger" v-bind:disabled="loading || isCurrentUser(user.id)" v-on:click.prevent="showRemoveConfirmationDialog(user.id)">
                                             <span class="icon is-small"><i class="fas fa-trash-alt"></i></span>
                                             <span>Remove</span>
                                         </button>
@@ -86,6 +110,7 @@ const vueFormsUsers = (function () {
                 searchByCreatorName: "",
                 searchFromCreationDate: null,
                 searchToCreationDate: null,
+                removeId: null
             });
         },
         mixins: [
@@ -103,7 +128,18 @@ const vueFormsUsers = (function () {
                 return (accountType == "A" ? "Administrator" : "Normal user");
             }
         },
+        computed: {
+            removeConfirmationDialogVisible: function() {
+                return(this.removeId != null);
+            }
+        },
         methods: {
+            showRemoveConfirmationDialog(id) {
+                this.removeId = id;
+            },
+            hideRemoveConfirmationDialog() {
+                this.removeId = null;
+            },
             isCurrentUser(userId) {
                 return(initialState.session.userId == userId);
             },
@@ -134,6 +170,19 @@ const vueFormsUsers = (function () {
             },
             onExport: function (format) {
                 this.export("users", this.items, { format: format, fields: ['id', 'email', 'name', 'created', 'accountType'] });
+            },
+            remove: function ()  {
+                let self = this;
+                self.loading = true;
+                formsAPI.user.remove(this.removeId, function (response) {
+                    if (response.ok && response.body.success) {
+                        self.hideRemoveConfirmationDialog();
+                        self.loading = false;
+                        self.search(false);
+                    } else {
+                        self.showApiError(response.getApiErrorData());
+                    }
+                });
             }
         }
     });

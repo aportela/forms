@@ -244,6 +244,25 @@
                     );
                 }
             });
+
+            $this->delete('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $user = new \Forms\User(
+                    $route->getArgument("id"),
+                    "",
+                    "",
+                    "",
+                    ""
+                );
+                $dbh = new \Forms\Database\DB($this);
+                $user->delete($dbh);
+                return $response->withJson(
+                    [
+                        'success' => true,
+                    ], 200
+                );
+            });
+
         });
         /**
          * USER API routes (END)

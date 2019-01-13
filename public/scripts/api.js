@@ -99,6 +99,20 @@ const formsAPI = {
                 }
             );
         },
+        remove: function (id, callback) {
+            Vue.http.delete("api/users/" + id).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
         search: function (searchByEmail, searchByName, searchByAccountType, searchByCreatorName, searchFromCreationDate, searchToCreationDate, currentPage, resultsPage, sortBy, sortOrder, callback) {
             let params = {
                 filter: {},
