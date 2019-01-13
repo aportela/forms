@@ -3,7 +3,7 @@ const vueFormsPaginationControls = (function () {
 
     let template = function () {
         return `
-            <nav class="pagination has-text-weight-normal is-right" role="navigation" aria-label="pagination">
+            <nav class="pagination has-text-weight-normal is-left" role="navigation" aria-label="pagination">
                 <button type="button" class="pagination-previous" title="Click for navigate to previous page" v-show="isEnabled" v-bind:disabled="disabled || this.data.currentPage <= 1" v-on:click.prevent="navigateToPreviousPage"><span class="icon is-small"><i class="fas fa-caret-left"></i></span> <span>Previous page</span></button>
                 <button type="button" class="pagination-next" title="Click for navigate to next page" v-show="isEnabled" v-bind:disabled="disabled || this.data.currentPage >= this.data.totalPages" v-on:click.prevent="navigateToNextPage">Next page <span class="icon is-small"><i class="fas fa-caret-right"></i></span></button>
                 <ul class="pagination-list" v-show="isEnabled">
