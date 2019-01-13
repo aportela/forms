@@ -9,7 +9,9 @@ const vueFormsExportButton = (function () {
                         <select v-model="format" v-bind:disabled="disabled">
                             <option value="">select format</option>
                             <option value="json">json</option>
-                            <option value="csv">csv</option>
+                            <!--
+                            <option value="csv" disabled>csv</option>
+                            -->
                         </select>
                     </span>
                 </p>
