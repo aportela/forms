@@ -7,18 +7,20 @@ const vueFormsUserCard = (function () {
                 <form v-on:submit.prevent="save()">
                     <div class="box">
                         <label class="label">Email</label>
-                        <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidEmail }">
-                            <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': invalidEmail }" v-bind:disabled="loading ? true: false" v-model="user.email">
+                        <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidEmailFormat || invalidEmailAlreadyExists }">
+                            <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': invalidEmailFormat || invalidEmailAlreadyExists }" v-bind:disabled="loading ? true: false" v-model="user.email">
                             <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
-                            <span class="icon is-small is-right" v-show="invalidEmail"><i class="fa fa-warning"></i></span>
-                            <p class="help is-danger" v-show="invalidEmail">Email already used</p>
+                            <span class="icon is-small is-right" v-show="invalidEmailFormat || invalidEmailAlreadyExists"><i class="fa fa-warning"></i></span>
+                            <p class="help is-danger" v-show="invalidEmailFormat">Invalid email</p>
+                            <p class="help is-danger" v-show="invalidEmailAlreadyExists">Email already used</p>
                         </p>
                         <label class="label">Name</label>
-                        <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidName }">
-                            <input class="input" type="text" name="name" maxlength="255" required v-bind:class="{ 'is-danger': invalidName }" v-bind:disabled="loading ? true: false" v-model="user.name">
+                        <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidNameFormat || invalidNameAlreadyExists }">
+                            <input class="input" type="text" name="name" maxlength="255" required v-bind:class="{ 'is-danger': invalidNameFormat || invalidNameAlreadyExists }" v-bind:disabled="loading ? true: false" v-model="user.name">
                             <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
-                            <span class="icon is-small is-right" v-show="invalidName"><i class="fa fa-warning"></i></span>
-                            <p class="help is-danger" v-show="invalidName">Name already used</p>
+                            <span class="icon is-small is-right" v-show="invalidNameFormat || invalidNameAlreadyExists"><i class="fa fa-warning"></i></span>
+                            <p class="help is-danger" v-show="invalidNameFormat">Invalid name</p>
+                            <p class="help is-danger" v-show="invalidNameAlreadyExists">Name already used</p>
                         </p>
                         <label class="label">Password</label>
                         <p class="control has-icons-left" id="password-container" v-bind:class="{ 'has-icons-right' : invalidPassword }">
@@ -62,8 +64,10 @@ const vueFormsUserCard = (function () {
                     password: null,
                     accountType: "U"
                 },
-                invalidEmail: false,
-                invalidName: false,
+                invalidEmailFormat: false,
+                invalidEmailAlreadyExists: false,
+                invalidNameFormat: false,
+                invalidNameAlreadyExists: false,
                 invalidPassword: false
             });
         },
@@ -75,7 +79,7 @@ const vueFormsUserCard = (function () {
             mixinSession,
             mixinUtils
         ],
-        created: function() {
+        created: function () {
             if (this.$route.params.id) {
                 this.load(this.$route.params.id);
             } else if (this.isRouteActive('profile')) {
@@ -83,19 +87,19 @@ const vueFormsUserCard = (function () {
             }
         },
         computed: {
-            showAccountTypeField: function()  {
+            showAccountTypeField: function () {
                 if (this.isAdministrator) {
-                    return(this.user.id != initialState.session.userId);
+                    return (this.user.id != initialState.session.userId);
                 } else {
-                    return(false);
+                    return (false);
                 }
             }
         },
         methods: {
-            load: function(id) {
+            load: function (id) {
                 let self = this;
                 self.loading = true;
-                formsAPI.user.get(id, function(response) {
+                formsAPI.user.get(id, function (response) {
                     if (response.ok) {
                         self.user = response.body.user;
                         self.loading = false;
@@ -104,17 +108,19 @@ const vueFormsUserCard = (function () {
                     }
                 });
             },
-            save: function() {
+            save: function () {
                 if (this.$route.params.id || this.isRouteActive('profile')) {
                     this.update();
                 } else {
                     this.add();
                 }
             },
-            add: function() {
+            add: function () {
                 let self = this;
-                self.invalidEmail = false;
-                self.invalidName = false;
+                self.invalidEmailFormat = false;
+                self.invalidEmailAlreadyExists = false;
+                self.invalidNameFormat = false;
+                self.invalidNameAlreadyExists = false;
                 self.invalidPassword = false;
                 self.loading = true;
                 this.user.id = self.uuid();
@@ -125,9 +131,9 @@ const vueFormsUserCard = (function () {
                         switch (response.status) {
                             case 400:
                                 if (response.body.invalidOrMissingParams.find(function (e) { return (e === "email"); })) {
-                                    self.invalidEmail = true;
+                                    self.invalidEmailFormat = true;
                                 } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "name"); })) {
-                                    self.invalidName = true;
+                                    self.invalidNameFormat = true;
                                 } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "password"); })) {
                                     self.invalidPassword = true;
                                 } else {
@@ -136,9 +142,9 @@ const vueFormsUserCard = (function () {
                                 break;
                             case 409:
                                 if (response.body.invalidParams.find(function (e) { return (e === "email"); })) {
-                                    self.invalidEmail = true;
+                                    self.invalidEmailAlreadyExists = true;
                                 } else if (response.body.invalidParams.find(function (e) { return (e === "name"); })) {
-                                    self.invalidName = true;
+                                    self.invalidNameAlreadyExists = true;
                                 }
                                 break;
                             default:
@@ -149,10 +155,12 @@ const vueFormsUserCard = (function () {
                     }
                 });
             },
-            update: function() {
+            update: function () {
                 let self = this;
-                self.invalidEmail = false;
-                self.invalidName = false;
+                self.invalidEmailFormat = false;
+                self.invalidEmailAlreadyExists = false;
+                self.invalidNameFormat = false;
+                self.invalidNameAlreadyExists = false;
                 self.invalidPassword = false;
                 self.loading = true;
                 formsAPI.user.update(this.user, function (response) {
@@ -162,9 +170,9 @@ const vueFormsUserCard = (function () {
                         switch (response.status) {
                             case 400:
                                 if (response.body.invalidOrMissingParams.find(function (e) { return (e === "email"); })) {
-                                    self.invalidEmail = true;
+                                    self.invalidEmailFormat = true;
                                 } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "name"); })) {
-                                    self.invalidName = true;
+                                    self.invalidNameFormat = true;
                                 } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "password"); })) {
                                     self.invalidPassword = true;
                                 } else {
@@ -173,9 +181,9 @@ const vueFormsUserCard = (function () {
                                 break;
                             case 409:
                                 if (response.body.invalidParams.find(function (e) { return (e === "email"); })) {
-                                    self.invalidEmail = true;
+                                    self.invalidEmailAlreadyExists = true;
                                 } else if (response.body.invalidParams.find(function (e) { return (e === "name"); })) {
-                                    self.invalidName = true;
+                                    self.invalidNameAlreadyExists = true;
                                 }
                                 break;
                             default:
