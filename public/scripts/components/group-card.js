@@ -92,7 +92,7 @@ const vueFormsGroupCard = (function () {
                 let self = this;
                 self.loading = true;
                 formsAPI.group.get(id, function (response) {
-                    if (response.ok) {
+                    if (response.ok && response.body.success) {
                         self.group = response.body.group;
                         self.loading = false;
                     } else {
@@ -113,7 +113,7 @@ const vueFormsGroupCard = (function () {
                 self.loading = true;
                 this.group.id = self.uuid();
                 formsAPI.group.add(this.group, function (response) {
-                    if (response.ok) {
+                    if (response.ok && response.body.success) {
                         self.$router.go(-1);
                     } else {
                         switch (response.status) {
@@ -145,7 +145,7 @@ const vueFormsGroupCard = (function () {
                 let self = this;
                 self.loading = true;
                 formsAPI.group.update(this.group, function (response) {
-                    if (response.ok) {
+                    if (response.ok && response.body.success) {
                         self.$router.go(-1);
                     } else {
                         switch (response.status) {

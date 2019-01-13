@@ -130,7 +130,7 @@ var vueFormsAuth = (function () {
                 self.validator.clear();
                 self.loading = true;
                 formsAPI.user.signIn(this.signInEmail, this.signInPassword, function (response) {
-                    if (response.ok) {
+                    if (response.ok && response.body.success) {
                         initialState.session = response.body.session;
                         self.$router.push({ name: 'home' });
                     } else {
@@ -163,7 +163,7 @@ var vueFormsAuth = (function () {
                 self.validator.clear();
                 self.loading = true;
                 formsAPI.user.signUp(this.signUpEmail, this.signUpName, this.signUpPassword, function (response) {
-                    if (response.ok) {
+                    if (response.ok && response.body.success) {
                         self.signInEmail = self.signUpEmail;
                         self.signInPassword = self.signUpPassword;
                         self.loading = false;

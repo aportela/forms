@@ -84,7 +84,7 @@ const app = new Vue({
     methods: {
         signOut: function() {
             formsAPI.user.signOut((response) => {
-                if (response.ok) {
+                if (response.ok && response.body.success) {
                     initialState.session = {};
                     this.changeRoute("auth");
                 } else {

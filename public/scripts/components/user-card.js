@@ -94,7 +94,7 @@ const vueFormsUserCard = (function () {
                 let self = this;
                 self.loading = true;
                 formsAPI.user.get(id, function (response) {
-                    if (response.ok) {
+                    if (response.ok && response.body.success) {
                         self.user = response.body.user;
                         self.loading = false;
                     } else {
@@ -115,7 +115,7 @@ const vueFormsUserCard = (function () {
                 self.loading = true;
                 this.user.id = self.uuid();
                 formsAPI.user.add(this.user, function (response) {
-                    if (response.ok) {
+                    if (response.ok && response.body.success) {
                         self.$router.go(-1);
                     } else {
                         switch (response.status) {
@@ -152,7 +152,7 @@ const vueFormsUserCard = (function () {
                 self.validator.clear();
                 self.loading = true;
                 formsAPI.user.update(this.user, function (response) {
-                    if (response.ok) {
+                    if (response.ok && response.body.success) {
                         self.$router.go(-1);
                     } else {
                         switch (response.status) {

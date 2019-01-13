@@ -99,7 +99,7 @@ const vueFormsGroups = (function () {
                 self.loading = true;
                 formsAPI.group.search(self.searchByName, self.searchByDescription, self.searchFromCreationDate, self.searchToCreationDate, self.pager.currentPage, self.pager.resultsPage, self.sortBy, self.sortOrder, function (response) {
                     self.loading = false;
-                    if (response.ok) {
+                    if (response.ok && response.body.success) {
                         self.pager.currentPage = response.body.pagination.currentPage;
                         self.pager.totalPages = response.body.pagination.totalPages;
                         self.pager.totalResults = response.body.pagination.totalResults;
