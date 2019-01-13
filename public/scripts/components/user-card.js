@@ -7,27 +7,25 @@ const vueFormsUserCard = (function () {
                 <form v-on:submit.prevent="save()">
                     <div class="box">
                         <label class="label">Email</label>
-                        <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidEmailFormat || invalidEmailAlreadyExists }">
-                            <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': invalidEmailFormat || invalidEmailAlreadyExists }" v-bind:disabled="loading ? true: false" v-model="user.email">
+                        <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('email') }">
+                            <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': validator.hasInvalidField('email') }" v-bind:disabled="loading ? true: false" v-model="user.email">
                             <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
-                            <span class="icon is-small is-right" v-show="invalidEmailFormat || invalidEmailAlreadyExists"><i class="fa fa-warning"></i></span>
-                            <p class="help is-danger" v-show="invalidEmailFormat">Invalid email</p>
-                            <p class="help is-danger" v-show="invalidEmailAlreadyExists">Email already used</p>
+                            <span class="icon is-small is-right" v-show="validator.hasInvalidField('email')"><i class="fa fa-warning"></i></span>
+                            <p class="help is-danger" v-show="validator.hasInvalidField('email')">{{ validator.getInvalidFieldMessage('email') }}</p>
                         </p>
                         <label class="label">Name</label>
-                        <p class="control has-icons-left" id="login-container" v-bind:class="{ 'has-icons-right' : invalidNameFormat || invalidNameAlreadyExists }">
-                            <input class="input" type="text" name="name" maxlength="255" required v-bind:class="{ 'is-danger': invalidNameFormat || invalidNameAlreadyExists }" v-bind:disabled="loading ? true: false" v-model="user.name">
+                        <p class="control has-icons-left" id="name-container" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('name') }">
+                            <input class="input" type="text" name="name" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('name') }" v-bind:disabled="loading ? true: false" v-model="user.name">
                             <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
-                            <span class="icon is-small is-right" v-show="invalidNameFormat || invalidNameAlreadyExists"><i class="fa fa-warning"></i></span>
-                            <p class="help is-danger" v-show="invalidNameFormat">Invalid name</p>
-                            <p class="help is-danger" v-show="invalidNameAlreadyExists">Name already used</p>
+                            <span class="icon is-small is-right" v-show="validator.hasInvalidField('name')"><i class="fa fa-warning"></i></span>
+                            <p class="help is-danger" v-show="validator.hasInvalidField('name')">{{ validator.getInvalidFieldMessage('name') }}</p>
                         </p>
                         <label class="label">Password</label>
-                        <p class="control has-icons-left" id="password-container" v-bind:class="{ 'has-icons-right' : invalidPassword }">
-                            <input class="input" type="password" name="password" v-bind:class="{ 'is-danger': invalidPassword }" v-bind:disabled="loading ? true: false" v-model="user.password">
+                        <p class="control has-icons-left" id="password-container" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('password') }">
+                            <input class="input" type="password" name="password" v-bind:class="{ 'is-danger': validator.hasInvalidField('password') }" v-bind:disabled="loading ? true: false" v-model="user.password">
                             <span class="icon is-small is-left"><i class="fa fa-key"></i></span>
-                            <span class="icon is-small is-right" v-show="invalidPassword"><i class="fa fa-warning"></i></span>
-                            <p class="help is-danger" v-show="invalidPassword">Invalid password</p>
+                            <span class="icon is-small is-right" v-show="validator.hasInvalidField('password')"><i class="fa fa-warning"></i></span>
+                            <p class="help is-danger" v-show="validator.hasInvalidField('password')">{{ validator.getInvalidFieldMessage('password') }}</p>
                         </p>
                         <div v-if="showAccountTypeField">
                             <label class="label">Account type</label>
@@ -57,18 +55,14 @@ const vueFormsUserCard = (function () {
         data: function () {
             return ({
                 loading: false,
+                validator: getValidator(),
                 user: {
                     id: null,
                     email: null,
                     name: null,
                     password: null,
                     accountType: "U"
-                },
-                invalidEmailFormat: false,
-                invalidEmailAlreadyExists: false,
-                invalidNameFormat: false,
-                invalidNameAlreadyExists: false,
-                invalidPassword: false
+                }
             });
         },
         props: [
@@ -117,11 +111,7 @@ const vueFormsUserCard = (function () {
             },
             add: function () {
                 let self = this;
-                self.invalidEmailFormat = false;
-                self.invalidEmailAlreadyExists = false;
-                self.invalidNameFormat = false;
-                self.invalidNameAlreadyExists = false;
-                self.invalidPassword = false;
+                self.validator.clear();
                 self.loading = true;
                 this.user.id = self.uuid();
                 formsAPI.user.add(this.user, function (response) {
@@ -131,20 +121,22 @@ const vueFormsUserCard = (function () {
                         switch (response.status) {
                             case 400:
                                 if (response.body.invalidOrMissingParams.find(function (e) { return (e === "email"); })) {
-                                    self.invalidEmailFormat = true;
+                                    self.validator.setInvalid("email", "Invalid email");
                                 } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "name"); })) {
-                                    self.invalidNameFormat = true;
+                                    self.validator.setInvalid("name", "Invalid name");
                                 } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "password"); })) {
-                                    self.invalidPassword = true;
+                                    self.validator.setInvalid("email", "Invalid password");
                                 } else {
-                                    self.apiError = response.getApiErrorData();
+                                    self.showApiError(response.getApiErrorData());
                                 }
                                 break;
                             case 409:
                                 if (response.body.invalidParams.find(function (e) { return (e === "email"); })) {
-                                    self.invalidEmailAlreadyExists = true;
+                                    self.validator.setInvalid("email", "Email already used");
                                 } else if (response.body.invalidParams.find(function (e) { return (e === "name"); })) {
-                                    self.invalidNameAlreadyExists = true;
+                                    self.validator.setInvalid("name", "Name already used");
+                                } else {
+                                    self.showApiError(response.getApiErrorData());
                                 }
                                 break;
                             default:
@@ -157,11 +149,7 @@ const vueFormsUserCard = (function () {
             },
             update: function () {
                 let self = this;
-                self.invalidEmailFormat = false;
-                self.invalidEmailAlreadyExists = false;
-                self.invalidNameFormat = false;
-                self.invalidNameAlreadyExists = false;
-                self.invalidPassword = false;
+                self.validator.clear();
                 self.loading = true;
                 formsAPI.user.update(this.user, function (response) {
                     if (response.ok) {
@@ -170,20 +158,22 @@ const vueFormsUserCard = (function () {
                         switch (response.status) {
                             case 400:
                                 if (response.body.invalidOrMissingParams.find(function (e) { return (e === "email"); })) {
-                                    self.invalidEmailFormat = true;
+                                    self.validator.setInvalid("email", "Invalid email");
                                 } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "name"); })) {
-                                    self.invalidNameFormat = true;
+                                    self.validator.setInvalid("name", "Invalid name");
                                 } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "password"); })) {
-                                    self.invalidPassword = true;
+                                    self.validator.setInvalid("email", "Invalid password");
                                 } else {
-                                    self.apiError = response.getApiErrorData();
+                                    self.showApiError(response.getApiErrorData());
                                 }
                                 break;
                             case 409:
                                 if (response.body.invalidParams.find(function (e) { return (e === "email"); })) {
-                                    self.invalidEmailAlreadyExists = true;
+                                    self.validator.setInvalid("email", "Email already used");
                                 } else if (response.body.invalidParams.find(function (e) { return (e === "name"); })) {
-                                    self.invalidNameAlreadyExists = true;
+                                    self.validator.setInvalid("name", "Name already used");
+                                } else {
+                                    self.showApiError(response.getApiErrorData());
                                 }
                                 break;
                             default:
