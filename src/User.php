@@ -287,7 +287,6 @@
                     $conditions[] = " U.name LIKE :creator_name ";
                     $params[] = (new \Forms\Database\DBParam())->str(":creator_name", "%" . $filter["creatorName"] . "%");
                 }
-
                 $whereCondition = count($conditions) > 0 ? " AND " .  implode(" AND ", $conditions) : "";
             }
 
