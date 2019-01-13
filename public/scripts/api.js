@@ -182,7 +182,7 @@ const formsAPI = {
                 }
             );
         },
-        search: function (searchByName, searchByDescription, searchFromCreationDate, searchToCreationDate, currentPage, resultsPage, sortBy, sortOrder, callback) {
+        search: function (searchByName, searchByDescription, searchByCreatorName, searchFromCreationDate, searchToCreationDate, currentPage, resultsPage, sortBy, sortOrder, callback) {
             let params = {
                 filter: {},
                 currentPage: currentPage,
@@ -195,6 +195,9 @@ const formsAPI = {
             }
             if (searchByDescription) {
                 params.filter.description = searchByDescription;
+            }
+            if (searchByCreatorName) {
+                params.filter.creatorName = searchByCreatorName;
             }
             if (searchFromCreationDate) {
                 params.filter.fromCreationDate = searchFromCreationDate;

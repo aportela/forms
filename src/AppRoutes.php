@@ -263,6 +263,9 @@
                 if (isset($requestFilter["description"]) && ! empty($requestFilter["description"])) {
                     $filter["description"] = $requestFilter["description"];
                 }
+                if (isset($requestFilter["creatorName"]) && ! empty($requestFilter["creatorName"])) {
+                    $filter["creatorName"] = $requestFilter["creatorName"];
+                }
                 $data = \Forms\Group::search(
                     new \Forms\Database\DB(
                         $this

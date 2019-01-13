@@ -13,6 +13,7 @@ const vueFormsGroups = (function () {
                             <f-table-header-field v-bind:name="'name'" v-bind:isSorted="sortBy == 'name'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('name');"></f-table-header-field>
                             <f-table-header-field v-bind:name="'description'" v-bind:isSorted="sortBy == 'description'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('description');"></f-table-header-field>
                             <f-table-header-field v-bind:name="'user count'" v-bind:isSorted="sortBy == 'userCount'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('userCount');"></f-table-header-field>
+                            <f-table-header-field v-bind:name="'Creator'" v-bind:isSorted="sortBy == 'creator'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('creator');"></f-table-header-field>
                             <f-table-header-field v-bind:name="'Created'" v-bind:isSorted="sortBy == 'creationDate'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('creationDate');"></f-table-header-field>
                             <th class="has-text-centered">Operations</th>
                         </tr>
@@ -27,6 +28,9 @@ const vueFormsGroups = (function () {
                                 <f-search-number-field v-bind:disabled="loading || true" v-bind:placeholderfrom="'from users'" v-bind:placeholderto="'to users'"v-on:searchTriggered="searchFromUserCount = $event.from; searchToUserCount = $event.to; search(true);"></f-search-number-field>
                             </th>
                             <th>
+                                <f-search-text-field v-bind:disabled="loading" v-bind:placeholder="'search by creator name'" v-on:searchTriggered="searchByCreatorName = $event; search(true);"></f-search-text-field>
+                            </th>
+                            <th>
                                 <f-search-date-field v-bind:disabled="loading || true" v-on:searchTriggered="searchFromCreationDate = $event.from; searchToCreationDate = $event.to; search(true);"></f-search-date-field>
                             </th>
                             <th>
@@ -38,6 +42,7 @@ const vueFormsGroups = (function () {
                             <td>{{ group.name }}</td>
                             <td>{{ group.description }}</td>
                             <td>{{ group.userCount }}</td>
+                            <td>{{ group.creator.name }}</td>
                             <td>{{ group.creationDate }}</td>
                             <td>
                                 <div class="field is-grouped">
@@ -74,6 +79,7 @@ const vueFormsGroups = (function () {
                 loading: false,
                 searchByName: null,
                 searchByDescription: null,
+                searchByCreatorName: "",
                 searchFromCreationDate: null,
                 searchToCreationDate: null,
                 searchFromUserCount: null,
@@ -97,7 +103,7 @@ const vueFormsGroups = (function () {
                     self.pager.currentPage = 1;
                 }
                 self.loading = true;
-                formsAPI.group.search(self.searchByName, self.searchByDescription, self.searchFromCreationDate, self.searchToCreationDate, self.pager.currentPage, self.pager.resultsPage, self.sortBy, self.sortOrder, function (response) {
+                formsAPI.group.search(self.searchByName, self.searchByDescription, self.searchByCreatorName, self.searchFromCreationDate, self.searchToCreationDate, self.pager.currentPage, self.pager.resultsPage, self.sortBy, self.sortOrder, function (response) {
                     self.loading = false;
                     if (response.ok && response.body.success) {
                         self.pager.currentPage = response.body.pagination.currentPage;
