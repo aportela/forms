@@ -30,10 +30,10 @@
                 return $response;
             } catch (\Forms\Exception\InvalidParamsException $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
-                return $response->withJson(['invalidOrMissingParams' => array($e->getMessage())], 400);
+                return $response->withJson(['invalidOrMissingParams' => explode(",", $e->getMessage())], 400);
             } catch (\Forms\Exception\AlreadyExistsException $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
-                return $response->withJson(['invalidParams' => array($e->getMessage())], 409);
+                return $response->withJson(['invalidParams' => explode(",", $e->getMessage())], 409);
             } catch (\Forms\Exception\NotFoundException $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
                 return $response->withJson(['keyNotFound' => $e->getMessage()], 404);
