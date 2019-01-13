@@ -9,8 +9,8 @@ const mixinRoutes = {
         changeRoute: function (routeName) {
             this.$router.push({ name: routeName });
         },
-        showApiError: function(error) {
-            this.$router.push({ name: "apiError", params: { error: error }});
+        showApiError: function (error) {
+            this.$router.push({ name: "apiError", params: { error: error } });
         }
     }
 };
@@ -20,8 +20,8 @@ const mixinRoutes = {
  */
 const mixinSession = {
     computed: {
-        isAdministrator: function() {
-            return(initialState.session.isAdministrator);
+        isAdministrator: function () {
+            return (initialState.session.isAdministrator);
         }
     },
     methods: {
@@ -157,10 +157,30 @@ const mixinUtils = {
                 saveAs(new Blob([data], { type: "text/csv; charset=utf-8" }), name + ".csv");
                 return (true);
                 */
-                return(false);
+                return (false);
             } else {
                 return (false);
             }
         }
     }
+}
+
+/**
+ * export data mixin
+ */
+const mixinExport = {
+    data: function () {
+        return ({
+            exportDialogVisible: false
+        });
+    },
+    methods: {
+        showExportDialog: function () {
+            this.exportDialogVisible = true;
+        },
+        hideExportDialog: function () {
+            this.exportDialogVisible = false;
+        }
+    }
+
 }
