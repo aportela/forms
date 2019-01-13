@@ -38,7 +38,7 @@
                 if (! empty($this->name) && mb_strlen($this->name) <= 64) {
                     $params = array(
                         (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
-                        (new \Forms\Database\DBParam())->str(":name", mb_strtolower($this->name)),
+                        (new \Forms\Database\DBParam())->str(":name", $this->name),
                         (new \Forms\Database\DBParam())->str(":creator", \Forms\UserSession::getUserId())
                     );
                     if (! empty($this->description)) {
@@ -73,7 +73,7 @@
                 if (! empty($this->name) && mb_strlen($this->name) <= 64) {
                     $params = array(
                         (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
-                        (new \Forms\Database\DBParam())->str(":name", mb_strtolower($this->name)),
+                        (new \Forms\Database\DBParam())->str(":name", $this->name),
 
                     );
                     if (! empty($this->description)) {
