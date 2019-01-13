@@ -54,21 +54,15 @@ const vueFormsTopMenu = (function () {
                             </a>
                             <div class="navbar-dropdown">
                                 <div class="navbar-item">
-                                    <a v-on:click.prevent="changeRoute('users')" v-bind:class="{ 'is-active': isRouteActive('users') }">
+                                    <a v-on:click.prevent="changeRoute('users')">
                                         <span class="icon is-small"><i class="fas fa-user"></i> </span>
-                                        <span>Users</span>
+                                        <span>User management</span>
                                     </a>
                                 </div>
                                 <div class="navbar-item">
-                                    <a v-on:click.prevent="changeRoute('groups')" v-bind:class="{ 'is-active': isRouteActive('groups') }">
+                                    <a v-on:click.prevent="changeRoute('groups')">
                                         <span class="icon is-small"><i class="fas fa-users"></i> </span>
-                                        <span>Groups</span>
-                                    </a>
-                                </div>
-                                <div class="navbar-item">
-                                    <a v-on:click.prevent="changeRoute('attributes')" v-bind:class="{ 'is-active': isRouteActive('attributes') }">
-                                        <span class="icon is-small"><i class="fas fa-tags"></i> </span>
-                                        <span>Attributes</span>
+                                        <span>Group management</span>
                                     </a>
                                 </div>
                             </div>
