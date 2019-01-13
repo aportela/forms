@@ -128,6 +128,9 @@
                 if (isset($requestFilter["name"]) && ! empty($requestFilter["name"])) {
                     $filter["name"] = $requestFilter["name"];
                 }
+                if (isset($requestFilter["creatorName"]) && ! empty($requestFilter["creatorName"])) {
+                    $filter["creatorName"] = $requestFilter["creatorName"];
+                }
                 if (isset($requestFilter["accountType"]) && ! empty($requestFilter["accountType"])) {
                     $filter["accountType"] = $requestFilter["accountType"];
                 }

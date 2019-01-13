@@ -16,6 +16,7 @@ const vueFormsUsers = (function () {
                             <f-table-header-field v-bind:name="'Email'" v-bind:isSorted="sortBy == 'email'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('email');"></f-table-header-field>
                             <f-table-header-field v-bind:name="'Name'" v-bind:isSorted="sortBy == 'name'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('name');"></f-table-header-field>
                             <f-table-header-field v-bind:name="'Account type'" v-bind:isSorted="sortBy == 'accountType'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('accountType');"></f-table-header-field>
+                            <f-table-header-field v-bind:name="'Creator'" v-bind:isSorted="sortBy == 'creator'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('creator');"></f-table-header-field>
                             <f-table-header-field v-bind:name="'Created'" v-bind:isSorted="sortBy == 'creationDate'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('creationDate');"></f-table-header-field>
                             <th class="has-text-centered">Operations</th>
                         </tr>
@@ -30,6 +31,9 @@ const vueFormsUsers = (function () {
                                 <f-search-user-account-type-field v-bind:disabled="loading" v-on:searchTriggered="searchByAccountType = $event; search(true);"></f-search-user-account-type-field>
                             </th>
                             <th>
+                                <f-search-text-field v-bind:disabled="loading" v-bind:placeholder="'search by creator name'" v-on:searchTriggered="searchByCreatorName = $event; search(true);"></f-search-text-field>
+                            </th>
+                            <th>
                                 <f-search-date-field v-bind:disabled="loading || true" v-on:searchTriggered="searchFromCreationDate = $event.from; searchToCreationDate = $event.to; search(true);"></f-search-date-field>
                             </th>
                             <th>
@@ -41,6 +45,7 @@ const vueFormsUsers = (function () {
                             <td>{{ user.email }}</td>
                             <td>{{ user.name }}</td>
                             <td>{{ user.accountType | getAccountTypeName }}</td>
+                            <td>{{ user.creatorName }}</td>
                             <td>{{ user.creationDate }}</td>
                             <td>
                                 <div class="field is-grouped">
@@ -78,6 +83,7 @@ const vueFormsUsers = (function () {
                 searchByEmail: null,
                 searchByName: null,
                 searchByAccountType: "",
+                searchByCreatorName: "",
                 searchFromCreationDate: null,
                 searchToCreationDate: null,
             });
@@ -107,7 +113,7 @@ const vueFormsUsers = (function () {
                     self.pager.currentPage = 1;
                 }
                 self.loading = true;
-                formsAPI.user.search(self.searchByEmail, self.searchByName, self.searchByAccountType, self.searchFromCreationDate, self.searchToCreationDate, self.pager.currentPage, self.pager.resultsPage, self.sortBy, self.sortOrder, function (response) {
+                formsAPI.user.search(self.searchByEmail, self.searchByName, self.searchByAccountType, self.searchByCreatorName, self.searchFromCreationDate, self.searchToCreationDate, self.pager.currentPage, self.pager.resultsPage, self.sortBy, self.sortOrder, function (response) {
                     self.loading = false;
                     if (response.ok && response.body.success) {
                         self.pager.currentPage = response.body.pagination.currentPage;

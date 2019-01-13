@@ -156,7 +156,7 @@
                 $results = $dbh->query(
                     "
                         SELECT
-                            USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail
+                            USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
                         FROM USER
                         LEFT JOIN USER U ON USER.creator = U.id
                         WHERE USER.id = :id
@@ -168,7 +168,7 @@
                 $results = $dbh->query(
                     "
                         SELECT
-                            USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail
+                            USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
                         FROM USER
                         LEFT JOIN USER U ON USER.creator = U.id
                         WHERE USER.email = :email
@@ -191,6 +191,7 @@
                 $this->creator = new \stdclass();
                 $this->creator->id = $results[0]->creatorId;
                 $this->creator->email = $results[0]->creatorEmail;
+                $this->creator->name = $results[0]->creatorName;
                 $this->accountType = $results[0]->accountType;
             } else {
                 throw new \Forms\Exception\NotFoundException("");
@@ -282,6 +283,11 @@
                     $conditions[] = " USER.name LIKE :name ";
                     $params[] = (new \Forms\Database\DBParam())->str(":name", "%" . $filter["name"] . "%");
                 }
+                if (isset($filter["creatorName"]) && ! empty($filter["creatorName"])) {
+                    $conditions[] = " U.name LIKE :creator_name ";
+                    $params[] = (new \Forms\Database\DBParam())->str(":creator_name", "%" . $filter["creatorName"] . "%");
+                }
+
                 $whereCondition = count($conditions) > 0 ? " AND " .  implode(" AND ", $conditions) : "";
             }
 
@@ -291,6 +297,7 @@
                         SELECT
                         COUNT(USER.id) AS total
                         FROM USER
+                        LEFT JOIN USER U ON USER.creator = U.id
                         WHERE USER.deletion_date IS NULL
                         %s
                     ", $whereCondition
@@ -319,7 +326,7 @@
                 sprintf(
                     "
                         SELECT
-                            USER.id, USER.email, USER.name, USER.creation_date AS creationDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail
+                            USER.id, USER.email, USER.name, USER.creation_date AS creationDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
                         FROM USER
                         LEFT JOIN USER U ON USER.creator = U.id
                         WHERE USER.deletion_date IS NULL
@@ -336,9 +343,11 @@
             foreach($data->results as $user) {
                 $creatorId = $user->creatorId;
                 $creatorEmail = $user->creatorEmail;
+                $creatorName = $user->creatorName;
                 $user->creator = new \stdclass();
                 $user->creator->id = $creatorId;
                 $user->creator->email = $creatorEmail;
+                $user->creator->name = $creatorName;
             }
             return($data);
         }

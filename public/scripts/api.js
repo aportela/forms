@@ -99,7 +99,7 @@ const formsAPI = {
                 }
             );
         },
-        search: function (searchByEmail, searchByName, searchByAccountType, searchFromCreationDate, searchToCreationDate, currentPage, resultsPage, sortBy, sortOrder, callback) {
+        search: function (searchByEmail, searchByName, searchByAccountType, searchByCreatorName, searchFromCreationDate, searchToCreationDate, currentPage, resultsPage, sortBy, sortOrder, callback) {
             let params = {
                 filter: {},
                 currentPage: currentPage,
@@ -115,6 +115,9 @@ const formsAPI = {
             }
             if (searchByAccountType) {
                 params.filter.accountType = searchByAccountType;
+            }
+            if (searchByCreatorName) {
+                params.filter.creatorName = searchByCreatorName;
             }
             if (searchFromCreationDate) {
                 params.filter.fromCreationDate = searchFromCreationDate;
