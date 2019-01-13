@@ -302,8 +302,8 @@
                 ), $params
             );
             foreach($data->results as $group) {
-                $creatorId = $user->creatorId;
-                $creatorEmail = $user->creatorEmail;
+                $creatorId = $group->creatorId;
+                $creatorEmail = $group->creatorEmail;
                 $group->creator = new \stdclass();
                 $group->creator->id = $creatorId;
                 $group->creator->email = $creatorEmail;
