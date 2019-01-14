@@ -376,6 +376,23 @@
                 }
             })->add(new \Forms\Middleware\AdministrationPrivilegesRequired($this->getContainer()));
 
+            $this->delete('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $group = new \Forms\Group(
+                    $route->getArgument("id"),
+                    "",
+                    "",
+                    array()
+                );
+                $dbh = new \Forms\Database\DB($this);
+                $group->delete($dbh);
+                return $response->withJson(
+                    [
+                        'success' => true,
+                    ], 200
+                );
+            })->add(new \Forms\Middleware\AdministrationPrivilegesRequired($this->getContainer()));
+
         })->add(new \Forms\Middleware\AuthenticationRequired($this->getContainer()));
 
         /**
