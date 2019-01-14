@@ -63,7 +63,7 @@ const vueFormsUsers = (function () {
                     </thead>
                     <tbody>
                         <tr v-for="user in items" v-bind:key="user.id">
-                            <td>{{ user.email }}</td>
+                            <td><a v-bind:href="'mailto:' + user.email">{{ user.email }}</a></td>
                             <td>{{ user.name }}</td>
                             <td>{{ user.accountType | getAccountTypeName }}</td>
                             <td>{{ user.creatorName }}</td>
