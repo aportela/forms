@@ -31,20 +31,24 @@ var vueFormsAuth = (function () {
 
                         <form v-on:submit.prevent="submitSignIn" v-if="tab == 'signin'">
                             <div class="box">
-                                <label class="label">Email</label>
-                                <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('email') }">
-                                    <input class="input" type="email" name="email" maxlength="255" ref="signInEmail" required autofocus v-bind:class="{ 'is-danger': validator.hasInvalidField('email') }" v-bind:disabled="loading ? true: false" v-model="signInEmail">
-                                    <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
-                                    <span class="icon is-small is-right" v-show="validator.hasInvalidField('email')"><i class="fa fa-warning"></i></span>
-                                    <p class="help is-danger" v-show="validator.hasInvalidField('email')">{{ validator.getInvalidFieldMessage('email') }}</p>
-                                </p>
-                                <label class="label">Password</label>
-                                <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('password') }">
-                                    <input class="input" type="password" name="password" required v-bind:class="{ 'is-danger': validator.hasInvalidField('password') }" v-bind:disabled="loading ? true: false" v-model="signInPassword">
-                                    <span class="icon is-small is-left"><i class="fa fa-key"></i></span>
-                                    <span class="icon is-small is-right" v-show="validator.hasInvalidField('password')"><i class="fa fa-warning"></i></span>
-                                    <p class="help is-danger" v-show="validator.hasInvalidField('password')">{{ validator.getInvalidFieldMessage('password') }}</p>
-                                </p>
+                                <div class="field">
+                                    <label class="label">Email</label>
+                                    <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('email') }">
+                                        <input class="input" type="email" name="email" maxlength="255" ref="signInEmail" required autofocus v-bind:class="{ 'is-danger': validator.hasInvalidField('email') }" v-bind:disabled="loading ? true: false" v-model="signInEmail">
+                                        <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
+                                        <span class="icon is-small is-right" v-show="validator.hasInvalidField('email')"><i class="fa fa-warning"></i></span>
+                                        <p class="help is-danger" v-show="validator.hasInvalidField('email')">{{ validator.getInvalidFieldMessage('email') }}</p>
+                                    </p>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Password</label>
+                                    <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('password') }">
+                                        <input class="input" type="password" name="password" required v-bind:class="{ 'is-danger': validator.hasInvalidField('password') }" v-bind:disabled="loading ? true: false" v-model="signInPassword">
+                                        <span class="icon is-small is-left"><i class="fa fa-key"></i></span>
+                                        <span class="icon is-small is-right" v-show="validator.hasInvalidField('password')"><i class="fa fa-warning"></i></span>
+                                        <p class="help is-danger" v-show="validator.hasInvalidField('password')">{{ validator.getInvalidFieldMessage('password') }}</p>
+                                    </p>
+                                </div>
                                 <hr>
                                 <p class="control">
                                     <button type="submit" class="button is-primary" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading ? true: false">
@@ -56,27 +60,33 @@ var vueFormsAuth = (function () {
                         </form>
                         <form v-on:submit.prevent="submitSignUp" v-if="tab == 'signup'">
                             <div class="box">
-                                <label class="label">Email</label>
-                                <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('email') }">
-                                    <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': validator.hasInvalidField('email') }" v-bind:disabled="loading ? true: false" v-model="signUpEmail">
-                                    <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
-                                    <span class="icon is-small is-right" v-show="validator.hasInvalidField('email')"><i class="fa fa-warning"></i></span>
-                                    <p class="help is-danger" v-show="validator.hasInvalidField('email')">{{ validator.getInvalidFieldMessage('email') }}</p>
-                                </p>
-                                <label class="label">Name</label>
-                                <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('name') }">
-                                    <input class="input" type="test" name="name" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('name') }" v-bind:disabled="loading ? true: false" v-model="signUpName">
-                                    <span class="icon is-small is-left"><i class="fa fa-user"></i></span>
-                                    <span class="icon is-small is-right" v-show="validator.hasInvalidField('name')"><i class="fa fa-warning"></i></span>
-                                    <p class="help is-danger" v-show="validator.hasInvalidField('name')">{{ validator.getInvalidFieldMessage('name') }}</p>
-                                </p>
-                                <label class="label">Password</label>
-                                <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('password') }">
-                                    <input class="input" type="password" name="password" required v-bind:class="{ 'is-danger': validator.hasInvalidField('password') }" v-bind:disabled="loading ? true: false" v-model="signUpPassword">
-                                    <span class="icon is-small is-left"><i class="fa fa-key"></i></span>
-                                    <span class="icon is-small is-right" v-show="validator.hasInvalidField('password')"><i class="fa fa-warning"></i></span>
-                                    <p class="help is-danger" v-show="validator.hasInvalidField('password')">{{ validator.getInvalidFieldMessage('password') }}</p>
-                                </p>
+                                <div class="field">
+                                    <label class="label">Email</label>
+                                    <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('email') }">
+                                        <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': validator.hasInvalidField('email') }" v-bind:disabled="loading ? true: false" v-model="signUpEmail">
+                                        <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
+                                        <span class="icon is-small is-right" v-show="validator.hasInvalidField('email')"><i class="fa fa-warning"></i></span>
+                                        <p class="help is-danger" v-show="validator.hasInvalidField('email')">{{ validator.getInvalidFieldMessage('email') }}</p>
+                                    </p>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Name</label>
+                                    <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('name') }">
+                                        <input class="input" type="test" name="name" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('name') }" v-bind:disabled="loading ? true: false" v-model="signUpName">
+                                        <span class="icon is-small is-left"><i class="fa fa-user"></i></span>
+                                        <span class="icon is-small is-right" v-show="validator.hasInvalidField('name')"><i class="fa fa-warning"></i></span>
+                                        <p class="help is-danger" v-show="validator.hasInvalidField('name')">{{ validator.getInvalidFieldMessage('name') }}</p>
+                                    </p>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Password</label>
+                                    <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('password') }">
+                                        <input class="input" type="password" name="password" required v-bind:class="{ 'is-danger': validator.hasInvalidField('password') }" v-bind:disabled="loading ? true: false" v-model="signUpPassword">
+                                        <span class="icon is-small is-left"><i class="fa fa-key"></i></span>
+                                        <span class="icon is-small is-right" v-show="validator.hasInvalidField('password')"><i class="fa fa-warning"></i></span>
+                                        <p class="help is-danger" v-show="validator.hasInvalidField('password')">{{ validator.getInvalidFieldMessage('password') }}</p>
+                                    </p>
+                                </div>
                                 <hr>
                                 <p class="control">
                                     <button type="submit" class="button is-primary" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading ? true: false">

@@ -6,34 +6,42 @@ const vueFormsUserCard = (function () {
             <div>
                 <form v-on:submit.prevent="save()">
                     <div class="box">
-                        <label class="label">Email</label>
-                        <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('email') }">
-                            <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': validator.hasInvalidField('email') }" v-bind:disabled="loading ? true: false" v-model="user.email">
-                            <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
-                            <span class="icon is-small is-right" v-show="validator.hasInvalidField('email')"><i class="fa fa-warning"></i></span>
-                            <p class="help is-danger" v-show="validator.hasInvalidField('email')">{{ validator.getInvalidFieldMessage('email') }}</p>
-                        </p>
-                        <label class="label">Name</label>
-                        <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('name') }">
-                            <input class="input" type="text" name="name" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('name') }" v-bind:disabled="loading ? true: false" v-model="user.name">
-                            <span class="icon is-small is-left"><i class="fa fa-user"></i></span>
-                            <span class="icon is-small is-right" v-show="validator.hasInvalidField('name')"><i class="fa fa-warning"></i></span>
-                            <p class="help is-danger" v-show="validator.hasInvalidField('name')">{{ validator.getInvalidFieldMessage('name') }}</p>
-                        </p>
-                        <label class="label">Password</label>
-                        <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('password') }">
-                            <input class="input" type="password" name="password" v-bind:class="{ 'is-danger': validator.hasInvalidField('password') }" v-bind:disabled="loading ? true: false" v-model="user.password">
-                            <span class="icon is-small is-left"><i class="fa fa-key"></i></span>
-                            <span class="icon is-small is-right" v-show="validator.hasInvalidField('password')"><i class="fa fa-warning"></i></span>
-                            <p class="help is-danger" v-show="validator.hasInvalidField('password')">{{ validator.getInvalidFieldMessage('password') }}</p>
-                        </p>
-                        <div v-if="showAccountTypeField">
-                            <label class="label">Account type</label>
-                            <div class="select">
-                                <select required v-bind:disabled="disabled" v-model="user.accountType">
-                                    <option value="A">Administrator</option>
-                                    <option value="U">Normal user</option>
-                                </select>
+                        <div class="field">
+                            <label class="label">Email</label>
+                            <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('email') }">
+                                <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': validator.hasInvalidField('email') }" v-bind:disabled="loading" v-model="user.email">
+                                <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
+                                <span class="icon is-small is-right" v-show="validator.hasInvalidField('email')"><i class="fa fa-warning"></i></span>
+                                <p class="help is-danger" v-show="validator.hasInvalidField('email')">{{ validator.getInvalidFieldMessage('email') }}</p>
+                            </p>
+                        </div>
+                        <div class="field">
+                            <label class="label">Name</label>
+                            <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('name') }">
+                                <input class="input" type="text" name="name" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('name') }" v-bind:disabled="loading" v-model="user.name">
+                                <span class="icon is-small is-left"><i class="fa fa-user"></i></span>
+                                <span class="icon is-small is-right" v-show="validator.hasInvalidField('name')"><i class="fa fa-warning"></i></span>
+                                <p class="help is-danger" v-show="validator.hasInvalidField('name')">{{ validator.getInvalidFieldMessage('name') }}</p>
+                            </p>
+                        </div>
+                        <div class="field">
+                            <label class="label">Password</label>
+                            <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('password') }">
+                                <input class="input" type="password" name="password" v-bind:class="{ 'is-danger': validator.hasInvalidField('password') }" v-bind:disabled="loading" v-model="user.password">
+                                <span class="icon is-small is-left"><i class="fa fa-key"></i></span>
+                                <span class="icon is-small is-right" v-show="validator.hasInvalidField('password')"><i class="fa fa-warning"></i></span>
+                                <p class="help is-danger" v-show="validator.hasInvalidField('password')">{{ validator.getInvalidFieldMessage('password') }}</p>
+                            </p>
+                        </div>
+                        <div class="field">
+                            <div v-if="showAccountTypeField">
+                                <label class="label">Account type</label>
+                                <div class="select">
+                                    <select required v-bind:disabled="disabled" v-model="user.accountType">
+                                        <option value="A">Administrator</option>
+                                        <option value="U">Normal user</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <hr>
