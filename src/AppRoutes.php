@@ -212,7 +212,7 @@
                         ], 200
                     );
                 }
-            });
+            })->add(new \Forms\Middleware\AdministrationPrivilegesRequired($this->getContainer()));
 
             $this->put('/{id}', function (Request $request, Response $response, array $args) {
                 $route = $request->getAttribute('route');
@@ -224,24 +224,28 @@
                     $request->getParam("accountType", "")
                 );
                 $dbh = new \Forms\Database\DB($this);
-                if (\Forms\User::existsEmail($dbh, $user->email, $user->id)) {
-                    throw new \Forms\Exception\AlreadyExistsException("email");
-                } else if (\Forms\User::existsName($dbh, $user->name, $user->id)) {
-                    throw new \Forms\Exception\AlreadyExistsException("name");
+                if (\Forms\UserSession::isAdministrator() || $user->id == \Forms\UserSession::getUserId()) {
+                    if (\Forms\User::existsEmail($dbh, $user->email, $user->id)) {
+                        throw new \Forms\Exception\AlreadyExistsException("email");
+                    } else if (\Forms\User::existsName($dbh, $user->name, $user->id)) {
+                        throw new \Forms\Exception\AlreadyExistsException("name");
+                    } else {
+                        $user->update($dbh);
+                        return $response->withJson(
+                            [
+                                'success' => true,
+                                "user" => array(
+                                    "id" => $user->id,
+                                    "name" => $user->name,
+                                    "email" => $user->email,
+                                    "accountType" => $user->accountType,
+                                    "creationDate" => $user->creationDate
+                                )
+                            ], 200
+                        );
+                    }
                 } else {
-                    $user->update($dbh);
-                    return $response->withJson(
-                        [
-                            'success' => true,
-                            "user" => array(
-                                "id" => $user->id,
-                                "name" => $user->name,
-                                "email" => $user->email,
-                                "accountType" => $user->accountType,
-                                "creationDate" => $user->creationDate
-                            )
-                        ], 200
-                    );
+                    throw new \Forms\Exception\AccessDeniedException();
                 }
             });
 
@@ -261,9 +265,10 @@
                         'success' => true,
                     ], 200
                 );
-            });
+            })->add(new \Forms\Middleware\AdministrationPrivilegesRequired($this->getContainer()));
 
-        });
+        })->add(new \Forms\Middleware\AuthenticationRequired($this->getContainer()));
+
         /**
          * USER API routes (END)
          */
@@ -347,7 +352,7 @@
                         ], 200
                     );
                 }
-            });
+            })->add(new \Forms\Middleware\AdministrationPrivilegesRequired($this->getContainer()));
 
             $this->put('/{id}', function (Request $request, Response $response, array $args) {
                 $route = $request->getAttribute('route');
@@ -369,13 +374,13 @@
                         ], 200
                     );
                 }
-            });
+            })->add(new \Forms\Middleware\AdministrationPrivilegesRequired($this->getContainer()));
 
-        });
+        })->add(new \Forms\Middleware\AuthenticationRequired($this->getContainer()));
+
         /**
          * GROUP API routes (END)
          */
-
 
     })->add(new \Forms\Middleware\APIExceptionCatcher($this->app->getContainer()));
 ?>
