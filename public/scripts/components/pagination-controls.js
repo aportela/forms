@@ -71,26 +71,26 @@ const vueFormsPaginationControls = (function () {
         watch: {
             resultsPage: function (v) {
                 this.data.resultsPage = parseInt(v);
-                this.$emit("refreshRequired");
+                this.$emit("refreshRequired", true);
             }
         },
         methods: {
             navigateToPreviousPage: function () {
                 if (this.data.currentPage > 1) {
                     this.data.currentPage--
-                    this.$emit("refreshRequired");
+                    this.$emit("refreshRequired", false);
                 }
             },
             navigateToNextPage: function () {
                 if (this.data.currentPage < this.data.totalPages) {
                     this.data.currentPage++
-                    this.$emit("refreshRequired");
+                    this.$emit("refreshRequired", false);
                 }
             },
             navigateToCustomPage: function (pageIdx) {
                 if (pageIdx > 0 && pageIdx <= this.data.totalPages) {
                     this.data.currentPage = pageIdx;
-                    this.$emit("refreshRequired");
+                    this.$emit("refreshRequired", false);
                 }
             }
         }
