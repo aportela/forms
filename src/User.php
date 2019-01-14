@@ -330,7 +330,7 @@
                         LEFT JOIN USER U ON USER.creator = U.id
                         WHERE USER.deletion_date IS NULL
                         %s
-                        ORDER BY %s %s
+                        ORDER BY %s COLLATE NOCASE %s
                         %s
                     ",
                     $whereCondition,

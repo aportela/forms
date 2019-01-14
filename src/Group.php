@@ -298,7 +298,7 @@
                         LEFT JOIN USER U ON [GROUP].creator = U.id
                         WHERE [GROUP].deletion_date IS NULL
                         %s
-                        ORDER BY %s %s
+                        ORDER BY %s COLLATE NOCASE %s
                         %s
                     ",
                     $whereCondition,

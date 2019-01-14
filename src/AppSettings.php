@@ -43,7 +43,7 @@
             ],
             'common' => [
                 'allowSignUp' => true, // allow user public sign-ups
-                'defaultResultsPage' => 32 // default pagination results
+                'defaultResultsPage' => 16 // default pagination results
             ]
         ],
     ];
