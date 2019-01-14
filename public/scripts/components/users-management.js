@@ -107,8 +107,7 @@ const vueFormsUsers = (function () {
                 searchByCreatorName: "",
                 searchFromCreationDate: null,
                 searchToCreationDate: null,
-                removeId: null,
-
+                removeId: null
             });
         },
         mixins: [
@@ -133,6 +132,12 @@ const vueFormsUsers = (function () {
             }
         },
         methods: {
+            showRemoveConfirmationDialog: function(id) {
+                this.removeId = id;
+            },
+            hideRemoveConfirmationDialog: function() {
+                this.removeId = null;
+            },
             isCurrentUser: function(userId) {
                 return(initialState.session.userId == userId);
             },
