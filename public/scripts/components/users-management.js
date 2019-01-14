@@ -106,8 +106,7 @@ const vueFormsUsers = (function () {
                 searchByAccountType: "",
                 searchByCreatorName: "",
                 searchFromCreationDate: null,
-                searchToCreationDate: null,
-                removeId: null
+                searchToCreationDate: null
             });
         },
         mixins: [
@@ -126,18 +125,7 @@ const vueFormsUsers = (function () {
                 return (accountType == "A" ? "Administrator" : "Normal user");
             }
         },
-        computed: {
-            removeConfirmationDialogVisible: function() {
-                return(this.removeId != null);
-            }
-        },
         methods: {
-            showRemoveConfirmationDialog: function(id) {
-                this.removeId = id;
-            },
-            hideRemoveConfirmationDialog: function() {
-                this.removeId = null;
-            },
             isCurrentUser: function(userId) {
                 return(initialState.session.userId == userId);
             },

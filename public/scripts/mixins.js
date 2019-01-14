@@ -60,11 +60,17 @@ const mixinTableControls = {
             pager: this.getPager(),
             items: [],
             sortBy: null,
-            sortOrder: "ASC"
+            sortOrder: "ASC",
+            removeId: null
         });
     },
     created: function () {
         this.search(true);
+    },
+    computed: {
+        removeConfirmationDialogVisible: function() {
+            return(this.removeId != null);
+        }
     },
     mixins: [
         mixinPagination
@@ -84,6 +90,12 @@ const mixinTableControls = {
                 }
                 this.search(false);
             }
+        },
+        showRemoveConfirmationDialog: function(id) {
+            this.removeId = id;
+        },
+        hideRemoveConfirmationDialog: function() {
+            this.removeId = null;
         }
     }
 }

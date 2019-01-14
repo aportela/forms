@@ -104,8 +104,7 @@ const vueFormsGroups = (function () {
                 searchFromCreationDate: null,
                 searchToCreationDate: null,
                 searchFromUserCount: null,
-                searchToUserCount: null,
-                removeId: null
+                searchToUserCount: null
             });
         },
         mixins: [
@@ -119,18 +118,7 @@ const vueFormsGroups = (function () {
             this.sortOrder = "ASC";
             console.log("[groups]: created");
         },
-        computed: {
-            removeConfirmationDialogVisible: function() {
-                return(this.removeId != null);
-            }
-        },
         methods: {
-            showRemoveConfirmationDialog: function(id) {
-                this.removeId = id;
-            },
-            hideRemoveConfirmationDialog: function() {
-                this.removeId = null;
-            },
             search(resetPager) {
                 let self = this;
                 if (resetPager) {
