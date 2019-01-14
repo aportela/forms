@@ -35,26 +35,7 @@ const vueFormsGroups = (function () {
                                 <f-search-date-field v-bind:disabled="loading || true" v-on:searchTriggered="searchFromCreationDate = $event.from; searchToCreationDate = $event.to; search(true);"></f-search-date-field>
                             </th>
                             <th>
-                                <div class="field is-grouped">
-                                    <p class="control is-expanded">
-                                        <button type="button" class="button is-fullwidth is-info" title="Click for add new element" v-bind:disabled="loading" v-on:click.prevent="onAdd">
-                                            <span class="icon is-small"><i class="fas fa-plus"></i></span>
-                                            <span>Add</span>
-                                        </button>
-                                    </p>
-                                    <p class="control is-expanded">
-                                        <button type="button" class="button is-fullwidth is-link" v-bind:class="{ 'is-loading': loading }" title="Click for refresh elements" v-bind:disabled="loading" v-on:click.prevent="onRefresh">
-                                            <span class="icon is-small"><i class="fas fa-sync-alt"></i></span>
-                                            <span>Refresh</span>
-                                        </button>
-                                    </p>
-                                    <p class="control is-expanded">
-                                        <button type="button" class="button is-fullwidth is-warning" title="Click for export elements" v-bind:disabled="loading" v-on:click.prevent="showExportDialog" v-on:close="hideExportDialog" v-on:cancel="hideExportDialog">
-                                            <span class="icon is-small"><i class="fas fa-file-export"></i></span>
-                                            <span>Export</span>
-                                        </button>
-                                    </p>
-                                </div>
+                                <f-table-controls v-bind:loading="loading" v-bind:configuration="{ showAddButton: true, showRefreshButton: true, showExportButton: true }" v-on:add="onAdd" v-on:refresh="onRefresh" v-on:export="showExportDialog"></f-table-controls>
                             </th>
                         </tr>
                     </thead>
@@ -87,7 +68,7 @@ const vueFormsGroups = (function () {
                     </tfoot>
                 </table>
 
-                <f-table-controls v-bind:loading="loading" v-bind:paginationData="pager" v-bind:configuration="{ showAddButton: true, showRefreshButton: true, showExportButton: true, showPaginationControls: true }" v-on:onAddButtonClicked="onAdd" v-on:onRefreshButtonClicked="onRefresh" v-on:onExportButtonClicked="onExport" v-on:onPaginationRefreshRequired="search($event)"></f-table-controls>
+                <f-pagination-controls v-bind:disabled="loading" v-bind:data="pager" v-on:refreshRequired="search($event)"></f-pagination-controls>
 
             </div>
         `;
