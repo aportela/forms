@@ -5,6 +5,7 @@ const vueFormsTableControls = (function () {
         return `
             <nav class="level">
                 <div class="level-left" v-if="configuration.showAddButton || configuration.showRefreshButton || configuration.showExportButton">
+                    <!--
                     <div class="level-item">
                         <div class="field is-grouped">
                             <p class="control is-expanded" v-if="configuration.showAddButton">
@@ -24,6 +25,7 @@ const vueFormsTableControls = (function () {
                             </p>
                         </div>
                     </div>
+                    -->
                 </div>
                 <div class="level-right" v-if="configuration.showPaginationControls">
                     <div class="level-item">
