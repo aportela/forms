@@ -5,7 +5,7 @@
     namespace Forms\Exception;
 
     /**
-     * deleted exception
+     * "unauthorized" custom exception (operation fails due not logged session)
      */
     class UnauthorizedException extends \Exception {
         public function __construct($message = "", $code = 0, Exception $previous = null) {

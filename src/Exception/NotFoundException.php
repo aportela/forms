@@ -5,7 +5,7 @@
     namespace Forms\Exception;
 
     /**
-     * not found exception
+     * "element not found" custom exception (operation fails due element is not found)
      */
     class NotFoundException extends \Exception {
         public function __construct($message = "", $code = 0, Exception $previous = null) {

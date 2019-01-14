@@ -5,7 +5,7 @@
     namespace Forms\Exception;
 
     /**
-     * deleted exception
+     * "deleted element" custom exception (operation fails due element has been deleted and can not be accessed)
      */
     class DeletedException extends \Exception {
         public function __construct($message = "", $code = 0, Exception $previous = null) {
