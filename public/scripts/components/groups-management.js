@@ -159,7 +159,7 @@ const vueFormsGroups = (function () {
             onExport: function (format, filename) {
                 console.log(format);
                 this.hideExportDialog();
-                this.export(filename, this.items, { format: format, fields: [['id', 'name', 'description', 'created']] });
+                this.export(filename, this.items, { format: format, fields: ['id', 'name', 'description', 'created'] });
             },
             remove: function ()  {
                 let self = this;
