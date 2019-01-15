@@ -336,12 +336,12 @@
                 $route = $request->getAttribute('route');
                 $groupUsers = array();
                 foreach($request->getParam("users", array()) as $user) {
-                    $users[] = new \Forms\User($user["id"]);
+                    $groupUsers[] = new \Forms\User($user["id"]);
                 }
                 $group = new \Forms\Group(
                     $route->getArgument("id"),
-                    $route->getParam("name", ""),
-                    $route->getParam("description", ""),
+                    $request->getParam("name", ""),
+                    $request->getParam("description", ""),
                     $groupUsers
                 );
                 $dbh = new \Forms\Database\DB($this);
