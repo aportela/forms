@@ -6,32 +6,43 @@ const vueFormsGroupCard = (function () {
             <div>
                 <form v-on:submit.prevent="save()">
                     <div class="box">
-                        <label class="label">Name</label>
-                        <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('name') }">
-                            <input class="input" type="text" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('name') }" v-bind:disabled="loading ? true: false" v-model="group.name">
-                            <span class="icon is-small is-left"><i class="fa fa-users"></i></span>
-                            <span class="icon is-small is-right" v-show="validator.hasInvalidField('name')"><i class="fa fa-warning"></i></span>
-                            <p class="help is-danger" v-show="validator.hasInvalidField('name')">{{ validator.getInvalidFieldMessage('name') }}</p>
-                        </p>
-                        <label class="label">Description</label>
-                        <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('description') }">
-                            <input class="input" type="text" maxlength="255" v-bind:class="{ 'is-danger': validator.hasInvalidField('description') }" v-bind:disabled="loading ? true: false" v-model="group.description">
-                            <span class="icon is-small is-left"><i class="fa fa-info"></i></span>
-                            <span class="icon is-small is-right" v-show="validator.hasInvalidField('description')"><i class="fa fa-warning"></i></span>
-                            <p class="help is-danger" v-show="validator.hasInvalidField('description')">{{ validator.getInvalidFieldMessage('description') }}</p>
-                        </p>
+                        <div class="field">
+                            <label class="label">Name</label>
+                            <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('name') }">
+                                <input class="input" type="text" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('name') }" v-bind:disabled="loading ? true: false" v-model="group.name">
+                                <span class="icon is-small is-left"><i class="fa fa-users"></i></span>
+                                <span class="icon is-small is-right" v-show="validator.hasInvalidField('name')"><i class="fa fa-warning"></i></span>
+                                <p class="help is-danger" v-show="validator.hasInvalidField('name')">{{ validator.getInvalidFieldMessage('name') }}</p>
+                            </p>
+                        </div>
+                        <div class="field">
+                            <label class="label">Description</label>
+                            <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('description') }">
+                                <input class="input" type="text" maxlength="255" v-bind:class="{ 'is-danger': validator.hasInvalidField('description') }" v-bind:disabled="loading ? true: false" v-model="group.description">
+                                <span class="icon is-small is-left"><i class="fa fa-info"></i></span>
+                                <span class="icon is-small is-right" v-show="validator.hasInvalidField('description')"><i class="fa fa-warning"></i></span>
+                                <p class="help is-danger" v-show="validator.hasInvalidField('description')">{{ validator.getInvalidFieldMessage('description') }}</p>
+                            </p>
+                        </div>
+                        <div class="field">
+                            <label class="label">User list</label>
+                            <f-search-user-field v-bind:disabled="loading" v-bind:placeholder="'search user name'" v-bind:denyUsers="group.users" v-on:userSelected="addUser($event)"></f-search-user-field>
+                            <p v-show="userAlreadyExists" class="help is-danger">User already on group</p>
+                        </div>
                         <table class="table is-striped is-narrow is-fullwidth is-unselectable">
                             <thead>
                                 <tr>
-                                    <th>Email</th>
                                     <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Account type</th>
                                     <th class="has-text-centered">Operations</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="user in group.users" v-bind:key="user.id">
-                                    <td>{{ user.email }}</td>
                                     <td>{{ user.name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.accountType | getAccountTypeName }}</td>
                                     <td>
                                         <p class="control has-text-centered">
                                             <button type="button" class="button is-small is-danger" v-bind:disabled="loading" v-on:click.prevent="removeUser(user.id)">
@@ -67,8 +78,9 @@ const vueFormsGroupCard = (function () {
                     id: null,
                     name: null,
                     description: null,
-                    users: [ ]
-                }
+                    users: []
+                },
+                userAlreadyExists: false
             });
         },
         props: [
@@ -77,15 +89,29 @@ const vueFormsGroupCard = (function () {
         mixins: [
             mixinRoutes,
             mixinSession,
+            mixinPagination,
             mixinUtils
         ],
+        filters: {
+            getAccountTypeName: function (accountType) {
+                return (accountType == "A" ? "Administrator" : "Normal user");
+            }
+        },
         created: function () {
             if (this.$route.params.id) {
                 this.load(this.$route.params.id);
             }
         },
         methods: {
-            removeUser: function(userId) {
+            addUser: function(user) {
+                if (this.group.users.find(u => u.id == user.id)) {
+                    this.userAlreadyExists = true;
+                } else {
+                    this.userAlreadyExists = false;
+                    this.group.users.push(user);
+                }
+            },
+            removeUser: function (userId) {
                 this.group.users = this.group.users.filter(user => user.id !== userId);
             },
             load: function (id) {
