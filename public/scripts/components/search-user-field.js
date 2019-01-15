@@ -21,7 +21,8 @@ const vueFormsSearchUserField = (function () {
                     <div class="dropdown-menu">
                         <div class="dropdown-content is-unselectable">
                             <a href="#" v-show="hasResults" class="dropdown-item" v-for="user in users" v-on:click.prevent="onUserSelected(user)">
-                                <span><i class="fas fa-user" aria-hidden="true"></i></span>
+                                <span v-if="! isUserSelectionDenied(user)"><i class="fas fa-user" aria-hidden="true"></i></span>
+                                <span v-else><i class="fas fa-ban" aria-hidden="true"></i></span>
                                 <span>{{ user.name }}</span>
                             </a>
                             <p class="dropdown-item" v-show="! hasResults">
@@ -52,7 +53,8 @@ const vueFormsSearchUserField = (function () {
         },
         props: [
             'disabled',
-            'placeholder'
+            'placeholder',
+            'denyUsers'
         ],
         computed: {
             isDisabled: function() {
@@ -77,10 +79,20 @@ const vueFormsSearchUserField = (function () {
                     }
                 });
             },
+            isUserSelectionDenied: function(user) {
+                if (this.denyUsers && this.denyUsers.length > 0) {
+                    return(this.denyUsers.find(userDenied => userDenied.id == user.id));
+                } else {
+                    return(false);
+                }
+
+            },
             onUserSelected: function(user) {
-                this.users = [];
-                this.showResults = false;
-                this.$emit("userSelected", user);
+                if (! this.isUserSelectionDenied(user)) {
+                    this.users = [];
+                    this.showResults = false;
+                    this.$emit("userSelected", user);
+                }
             }
         }
     });
