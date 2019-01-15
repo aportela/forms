@@ -287,6 +287,10 @@
                     $conditions[] = " U.name LIKE :creator_name ";
                     $params[] = (new \Forms\Database\DBParam())->str(":creator_name", "%" . $filter["creatorName"] . "%");
                 }
+                if (isset($filter["groupId"]) && ! empty($filter["groupId"])) {
+                    $conditions[] = " EXISTS (SELECT USER_GROUP.group_id FROM USER_GROUP WHERE USER_GROUP.group_id = :group_id AND USER_GROUP.user_id = USER.id) ";
+                    $params[] = (new \Forms\Database\DBParam())->str(":group_id", $filter["groupId"]);
+                }
                 $whereCondition = count($conditions) > 0 ? " AND " .  implode(" AND ", $conditions) : "";
             }
 
