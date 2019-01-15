@@ -202,7 +202,6 @@
             return($results[0]->total == 1);
         }
 
-
         /**
          * search users
          *
