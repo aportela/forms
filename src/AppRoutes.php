@@ -334,11 +334,15 @@
 
             $this->post('/{id}', function (Request $request, Response $response, array $args) {
                 $route = $request->getAttribute('route');
+                $groupUsers = array();
+                foreach($request->getParam("users", array()) as $user) {
+                    $users[] = new \Forms\User($user["id"]);
+                }
                 $group = new \Forms\Group(
                     $route->getArgument("id"),
-                    $request->getParam("name", ""),
-                    $request->getParam("description", ""),
-                    array()
+                    $route->getParam("name", ""),
+                    $route->getParam("description", ""),
+                    $groupUsers
                 );
                 $dbh = new \Forms\Database\DB($this);
                 if (\Forms\Group::existsName($dbh, $group->name)) {
@@ -356,11 +360,15 @@
 
             $this->put('/{id}', function (Request $request, Response $response, array $args) {
                 $route = $request->getAttribute('route');
+                $groupUsers = array();
+                foreach($request->getParam("users", array()) as $user) {
+                    $groupUsers[] = new \Forms\User($user["id"]);
+                }
                 $group = new \Forms\Group(
                     $route->getArgument("id"),
                     $request->getParam("name", ""),
                     $request->getParam("description", ""),
-                    array()
+                    $groupUsers
                 );
                 $dbh = new \Forms\Database\DB($this);
                 if (\Forms\Group::existsName($dbh, $group->name, $group->id)) {
