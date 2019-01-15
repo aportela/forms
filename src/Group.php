@@ -163,31 +163,13 @@
                     if (! empty($results[0]->deletionDate)) {
                         throw new \Forms\Exception\DeletedException("");
                     } else {
-                        $this->getUsers($dbh);
+                        $this->users = (\Forms\User::search($dbh, array("groupId" => $this->id), 1, 0, "name", "ASC"))->results;
                     }
                 } else {
                     throw new \Forms\Exception\NotFoundException("");
                 }
             } else {
                 throw new \Forms\Exception\InvalidParamsException("id");
-            }
-        }
-
-        /**
-         * get group users
-         *
-         * @param \Forms\Database\DB $dbh database handler
-         */
-        private function getUsers(\Forms\Database\DB $dbh) {
-            $results = $dbh->query(" SELECT USER.id, USER.email, USER.name FROM USER_GROUP LEFT JOIN USER ON USER.id = USER_GROUP.user_id WHERE USER_GROUP.group_id = :id AND USER.deletion_date IS NULL ", array(
-                (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id))
-            ));
-            if (count($results) > 0) {
-                foreach($results as $user) {
-                    $this->users[] = new \Forms\User($user->id, $user->name);
-                }
-            } else {
-                $this->users = array();
             }
         }
 
