@@ -113,7 +113,7 @@ const formsAPI = {
                 }
             );
         },
-        search: function (searchByEmail, searchByName, searchByAccountType, searchByCreatorName, searchFromCreationDate, searchToCreationDate, currentPage, resultsPage, sortBy, sortOrder, callback) {
+        search: function (searchByEmail, searchByName, searchByEnabled, searchByAccountType, searchByCreatorName, searchFromCreationDate, searchToCreationDate, currentPage, resultsPage, sortBy, sortOrder, callback) {
             let params = {
                 filter: {},
                 currentPage: currentPage,
@@ -126,6 +126,9 @@ const formsAPI = {
             }
             if (searchByName) {
                 params.filter.name = searchByName;
+            }
+            if (searchByEnabled) {
+                params.filter.enabled = searchByEnabled;
             }
             if (searchByAccountType) {
                 params.filter.accountType = searchByAccountType;
