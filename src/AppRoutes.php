@@ -56,7 +56,7 @@
         });
 
         $this->post('/signin', function (Request $request, Response $response, array $args) {
-            $user = new \Forms\User("", $request->getParam("email", ""), "", $request->getParam("password", \Forms\User::ACCOUNT_TYPE_USER));
+            $user = new \Forms\User("", $request->getParam("email", ""), "", $request->getParam("password", \Forms\User::ACCOUNT_TYPE_USER, "Y"));
             if ($user->login(new \Forms\Database\DB($this))) {
                 return $response->withJson(
                     [
@@ -132,7 +132,7 @@
                 if (isset($requestFilter["creatorName"]) && ! empty($requestFilter["creatorName"])) {
                     $filter["creatorName"] = $requestFilter["creatorName"];
                 }
-                if (isset($requestFilter["enabled"]) && ! empty($requestFilter["enabled"])) {
+                if (isset($requestFilter["enabled"])) {
                     $filter["enabled"] = $requestFilter["enabled"];
                 }
                 if (isset($requestFilter["accountType"]) && ! empty($requestFilter["accountType"])) {
@@ -194,7 +194,8 @@
                     $request->getParam("email", ""),
                     $request->getParam("name", ""),
                     $request->getParam("password", ""),
-                    $request->getParam("accountType", "")
+                    $request->getParam("accountType", ""),
+                    $request->getParam("enabled", true)
                 );
                 $dbh = new \Forms\Database\DB($this);
                 if (\Forms\User::existsEmail($dbh, $user->email)) {
@@ -226,7 +227,7 @@
                     $request->getParam("name", ""),
                     $request->getParam("password", ""),
                     $request->getParam("accountType", ""),
-                    $request->getParam("enabled", "")
+                    $request->getParam("enabled", true)
                 );
                 $dbh = new \Forms\Database\DB($this);
                 if (\Forms\UserSession::isAdministrator() || $user->id == \Forms\UserSession::getUserId()) {

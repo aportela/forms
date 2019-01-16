@@ -162,7 +162,7 @@
                 $results = $dbh->query(
                     "
                         SELECT
-                            USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
+                            USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName, USER.enabled AS enabled
                         FROM USER
                         LEFT JOIN USER U ON USER.creator = U.id
                         WHERE USER.id = :id
@@ -296,9 +296,9 @@
                     $conditions[] = " U.name LIKE :creator_name ";
                     $params[] = (new \Forms\Database\DBParam())->str(":creator_name", "%" . $filter["creatorName"] . "%");
                 }
-                if (isset($filter["enabled"]) && ! empty($filter["enabled"])) {
+                if (isset($filter["enabled"])) {
                     $conditions[] = " USER.enabled = :enabled ";
-                    $params[] = (new \Forms\Database\DBParam())->str(":enabled", $filter["enabled"]);
+                    $params[] = (new \Forms\Database\DBParam())->str(":enabled", $filter["enabled"] ? "Y": "N");
                 }
                 if (isset($filter["groupId"]) && ! empty($filter["groupId"])) {
                     $conditions[] = " EXISTS (SELECT USER_GROUP.group_id FROM USER_GROUP WHERE USER_GROUP.group_id = :group_id AND USER_GROUP.user_id = USER.id) ";
