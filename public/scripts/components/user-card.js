@@ -33,15 +33,21 @@ const vueFormsUserCard = (function () {
                                 <p class="help is-danger" v-show="validator.hasInvalidField('password')">{{ validator.getInvalidFieldMessage('password') }}</p>
                             </p>
                         </div>
-                        <div class="field">
-                            <div v-if="showAccountTypeField">
-                                <label class="label">Account type</label>
-                                <div class="select">
-                                    <select required v-bind:disabled="disabled" v-model="user.accountType">
-                                        <option value="A">Administrator</option>
-                                        <option value="U">Normal user</option>
-                                    </select>
-                                </div>
+                        <div class="field" v-if="showAccountTypeField">
+                            <label class="label">Account type</label>
+                            <div class="select">
+                                <select required v-bind:disabled="disabled" v-model="user.accountType">
+                                    <option value="A">Administrator</option>
+                                    <option value="U">Normal user</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="field" v-if="showAccountEnabledField">
+                            <label class="label">Account enabled/disabled</label>
+                            <div class="select">
+                                <select required v-bind:disabled="disabled" v-model="user.enabled">
+                                    <option v-for="item in [{ name: 'Enabled', value: true }, { name: 'Disabled', value: false }]" v-bind:value="item.value">{{ item.name }}</option>
+                                </select>
                             </div>
                         </div>
                         <hr>
@@ -69,7 +75,8 @@ const vueFormsUserCard = (function () {
                     email: null,
                     name: null,
                     password: null,
-                    accountType: "U"
+                    accountType: "U",
+                    enabled: true
                 }
             });
         },
@@ -93,11 +100,10 @@ const vueFormsUserCard = (function () {
         },
         computed: {
             showAccountTypeField: function () {
-                if (this.isAdministrator) {
-                    return (this.user.id != initialState.session.userId);
-                } else {
-                    return (false);
-                }
+                return (this.isAdministrator ? this.user.id != initialState.session.userId: false);
+            },
+            showAccountEnabledField: function() {
+                return (this.isAdministrator ? this.user.id != initialState.session.userId: false);
             }
         },
         methods: {
