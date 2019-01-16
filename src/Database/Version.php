@@ -104,6 +104,37 @@
                             [deletion_date] INTEGER
                         );
                     '
+                    ),
+                "1.08" => array(
+                    '
+                        DROP TABLE [USER]
+                    ',
+                    '
+                        CREATE TABLE [USER] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [email] VARCHAR(255) NOT NULL,
+                            [name] VARCHAR(255) NOT NULL,
+                            [password_hash] VARCHAR(60) NOT NULL,
+                            [account_type] VARCHAR(1) NOT NULL DEFAULT "U",
+                            [creation_date] INTEGER NOT NULL,
+                            [creator] VARCHAR(36) NOT NULL,
+                            [deletion_date] INTEGER,
+                            [enabled] VARCHAR(1) NOT NULL DEFAULT "Y"
+                        );
+                    ',
+                    '
+                        DROP TABLE [GROUP]
+                    ',
+                    '
+                        CREATE TABLE [GROUP] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [name] VARCHAR(64) NOT NULL,
+                            [description] VARCHAR(255),
+                            [creation_date] INTEGER NOT NULL,
+                            [creator] VARCHAR(36) NOT NULL,
+                            [deletion_date] INTEGER
+                        );
+                    '
                 )
             ),
         );
