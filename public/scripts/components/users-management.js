@@ -14,6 +14,7 @@ const vueFormsUsers = (function () {
                             <f-table-header-field v-bind:name="'Email'" v-bind:isSorted="sortBy == 'email'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('email');"></f-table-header-field>
                             <f-table-header-field v-bind:name="'Name'" v-bind:isSorted="sortBy == 'name'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('name');"></f-table-header-field>
                             <f-table-header-field v-bind:name="'Account type'" v-bind:isSorted="sortBy == 'accountType'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('accountType');"></f-table-header-field>
+                            <f-table-header-field v-bind:name="'Enabled'" v-bind:isSorted="sortBy == 'enabled'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('enabled');"></f-table-header-field>
                             <f-table-header-field v-bind:name="'Creator'" v-bind:isSorted="sortBy == 'creator'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('creator');"></f-table-header-field>
                             <f-table-header-field v-bind:name="'Created'" v-bind:isSorted="sortBy == 'creationDate'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('creationDate');"></f-table-header-field>
                             <th class="has-text-centered">Operations</th>
@@ -27,6 +28,9 @@ const vueFormsUsers = (function () {
                             </th>
                             <th>
                                 <f-search-user-account-type-field v-bind:disabled="loading" v-on:searchTriggered="searchByAccountType = $event; search(true);"></f-search-user-account-type-field>
+                            </th>
+                            <th>
+                                <f-search-select-field v-bind:disabled="loading" v-bind:items="enabledItems" v-on:searchTriggered="searchByEnabled = $event; search(true);"></f-search-select-field>
                             </th>
                             <th>
                                 <f-search-text-field v-bind:disabled="loading" v-bind:placeholder="'search by creator name'" v-on:searchTriggered="searchByCreatorName = $event; search(true);"></f-search-text-field>
@@ -44,6 +48,10 @@ const vueFormsUsers = (function () {
                             <td><a v-bind:href="'mailto:' + user.email">{{ user.email }}</a></td>
                             <td>{{ user.name }}</td>
                             <td>{{ user.accountType | getAccountTypeName }}</td>
+                            <td>
+                                <i title="Account is enabled" v-if="user.enabled" class="fas fa-check f-cursor-help"></i>
+                                <i title="Account is disabled"v-else class="fas fa-exclamation-circle f-cursor-help"></i>
+                            </td>
                             <td>{{ user.creatorName }}</td>
                             <td>{{ user.creationDate }}</td>
                             <td>
@@ -81,10 +89,25 @@ const vueFormsUsers = (function () {
                 loading: false,
                 searchByEmail: null,
                 searchByName: null,
+                searchByEnabled: "",
                 searchByAccountType: "",
                 searchByCreatorName: "",
                 searchFromCreationDate: null,
-                searchToCreationDate: null
+                searchToCreationDate: null,
+                enabledItems: [
+                    {
+                        id: "",
+                        name: "Any value"
+                    },
+                    {
+                        id: "Y",
+                        name: "Enabled accounts"
+                    },
+                    {
+                        id: "N",
+                        name: "Disabled accounts"
+                    }
+                ]
             });
         },
         mixins: [
@@ -113,7 +136,7 @@ const vueFormsUsers = (function () {
                     self.pager.currentPage = 1;
                 }
                 self.loading = true;
-                formsAPI.user.search(self.searchByEmail, self.searchByName, self.searchByAccountType, self.searchByCreatorName, self.searchFromCreationDate, self.searchToCreationDate, self.pager.currentPage, self.pager.resultsPage, self.sortBy, self.sortOrder, function (response) {
+                formsAPI.user.search(self.searchByEmail, self.searchByName, self.searchByEnabled, self.searchByAccountType, self.searchByCreatorName, self.searchFromCreationDate, self.searchToCreationDate, self.pager.currentPage, self.pager.resultsPage, self.sortBy, self.sortOrder, function (response) {
                     self.loading = false;
                     if (response.ok && response.body.success) {
                         self.pager.currentPage = response.body.pagination.currentPage;
