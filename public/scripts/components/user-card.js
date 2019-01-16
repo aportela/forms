@@ -81,12 +81,15 @@ const vueFormsUserCard = (function () {
             mixinSession,
             mixinUtils
         ],
-        created: function () {
-            if (this.$route.params.id) {
-                this.load(this.$route.params.id);
-            } else if (this.isRouteActive('profile')) {
-                this.load(initialState.session.userId);
+        watch: {
+            '$route'(to, from) {
+                if (to.name != from.name) {
+                    this.loadData();
+                }
             }
+        },
+        created: function () {
+            this.loadData();
         },
         computed: {
             showAccountTypeField: function () {
@@ -98,6 +101,13 @@ const vueFormsUserCard = (function () {
             }
         },
         methods: {
+            loadData() {
+                if (this.$route.params.id) {
+                    this.load(this.$route.params.id);
+                } else if (this.isRouteActive('profile')) {
+                    this.load(initialState.session.userId);
+                }
+            },
             load: function (id) {
                 let self = this;
                 self.loading = true;
