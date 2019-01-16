@@ -195,6 +195,7 @@
                             COUNT(id) AS total
                         FROM [GROUP]
                         WHERE name = :name
+                        AND deletion_date IS NULL
                         %s
                     ", $whereCondition
                 ), $params
