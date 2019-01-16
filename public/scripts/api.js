@@ -127,8 +127,11 @@ const formsAPI = {
             if (searchByName) {
                 params.filter.name = searchByName;
             }
-            if (searchByEnabled) {
-                params.filter.enabled = searchByEnabled;
+            if (searchByEnabled == "Y") {
+                params.filter.enabled = true;
+            }
+            else if (searchByEnabled == "N") {
+                params.filter.enabled = false;
             }
             if (searchByAccountType) {
                 params.filter.accountType = searchByAccountType;
