@@ -167,9 +167,10 @@
                 $user = new \Forms\User(
                     $route->getArgument("id"),
                     "",
-                    "" ,
                     "",
-                    ""
+                    "",
+                    "",
+                    true
                 );
                 $dbh = new \Forms\Database\DB($this);
                 $user->get($dbh);
@@ -181,7 +182,8 @@
                             "email" => $user->email,
                             "name" => $user->name,
                             "accountType" => $user->accountType,
-                            "creationDate" => $user->creationDate
+                            "creationDate" => $user->creationDate,
+                            "enabled" => $user->enabled
                         )
                     ], 200
                 );
