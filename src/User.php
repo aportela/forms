@@ -20,13 +20,15 @@
         public $accountType;
         public $creationDate;
         public $deletionDate;
+        public $enabled;
 
-        public function __construct (string $id = "", string $email = "", string $name = "", string $password = "", string $accountType = "") {
+        public function __construct (string $id = "", string $email = "", string $name = "", string $password = "", string $accountType = "", bool $enabled = true) {
             $this->id = $id;
             $this->email = $email;
             $this->name = $name;
             $this->password = $password;
             $this->accountType = $accountType;
+            $this->enabled = $enabled;
         }
 
         public function __destruct() {
@@ -60,9 +62,10 @@
                                     (new \Forms\Database\DBParam())->str(":name", $this->name),
                                     (new \Forms\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password)),
                                     (new \Forms\Database\DBParam())->str(":account_type", $this->accountType),
-                                    (new \Forms\Database\DBParam())->str(":creator", \Forms\UserSession::isLogged() ? \Forms\UserSession::getUserId() : $this->id)
+                                    (new \Forms\Database\DBParam())->str(":creator", \Forms\UserSession::isLogged() ? \Forms\UserSession::getUserId() : $this->id),
+                                    (new \Forms\Database\DBParam())->str(":enabled", $this->enabled ? "Y": "N")
                                 );
-                                return($dbh->execute(" INSERT INTO USER (id, email, name, password_hash, creation_date, creator, account_type) VALUES(:id, :email, :name, :password_hash, CURRENT_TIMESTAMP, :creator, :account_type) ", $params));
+                                return($dbh->execute(" INSERT INTO USER (id, email, name, password_hash, creation_date, creator, account_type, enabled) VALUES(:id, :email, :name, :password_hash, CURRENT_TIMESTAMP, :creator, :account_type, :enabled) ", $params));
                             } else {
                                 throw new \Forms\Exception\InvalidParamsException("accountType");
                             }
@@ -111,7 +114,10 @@
                         if (! empty($password)) {
                             $fields[] = "password_hash = :password_hash";
                             $params[] = (new \Forms\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password));
-
+                        }
+                        if (mb_strtolower($this->id) == \Forms\UserSession::getUserId() || \Forms\UserSession::isAdministrator()) {
+                            $fields[] = "enabled = :enabled";
+                            $params[] = (new \Forms\Database\DBParam())->str(":enabled", $this->enabled ? "Y": "N");
                         }
                         if (mb_strtolower($this->id) == \Forms\UserSession::getUserId() || \Forms\UserSession::isAdministrator()) {
                             return($dbh->execute(sprintf(" UPDATE USER SET %s WHERE id = :id ", implode(", ", $fields)), $params));
@@ -168,7 +174,7 @@
                 $results = $dbh->query(
                     "
                         SELECT
-                            USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
+                            USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName, USER.enabled AS enabled
                         FROM USER
                         LEFT JOIN USER U ON USER.creator = U.id
                         WHERE USER.email = :email
@@ -193,6 +199,7 @@
                 $this->creator->email = $results[0]->creatorEmail;
                 $this->creator->name = $results[0]->creatorName;
                 $this->accountType = $results[0]->accountType;
+                $this->enabled = $results[0]->enabled == "Y";
             } else {
                 throw new \Forms\Exception\NotFoundException("");
             }
@@ -220,6 +227,7 @@
                             COUNT(id) AS total
                         FROM USER
                         WHERE email = :email
+                        AND deletion_date IS NULL
                         %s
                     ", $whereCondition
                 ), $params
@@ -249,6 +257,7 @@
                             COUNT(id) AS total
                         FROM USER
                         WHERE name = :name
+                        AND deletion_date IS NULL
                         %s
                     ", $whereCondition
                 ), $params
@@ -287,6 +296,10 @@
                     $conditions[] = " U.name LIKE :creator_name ";
                     $params[] = (new \Forms\Database\DBParam())->str(":creator_name", "%" . $filter["creatorName"] . "%");
                 }
+                if (isset($filter["enabled"]) && ! empty($filter["enabled"])) {
+                    $conditions[] = " USER.enabled = :enabled ";
+                    $params[] = (new \Forms\Database\DBParam())->str(":enabled", $filter["enabled"]);
+                }
                 if (isset($filter["groupId"]) && ! empty($filter["groupId"])) {
                     $conditions[] = " EXISTS (SELECT USER_GROUP.group_id FROM USER_GROUP WHERE USER_GROUP.group_id = :group_id AND USER_GROUP.user_id = USER.id) ";
                     $params[] = (new \Forms\Database\DBParam())->str(":group_id", $filter["groupId"]);
@@ -320,6 +333,9 @@
                 case "accountType":
                     $sqlSortBy = "USER.account_type";
                 break;
+                case "enabled":
+                    $sqlSortBy = "USER.enabled";
+                break;
                 case "email":
                 default:
                     $sqlSortBy = "USER.email";
@@ -329,7 +345,7 @@
                 sprintf(
                     "
                         SELECT
-                            USER.id, USER.email, USER.name, USER.creation_date AS creationDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
+                            USER.id, USER.email, USER.name, USER.creation_date AS creationDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName, USER.enabled AS enabled
                         FROM USER
                         LEFT JOIN USER U ON USER.creator = U.id
                         WHERE USER.deletion_date IS NULL
@@ -351,6 +367,7 @@
                 $user->creator->id = $creatorId;
                 $user->creator->email = $creatorEmail;
                 $user->creator->name = $creatorName;
+                $user->enabled = $user->enabled == "Y";
             }
             return($data);
         }
@@ -366,11 +383,15 @@
         public function login(\Forms\Database\DB $dbh): bool {
             if (! empty($this->password)) {
                 $this->get($dbh);
-                if (password_verify($this->password, $this->passwordHash)) {
-                    \Forms\UserSession::set($this->id, $this->email, $this->name, $this->accountType);
-                    return(true);
+                if ($this->enabled) {
+                    if (password_verify($this->password, $this->passwordHash)) {
+                        \Forms\UserSession::set($this->id, $this->email, $this->name, $this->accountType);
+                        return(true);
+                    } else {
+                        return(false);
+                    }
                 } else {
-                    return(false);
+                    throw new \Forms\Exception\AccessDeniedException();
                 }
             } else {
                 throw new \Forms\Exception\InvalidParamsException("password");

@@ -85,7 +85,8 @@
                     $request->getParam("email", ""),
                     $request->getParam("name", ""),
                     $request->getParam("password", ""),
-                    \Forms\User::ACCOUNT_TYPE_USER
+                    \Forms\User::ACCOUNT_TYPE_USER,
+                    true
                 );
                 if (\Forms\User::existsEmail($dbh, $user->email)) {
                     throw new \Forms\Exception\AlreadyExistsException("email");
@@ -130,6 +131,9 @@
                 }
                 if (isset($requestFilter["creatorName"]) && ! empty($requestFilter["creatorName"])) {
                     $filter["creatorName"] = $requestFilter["creatorName"];
+                }
+                if (isset($requestFilter["enabled"]) && ! empty($requestFilter["enabled"])) {
+                    $filter["enabled"] = $requestFilter["enabled"];
                 }
                 if (isset($requestFilter["accountType"]) && ! empty($requestFilter["accountType"])) {
                     $filter["accountType"] = $requestFilter["accountType"];
@@ -221,7 +225,8 @@
                     $request->getParam("email", ""),
                     $request->getParam("name", ""),
                     $request->getParam("password", ""),
-                    $request->getParam("accountType", "")
+                    $request->getParam("accountType", ""),
+                    $request->getParam("enabled", "")
                 );
                 $dbh = new \Forms\Database\DB($this);
                 if (\Forms\UserSession::isAdministrator() || $user->id == \Forms\UserSession::getUserId()) {
