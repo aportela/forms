@@ -69,7 +69,7 @@ const vueFormsSearchUserField = (function () {
                 let self = this;
                 self.showResults = false;
                 self.loading = true;
-                formsAPI.user.search("", self.userNameCondition, "", "", "", "", 1, 8, "name", "ASC", function (response) {
+                formsAPI.user.search("", self.userNameCondition, "", "", "", "", "", 1, 8, "name", "ASC", function (response) {
                     if (response.ok && response.body.success) {
                         self.users = response.body.users;
                         self.loading = false;
