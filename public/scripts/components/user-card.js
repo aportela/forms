@@ -50,6 +50,16 @@ const vueFormsUserCard = (function () {
                                 </select>
                             </div>
                         </div>
+                        <!--
+                        <div class="field">
+                            <label class="label">Avatar (click to change)</label>
+                            <figure class="image is-96x96 avatar" v-if="user.avatar" v-on:click.prevent="selectLocalAvatarFile">
+                                <img class="f-cursor-pointer" v-bind:src="user.avatar">
+                            </figure>
+                            <i v-else class="f-cursor-pointer fas fa-user-circle fa-5x" v-on:click.prevent="selectLocalAvatarFile"></i>
+                            <input type="file" accept="image/*" id="avatarFileInput" class="is-invisible" v-on:change="onAvatarChange">
+                        </div>
+                        -->
                         <hr>
                         <p class="control">
                             <button type="submit" class="button is-primary" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading ? true: false">
@@ -76,7 +86,8 @@ const vueFormsUserCard = (function () {
                     name: null,
                     password: null,
                     accountType: "U",
-                    enabled: true
+                    enabled: true,
+                    avatar: null
                 }
             });
         },
@@ -100,10 +111,10 @@ const vueFormsUserCard = (function () {
         },
         computed: {
             showAccountTypeField: function () {
-                return (this.isAdministrator ? this.user.id != initialState.session.userId: false);
+                return (this.isAdministrator ? this.user.id != initialState.session.userId : false);
             },
-            showAccountEnabledField: function() {
-                return (this.isAdministrator ? this.user.id != initialState.session.userId: false);
+            showAccountEnabledField: function () {
+                return (this.isAdministrator ? this.user.id != initialState.session.userId : false);
             }
         },
         methods: {
@@ -207,6 +218,60 @@ const vueFormsUserCard = (function () {
                         self.loading = false;
                     }
                 });
+            },
+            selectLocalAvatarFile: function () {
+                document.getElementById('avatarFileInput').click();
+            },
+            onAvatarChange: function () {
+                let self = this;
+
+                // https://jsfiddle.net/mani04/5zyozvx8/
+
+                // Reference to the DOM input element
+                let input = event.target;
+                // Ensure that you have a file before attempting to read it
+                if (input.files && input.files[0]) {
+                    // create a new FileReader to read this image and convert to base64 format
+                    var reader = new FileReader();
+                    // Define a callback function to run, when FileReader finishes its job
+                    var filename = input.files[0].name;
+                    var filesize = input.files[0].size;
+                    reader.onload = (e) => {
+                        // Note: arrow function used here, so that "this.imageData" refers to the imageData of Vue component
+                        // Read image as base64 and set to imageData
+                        /*
+                        self.user.avatar = {
+                            filename: filename,
+                            //size: mKanban.utils.formatBytes(filesize),
+                            previewThumbnail: e.target.result
+                        };
+                        */
+                        self.resize(e.target.result);
+                    }
+                    // Start the reader job - read file as a data url (base64 format)
+                    reader.readAsDataURL(input.files[0]);
+                }
+            },
+            resize: function (src) {
+                let self = this;
+                // simple image crop to resize avatar, kudos to https://davidwalsh.name/resize-image-canvas
+                let image = new Image();
+                image.onload = function () {
+                    const MAX_HEIGHT = 128;
+                    if (image.height > MAX_HEIGHT) {
+                        image.width *= MAX_HEIGHT / image.height;
+                        image.height = MAX_HEIGHT;
+                    }
+                    var canvas = document.createElement('canvas');
+                    var ctx = canvas.getContext("2d");
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    canvas.width = image.width;
+                    canvas.height = image.height;
+                    ctx.drawImage(image, 0, 0, image.width, image.height);
+                    self.user.avatar = canvas.toDataURL("image/png");
+                    self.$forceUpdate();
+                };
+                image.src = src;
             }
         }
     });
