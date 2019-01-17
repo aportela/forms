@@ -1,3 +1,4 @@
+import { default as vueFormsDialogExport } from './f-dialog-export.js';
 import { default as vueFormsTableHeaderField } from './f-table-header-field.js';
 import { default as vueFormsTableControls } from './f-table-controls.js';
 import { default as vueFormsPaginationControl } from './f-pagination-control.js';
@@ -97,6 +98,7 @@ export default {
         mixinExport
     ],
     components: {
+        'f-dialog-export': vueFormsDialogExport,
         'f-table-header-field': vueFormsTableHeaderField,
         'f-table-controls': vueFormsTableControls,
         'f-pagination-control': vueFormsPaginationControl
