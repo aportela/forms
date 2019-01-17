@@ -1,4 +1,5 @@
 import { default as vueFormsTableHeaderField } from './f-table-header-field.js';
+import { default as vueFormsTableControls } from './f-table-controls.js';
 
 const template = function () {
     return `
@@ -95,7 +96,8 @@ export default {
         mixinExport
     ],
     components: {
-        'f-table-header-field': vueFormsTableHeaderField
+        'f-table-header-field': vueFormsTableHeaderField,
+        'f-table-controls': vueFormsTableControls
     },
     created: function () {
         this.sortBy = "name";
@@ -133,7 +135,7 @@ export default {
             this.hideExportDialog();
             this.export(filename, this.items, { format: format, fields: ['id', 'name', 'description', 'created'] });
         },
-        remove: function ()  {
+        remove: function () {
             let self = this;
             self.loading = true;
             formsAPI.group.remove(this.removeId, function (response) {

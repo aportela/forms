@@ -1,4 +1,5 @@
 import { default as vueFormsTableHeaderField } from './f-table-header-field.js';
+import { default as vueFormsTableControls } from './f-table-controls.js';
 
 const template = function () {
     return `
@@ -117,7 +118,8 @@ export default {
         mixinExport
     ],
     components: {
-        'f-table-header-field': vueFormsTableHeaderField
+        'f-table-header-field': vueFormsTableHeaderField,
+        'f-table-controls': vueFormsTableControls
     },
     created: function () {
         this.sortBy = "email";
