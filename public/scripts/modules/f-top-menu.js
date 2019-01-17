@@ -1,4 +1,4 @@
-import { bus } from './modules/bus.js';
+import { bus } from './bus.js';
 
 const template = function () {
     return `
@@ -97,7 +97,7 @@ const template = function () {
 };
 
 export default {
-    name: 'topmenu',
+    name: 'f-top-menu',
     template: template(),
     data: function () {
         return ({
@@ -106,7 +106,7 @@ export default {
         });
     },
     created: function () {
-        console.log("[topmenu]: created");
+        console.log("[f-top-menu]: created");
     },
     mixins: [
         mixinSession,

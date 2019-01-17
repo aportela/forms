@@ -1,9 +1,9 @@
-import { default as vueFormsTopMenu } from './vue-topmenu.js';
+import { default as vueFormsTopMenu } from './modules/f-top-menu.js';
 
 const template = function () {
     return `
         <div>
-            <topmenu></topmenu>
+            <f-top-menu></f-top-menu>
             <div class="section">
                 <f-sections-breadcrumb></f-sections-breadcrumb>
                 <router-view></router-view>
@@ -22,6 +22,6 @@ export default {
         console.log("[section container]: created");
     },
     components: {
-        'topmenu': vueFormsTopMenu
+        'f-top-menu': vueFormsTopMenu
     }
 }

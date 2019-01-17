@@ -1,5 +1,4 @@
 import { default as vueFormsSectionContainer } from './vue-sectioncontainer.js';
-import { default as vueFormsTopMenu } from './vue-topmenu.js';
 
 /**
  * (vue-router) route definitions
