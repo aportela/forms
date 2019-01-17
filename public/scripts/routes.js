@@ -3,7 +3,7 @@ import { default as vueFormsSectionAdminUsers } from './modules/f-section-admin-
 import { default as vueFormsSectionAdminUserCard } from './modules/f-section-admin-user-card.js';
 import { default as vueFormsSectionAdminGroups } from './modules/f-section-admin-groups.js';
 import { default as vueFormsSectionAdminGroupCard } from './modules/f-section-admin-group-card.js';
-
+import { default as vueFormsSectionAPIError } from './modules/f-section-api-error.js';
 /**
  * (vue-router) route definitions
  */
