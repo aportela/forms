@@ -1,7 +1,7 @@
 import { bus } from './modules/bus.js';
 import { default as formsAPI } from './modules/api.js';
 
-import { routes as routes } from './routes.js';
+import { routes as routes } from './modules/routes.js';
 
 /**
  * init vue router component

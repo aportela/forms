@@ -1,14 +1,12 @@
-import { default as vueFormsSectionContainer } from './modules/f-section-container.js';
-import { default as vueFormsSectionAuth } from './modules/f-section-auth.js';
-import { default as vueFormsSectionHome } from './modules/f-section-home.js';
-import { default as vueFormsSectionAdminUsers } from './modules/f-section-admin-users.js';
-import { default as vueFormsSectionAdminUserCard } from './modules/f-section-admin-user-card.js';
-import { default as vueFormsSectionAdminGroups } from './modules/f-section-admin-groups.js';
-import { default as vueFormsSectionAdminGroupCard } from './modules/f-section-admin-group-card.js';
-import { default as vueFormsSectionAPIError } from './modules/f-section-api-error.js';
-/**
- * (vue-router) route definitions
- */
+import { default as vueFormsSectionContainer } from './f-section-container.js';
+import { default as vueFormsSectionAuth } from './f-section-auth.js';
+import { default as vueFormsSectionHome } from './f-section-home.js';
+import { default as vueFormsSectionAdminUsers } from './f-section-admin-users.js';
+import { default as vueFormsSectionAdminUserCard } from './f-section-admin-user-card.js';
+import { default as vueFormsSectionAdminGroups } from './f-section-admin-groups.js';
+import { default as vueFormsSectionAdminGroupCard } from './f-section-admin-group-card.js';
+import { default as vueFormsSectionAPIError } from './f-section-api-error.js';
+
 export const routes = [
     { path: '/auth', name: 'auth', component: vueFormsSectionAuth },
     {
