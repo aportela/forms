@@ -22,8 +22,7 @@ export const routes = [
             { path: 'profile', name: 'profile', component: vueFormsSectionAdminUserCard },
             { path: 'administration/groups/search', name: 'groups', component: vueFormsSectionAdminGroups },
             { path: 'administration/groups/add', name: 'addGroup', component: vueFormsSectionAdminGroupCard },
-            { path: 'administration/groups/update/:id', name: 'updateGroup', component: vueFormsSectionAdminGroupCard },
-            { path: 'administration/attributes', name: 'attributes', component: vueFormsAttributes }
+            { path: 'administration/groups/update/:id', name: 'updateGroup', component: vueFormsSectionAdminGroupCard }
         ]
     },
     { path: '/api-error', name: 'apiError', component: vueFormsSectionAPIError }
