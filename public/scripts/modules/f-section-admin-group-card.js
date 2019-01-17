@@ -1,4 +1,5 @@
 import { default as formsAPI } from './api.js';
+import { default as validator } from './validator.js';
 
 const template = function () {
     return `
@@ -73,7 +74,7 @@ export default {
     data: function () {
         return ({
             loading: false,
-            validator: getValidator(),
+            validator: validator,
             group: {
                 id: null,
                 name: null,
