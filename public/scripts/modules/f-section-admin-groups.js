@@ -1,5 +1,6 @@
 import { default as vueFormsTableHeaderField } from './f-table-header-field.js';
 import { default as vueFormsTableControls } from './f-table-controls.js';
+import { default as vueFormsPaginationControl } from './f-pagination-control.js';
 
 const template = function () {
     return `
@@ -68,7 +69,7 @@ const template = function () {
                 </tfoot>
             </table>
 
-            <f-pagination-controls v-bind:disabled="loading" v-bind:data="pager" v-on:refreshRequired="search($event)"></f-pagination-controls>
+            <f-pagination-control v-bind:disabled="loading" v-bind:data="pager" v-on:refreshRequired="search($event)"></f-pagination-control>
 
         </div>
     `;
@@ -97,7 +98,8 @@ export default {
     ],
     components: {
         'f-table-header-field': vueFormsTableHeaderField,
-        'f-table-controls': vueFormsTableControls
+        'f-table-controls': vueFormsTableControls,
+        'f-pagination-control': vueFormsPaginationControl
     },
     created: function () {
         this.sortBy = "name";
