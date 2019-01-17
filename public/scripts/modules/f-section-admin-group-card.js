@@ -66,7 +66,7 @@ const template = function () {
 };
 
 export default {
-    name: 'f-group-card',
+    name: 'f-section-admin-group-card',
     template: template(),
     data: function () {
         return ({
