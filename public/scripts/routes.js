@@ -1,5 +1,6 @@
 import { default as vueFormsSectionContainer } from './vue-sectioncontainer.js';
 import { default as vueFormsSectionAdminUsers } from './modules/f-section-admin-users.js';
+import { default as vueFormsSectionUserCard } from './modules/f-section-user-card.js';
 
 /**
  * (vue-router) route definitions
@@ -12,9 +13,9 @@ export const routes = [
         children: [
             { path: 'home', name: 'home', component: vueFormsHome },
             { path: 'administration/users/search', name: 'users', component: vueFormsSectionAdminUsers },
-            { path: 'administration/users/add', name: 'addUser', component: vueFormsUserCard },
-            { path: 'administration/users/update/:id', name: 'updateUser', component: vueFormsUserCard },
-            { path: 'profile', name: 'profile', component: vueFormsUserCard },
+            { path: 'administration/users/add', name: 'addUser', component: vueFormsSectionUserCard },
+            { path: 'administration/users/update/:id', name: 'updateUser', component: vueFormsSectionUserCard },
+            { path: 'profile', name: 'profile', component: vueFormsSectionUserCard },
             { path: 'administration/groups/search', name: 'groups', component: vueFormsGroups },
             { path: 'administration/groups/add', name: 'addGroup', component: vueFormsGroupCard },
             { path: 'administration/groups/update/:id', name: 'updateGroup', component: vueFormsGroupCard },
