@@ -1,4 +1,5 @@
 import { default as vueFormsSectionContainer } from './vue-sectioncontainer.js';
+import { default as vueFormsSectionAuth } from './modules/f-section-auth.js';
 import { default as vueFormsSectionAdminUsers } from './modules/f-section-admin-users.js';
 import { default as vueFormsSectionAdminUserCard } from './modules/f-section-admin-user-card.js';
 import { default as vueFormsSectionAdminGroups } from './modules/f-section-admin-groups.js';
@@ -8,7 +9,7 @@ import { default as vueFormsSectionAPIError } from './modules/f-section-api-erro
  * (vue-router) route definitions
  */
 export const routes = [
-    { path: '/auth', name: 'auth', component: vueFormsAuth },
+    { path: '/auth', name: 'auth', component: vueFormsSectionAuth },
     {
         path: '/app',
         component: vueFormsSectionContainer,
