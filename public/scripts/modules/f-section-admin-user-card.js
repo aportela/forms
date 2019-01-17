@@ -72,7 +72,7 @@ const template = function () {
 };
 
 export default {
-    name: 'f-user-card',
+    name: 'f-section-admin-user-card',
     template: template(),
     data: function () {
         return ({
