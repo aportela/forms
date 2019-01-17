@@ -1,3 +1,5 @@
+import { default as formsAPI } from './api.js';
+
 const template = function () {
     return `
         <div>
