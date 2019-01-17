@@ -1,3 +1,5 @@
+import { default as vueFormsTableHeaderField } from './f-table-header-field.js';
+
 const template = function () {
     return `
         <div>
@@ -114,6 +116,9 @@ export default {
         mixinUtils,
         mixinExport
     ],
+    components: {
+        'f-table-header-field': vueFormsTableHeaderField
+    },
     created: function () {
         this.sortBy = "email";
         this.sortOrder = "ASC";
@@ -125,10 +130,10 @@ export default {
         }
     },
     methods: {
-        isCurrentUser: function(userId) {
-            return(initialState.session.userId == userId);
+        isCurrentUser: function (userId) {
+            return (initialState.session.userId == userId);
         },
-        search: function(resetPager) {
+        search: function (resetPager) {
             let self = this;
             if (resetPager) {
                 self.pager.currentPage = 1;
@@ -158,7 +163,7 @@ export default {
             this.hideExportDialog();
             this.export(filename, this.items, { format: format, fields: ['id', 'email', 'name', 'created', 'accountType'] });
         },
-        remove: function ()  {
+        remove: function () {
             let self = this;
             self.loading = true;
             formsAPI.user.remove(this.removeId, function (response) {

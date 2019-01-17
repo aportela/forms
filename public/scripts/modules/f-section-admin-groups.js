@@ -1,3 +1,5 @@
+import { default as vueFormsTableHeaderField } from './f-table-header-field.js';
+
 const template = function () {
     return `
         <div>
@@ -92,6 +94,9 @@ export default {
         mixinUtils,
         mixinExport
     ],
+    components: {
+        'f-table-header-field': vueFormsTableHeaderField
+    },
     created: function () {
         this.sortBy = "name";
         this.sortOrder = "ASC";
