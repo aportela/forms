@@ -1,4 +1,4 @@
-import { default as vueFormsSectionContainer } from './vue-sectioncontainer.js';
+import { default as vueFormsSectionContainer } from './modules/f-section-container.js';
 import { default as vueFormsSectionAuth } from './modules/f-section-auth.js';
 import { default as vueFormsSectionHome } from './modules/f-section-home.js';
 import { default as vueFormsSectionAdminUsers } from './modules/f-section-admin-users.js';

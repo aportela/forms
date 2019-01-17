@@ -1,5 +1,5 @@
-import { default as vueFormsTopMenu } from './modules/f-top-menu.js';
-import { default as vueFormsBreadcrumb } from './modules/f-breadcrumb.js';
+import { default as vueFormsTopMenu } from './f-top-menu.js';
+import { default as vueFormsBreadcrumb } from './f-breadcrumb.js';
 
 const template = function () {
     return `
@@ -14,7 +14,7 @@ const template = function () {
 }
 
 export default {
-    name: 'sectionContainer',
+    name: 'f-section-container',
     template: template(),
     data: function () {
         return ({
