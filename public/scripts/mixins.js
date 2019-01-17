@@ -23,11 +23,6 @@ const mixinSession = {
         isAdministrator: function () {
             return (initialState.session.isAdministrator);
         }
-    },
-    methods: {
-        signOut: function () {
-            bus.$emit("signOut");
-        }
     }
 };
 

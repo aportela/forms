@@ -1,30 +1,27 @@
-/**
- * main app section container component
- */
-var vueFormsSectionContainer = (function () {
-    "use strict";
+import { default as vueFormsTopMenu } from './vue-topmenu.js';
 
-    var template = function () {
-        return `
-            <div>
-                <topmenu></topmenu>
-                <div class="section">
-                    <f-sections-breadcrumb></f-sections-breadcrumb>
-                    <router-view></router-view>
-                </div>
+const template = function () {
+    return `
+        <div>
+            <topmenu></topmenu>
+            <div class="section">
+                <f-sections-breadcrumb></f-sections-breadcrumb>
+                <router-view></router-view>
             </div>
-        `;
-    };
+        </div>
+    `;
+}
 
-    var module = Vue.component('sectionContainer', {
-        template: template(),
-        data: function () {
-            return ({
-            });
-        }, created: function () {
-            console.log("[section container]: created");
-        }
-    });
-
-    return (module);
-})();
+export default {
+    name: 'sectionContainer',
+    template: template(),
+    data: function () {
+        return ({
+        });
+    }, created: function () {
+        console.log("[section container]: created");
+    },
+    components: {
+        'topmenu': vueFormsTopMenu
+    }
+}

@@ -1,7 +1,10 @@
+import { default as vueFormsSectionContainer } from './vue-sectioncontainer.js';
+import { default as vueFormsTopMenu } from './vue-topmenu.js';
+
 /**
  * (vue-router) route definitions
  */
-const routes = [
+export const routes = [
     { path: '/auth', name: 'auth', component: vueFormsAuth },
     {
         path: '/app',

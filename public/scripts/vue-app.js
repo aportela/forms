@@ -1,9 +1,6 @@
-"use strict";
+import { bus } from './modules/bus.js';
 
-/**
- * used for sharing data between components
- */
-const bus = new Vue();
+import { routes as routes } from './routes.js';
 
 /**
  * init vue router component
@@ -11,7 +8,6 @@ const bus = new Vue();
 const router = new VueRouter({
     routes
 });
-
 
 /**
  * parse vue-resource (custom) resource and return valid object for api-error component
