@@ -21,7 +21,7 @@ const template = function () {
                 </span >
             </div>
             <div class="control">
-                <button type="button" class="button" v-bind:disabled="disabled" v-on:click.prevent="$emit('searchTriggered', text)">
+                <button type="button" class="button" v-bind:disabled="disabled" v-on:click.prevent="$emit('searchTriggered', dates)">
                     <span class="icon">
                         <i class="fas fa-search"></i>
                     </span>
@@ -68,7 +68,15 @@ export default {
             return (date);
         },
         onChange: function () {
-            let todayDate = new Date();
+            const date = new Date();
+            let todayDate = new Date(
+                    date.getUTCFullYear(),
+                    date.getUTCMonth(),
+                    date.getUTCDate(),
+                    date.getUTCHours(),
+                    date.getUTCMinutes(),
+                    date.getUTCSeconds(),
+            );
             switch (this.selected) {
                 // any date
                 case 0:
