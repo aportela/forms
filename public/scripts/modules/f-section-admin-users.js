@@ -155,7 +155,7 @@ export default {
     },
     filters: {
         getAccountTypeName: function (accountType) {
-            return (accountType == "A" ? "Administrator" : "Normal user");
+            return (accountType == "A" ? "Administrator" : "User");
         }
     },
     methods: {
