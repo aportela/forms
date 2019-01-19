@@ -1,3 +1,5 @@
+import { mixinRoutes } from './mixins.js';
+
 const template = function () {
     return `
         <nav class="breadcrumb has-bullet-separator" aria-label="breadcrumbs">

@@ -1,4 +1,5 @@
 import { bus } from './bus.js';
+import { mixinRoutes } from './mixins.js';
 
 const template = function () {
     return `
