@@ -293,6 +293,7 @@
                 $creatorId = $group->creatorId;
                 $creatorEmail = $group->creatorEmail;
                 $creatorName = $group->creatorName;
+                $group->userCount = intval($group->userCount);
                 $group->creator = new \stdclass();
                 $group->creator->id = $creatorId;
                 $group->creator->email = $creatorEmail;
