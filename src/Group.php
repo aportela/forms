@@ -148,9 +148,21 @@
         public function get(\Forms\Database\DB $dbh) {
             $results = null;
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
-                $results = $dbh->query(" SELECT [GROUP].id, [GROUP].name, [GROUP].description, [GROUP].creation_date AS creationDate, [GROUP].deletion_date AS deletionDate, [GROUP].creator AS creatorId, USER.email AS creatorEmail, USER.name AS creatorName FROM [GROUP] LEFT JOIN USER ON USER.id = [GROUP].creator WHERE [GROUP].id = :id ", array(
-                    (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id))
-                ));
+                $results = $dbh->query(
+                    sprintf(
+                        "
+                            SELECT
+                                [GROUP].id, [GROUP].name, [GROUP].description, strftime('%s', datetime([GROUP].creation_date, 'unixepoch')) AS creationDate, [GROUP].deletion_date AS deletionDate, [GROUP].creator AS creatorId, USER.email AS creatorEmail, USER.name AS creatorName
+                            FROM [GROUP]
+                            LEFT JOIN USER ON USER.id = [GROUP].creator
+                            WHERE [GROUP].id = :id
+                        ",
+                        \Forms\Database\DB::SQLITE_STRFTIME_FORMAT
+                    ),
+                    array(
+                        (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id))
+                    )
+                );
                 if (count($results) == 1) {
                     $this->id = $results[0]->id;
                     $this->name = $results[0]->name;
@@ -277,7 +289,7 @@
                 sprintf(
                     "
                         SELECT
-                        [GROUP].id, [GROUP].name, [GROUP].description, COALESCE(TMP_GROUP_USER_COUNT.totalUsers, 0) AS userCount, [GROUP].creation_date AS creationDate, [GROUP].creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
+                        [GROUP].id, [GROUP].name, [GROUP].description, COALESCE(TMP_GROUP_USER_COUNT.totalUsers, 0) AS userCount, strftime('%s', datetime([GROUP].creation_date, 'unixepoch')) AS creationDate, [GROUP].creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
                         FROM [GROUP]
                         LEFT JOIN (
                             SELECT COUNT(USER_GROUP.user_id) AS totalUsers, USER_GROUP.group_id
@@ -292,6 +304,7 @@
                         ORDER BY %s COLLATE NOCASE %s
                         %s
                     ",
+                    \Forms\Database\DB::SQLITE_STRFTIME_FORMAT,
                     $whereCondition,
                     $sqlSortBy,
                     $sortOrder == "DESC" ? "DESC": "ASC",

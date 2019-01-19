@@ -160,25 +160,33 @@
             $results = null;
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
                 $results = $dbh->query(
-                    "
-                        SELECT
-                            USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName, USER.enabled AS enabled
-                        FROM USER
-                        LEFT JOIN USER U ON USER.creator = U.id
-                        WHERE USER.id = :id
-                    ", array(
+                    sprintf(
+                        "
+                            SELECT
+                                USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, strftime('%s', datetime(USER.creation_date, 'unixepoch')) AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName, USER.enabled AS enabled
+                            FROM USER
+                            LEFT JOIN USER U ON USER.creator = U.id
+                            WHERE USER.id = :id
+                        ",
+                        \Forms\Database\DB::SQLITE_STRFTIME_FORMAT
+                    ),
+                    array(
                         (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id))
                     )
                 );
             } else if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
                 $results = $dbh->query(
-                    "
-                        SELECT
-                            USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, USER.creation_date AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName, USER.enabled AS enabled
-                        FROM USER
-                        LEFT JOIN USER U ON USER.creator = U.id
-                        WHERE USER.email = :email
-                    ", array(
+                    sprintf(
+                        "
+                            SELECT
+                                USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, strftime('%s', datetime(USER.creation_date, 'unixepoch')) AS creationDate, USER.deletion_date AS deletionDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName, USER.enabled AS enabled
+                            FROM USER
+                            LEFT JOIN USER U ON USER.creator = U.id
+                            WHERE USER.email = :email
+                        ",
+                        \Forms\Database\DB::SQLITE_STRFTIME_FORMAT
+                    ),
+                    array(
                         (new \Forms\Database\DBParam())->str(":email", mb_strtolower($this->email))
                     )
                 );
@@ -353,7 +361,7 @@
                 sprintf(
                     "
                         SELECT
-                            USER.id, USER.email, USER.name, USER.creation_date AS creationDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName, USER.enabled AS enabled
+                            USER.id, USER.email, USER.name, strftime('%s', datetime(USER.creation_date, 'unixepoch')) AS creationDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName, USER.enabled AS enabled
                         FROM USER
                         LEFT JOIN USER U ON USER.creator = U.id
                         WHERE USER.deletion_date IS NULL
@@ -361,6 +369,7 @@
                         ORDER BY %s COLLATE NOCASE %s
                         %s
                     ",
+                    \Forms\Database\DB::SQLITE_STRFTIME_FORMAT,
                     $whereCondition,
                     $sqlSortBy,
                     $sortOrder == "DESC" ? "DESC": "ASC",

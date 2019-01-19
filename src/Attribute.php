@@ -110,9 +110,21 @@
         public function get(\Forms\Database\DB $dbh) {
             $results = null;
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
-                $results = $dbh->query(" SELECT [ATTRIBUTE].id, [ATTRIBUTE].name, [ATTRIBUTE].description, [ATTRIBUTE].creation_date AS creationDate, [ATTRIBUTE].deletion_date AS deletionDate, [ATTRIBUTE].creator AS creatorId, USER.email AS creatorEmail, USER.name AS creatorName FROM [ATTRIBUTE] LEFT JOIN USER ON USER.id = [ATTRIBUTE].creator WHERE [ATTRIBUTE].id = :id ", array(
-                    (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id))
-                ));
+                $results = $dbh->query(
+                    sprintf(
+                        "
+                            SELECT
+                                [ATTRIBUTE].id, [ATTRIBUTE].name, [ATTRIBUTE].description, strftime('%s', datetime([ATTRIBUTE].creation_date, 'unixepoch')) AS creationDate, [ATTRIBUTE].deletion_date AS deletionDate, [ATTRIBUTE].creator AS creatorId, USER.email AS creatorEmail, USER.name AS creatorName
+                            FROM [ATTRIBUTE]
+                            LEFT JOIN USER ON USER.id = [ATTRIBUTE].creator
+                            WHERE [ATTRIBUTE].id = :id
+                        ",
+                        \Forms\Database\DB::SQLITE_STRFTIME_FORMAT
+                    ),
+                    array(
+                        (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id))
+                    )
+                );
                 if (count($results) == 1) {
                     $this->id = $results[0]->id;
                     $this->name = $results[0]->name;
@@ -233,7 +245,7 @@
                 sprintf(
                     "
                         SELECT
-                        [ATTRIBUTE].id, [ATTRIBUTE].name, [ATTRIBUTE].description, [ATTRIBUTE].creation_date AS creationDate, [ATTRIBUTE].creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
+                        [ATTRIBUTE].id, [ATTRIBUTE].name, [ATTRIBUTE].description, strftime('%s', datetime([ATTRIBUTE].creation_date, 'unixepoch')) AS creationDate, [ATTRIBUTE].creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
                         FROM [ATTRIBUTE]
                         LEFT JOIN USER U ON [ATTRIBUTE].creator = U.id
                         WHERE [ATTRIBUTE].deletion_date IS NULL
@@ -241,6 +253,7 @@
                         ORDER BY %s COLLATE NOCASE %s
                         %s
                     ",
+                    \Forms\Database\DB::SQLITE_STRFTIME_FORMAT,
                     $whereCondition,
                     $sqlSortBy,
                     $sortOrder == "DESC" ? "DESC": "ASC",

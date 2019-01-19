@@ -8,6 +8,9 @@
      * Simple PDO Database Wrapper
      */
     class DB {
+
+        const SQLITE_STRFTIME_FORMAT = "%Y-%m-%dT%H:%M:%fZ";
+
         private $dbh = null;
         private $container = null;
         private $queryParams = array();
