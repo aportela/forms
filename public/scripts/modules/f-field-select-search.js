@@ -2,7 +2,7 @@ const template = function () {
     return `
         <div class="field has-addons">
             <div class="control has-icons-left has-icons-left is-expanded">
-                <div class="select">
+                <div class="select is-fullwidth">
                     <select v-bind:disabled="disabled" v-model="selected">
                         <option v-for="item in items" v-bind:value="item.id" v-bind:key="item.id">{{ item.name }}</option>
                     </select>
