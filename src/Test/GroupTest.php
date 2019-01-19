@@ -17,28 +17,28 @@
         public function testAddWithoutName(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("name");
-            (new \Forms\Group((\Ramsey\Uuid\Uuid::uuid4())->toString(), "", ""))->add(self::$dbh);
+            (new \Forms\Group((\Ramsey\Uuid\Uuid::uuid4())->toString(), "", "", array()))->add(self::$dbh);
         }
 
         public function testAddWithInvalidDescription(): void {
             $this->expectException(\Forms\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("description");
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            (new \Forms\Group($id, $id, str_repeat("A", 256)))->add(self::$dbh);
+            (new \Forms\Group($id, $id, str_repeat("A", 256), array()))->add(self::$dbh);
         }
 
         public function testAdd(): void {
-            (new \Forms\UserSession())->set("00000000-0000-0000-0000-000000000000", "admin@localhost.localnet", true);
+            (new \Forms\UserSession())->set("00000000-0000-0000-0000-000000000000", "admin@localhost.localnet", "", \Forms\User::ACCOUNT_TYPE_ADMINISTRATOR);
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $this->assertTrue((new \Forms\Group($id, $id, "group description"))->add(self::$dbh));
+            $this->assertTrue((new \Forms\Group($id, $id, "group description", array()))->add(self::$dbh));
         }
 
         public function testAddWithUsers(): void {
-            (new \Forms\UserSession())->set("00000000-0000-0000-0000-000000000000", "admin@localhost.localnet", true);
+            (new \Forms\UserSession())->set("00000000-0000-0000-0000-000000000000", "admin@localhost.localnet", "", \Forms\User::ACCOUNT_TYPE_ADMINISTRATOR);
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $g = new \Forms\Group($id, $id, "group description");
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Forms\User($id, $id . "@server.com", "secret");
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER, true);
             $u->add(self::$dbh);
             $g->users = array($u);
             $this->assertTrue($g->add(self::$dbh));
@@ -67,18 +67,18 @@
         }
 
         public function testUpdate(): void {
-            (new \Forms\UserSession())->set("00000000-0000-0000-0000-000000000000", "admin@localhost.localnet", true);
+            (new \Forms\UserSession())->set("00000000-0000-0000-0000-000000000000", "admin@localhost.localnet", "", \Forms\User::ACCOUNT_TYPE_ADMINISTRATOR);
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $g = new \Forms\Group($id, $id, "group description");
             $this->assertTrue($g->add(self::$dbh) && $g->update(self::$dbh));
         }
 
         public function testUpdateWithUsers(): void {
-            (new \Forms\UserSession())->set("00000000-0000-0000-0000-000000000000", "admin@localhost.localnet", true);
+            (new \Forms\UserSession())->set("00000000-0000-0000-0000-000000000000", "admin@localhost.localnet", "", \Forms\User::ACCOUNT_TYPE_ADMINISTRATOR);
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $g = new \Forms\Group($id, $id, "group description");
             $g->add(self::$dbh);
-            $u = new \Forms\User($id, $id . "@server.com", "secret");
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER, true);
             $u->add(self::$dbh);
             $g->users = array($u);
             $this->assertTrue($g->update(self::$dbh));
@@ -126,19 +126,37 @@
             $g->get(self::$dbh);
         }
 
-        public function testSearchWithoutFilter(): void {
+        public function testExistsNameWithNonExistentName(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $g = new \Forms\Group($id, $id, "group description");
-            $g->add(self::$dbh);
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $g = new \Forms\Group($id, $id, "group description");
-            $u = new \Forms\User($id, $id . "@server.com", "secret");
-            $g->users = array($u);
-            $g->add(self::$dbh);
-            $groups = \Forms\Group::search(self::$dbh);
-            $this->assertTrue(count($groups) >= 0);
+            $this->assertFalse(\Forms\Group::existsName(self::$dbh, $id));
         }
 
+        public function testExistsNameWithExistentName(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $g = new \Forms\Group($id,  "name of " . $id, "", array());
+            $g->add(self::$dbh);
+            $this->assertTrue(\Forms\Group::existsName(self::$dbh, $g->name));
+        }
+
+        public function testExistsNameWithExistentNameIgnoringId(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $g = new \Forms\Group($id,  "name of " . $id, "", array());
+            $g->add(self::$dbh);
+            $this->assertFalse(\Forms\User::existsName(self::$dbh, $g->name, $g->id));
+        }
+
+        public function testSearchWithoutFilter(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $g = new \Forms\Group($id, $id, "group description", array());
+            $g->add(self::$dbh);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $g = new \Forms\Group($id, $id, "group description", array());
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER, true);
+            $g->users = array($u);
+            $g->add(self::$dbh);
+            $groups = \Forms\Group::search(self::$dbh, array(), 1, 0, "", "ASC");
+            $this->assertTrue(count($groups) >= 0);
+        }
     }
 
 ?>
