@@ -1,5 +1,6 @@
 import { default as formsAPI } from './api.js';
 import { default as validator } from './validator.js';
+import { uuid } from './utils.js';
 
 const template = function () {
     return `
@@ -97,8 +98,7 @@ export default {
     ],
     mixins: [
         mixinRoutes,
-        mixinSession,
-        mixinUtils
+        mixinSession
     ],
     watch: {
         '$route'(to, from) {
@@ -149,7 +149,7 @@ export default {
             let self = this;
             self.validator.clear();
             self.loading = true;
-            this.user.id = self.uuid();
+            this.user.id = uuid();
             formsAPI.user.add(this.user, function (response) {
                 if (response.ok && response.body.success) {
                     self.$router.go(-1);

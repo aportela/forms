@@ -1,5 +1,6 @@
 import { default as formsAPI } from './api.js';
 import { default as validator } from './validator.js';
+import { uuid } from './utils.js';
 import { default as vueFormsFieldUserSearch } from './f-field-user-search.js';
 
 const template = function () {
@@ -90,9 +91,7 @@ export default {
     ],
     mixins: [
         mixinRoutes,
-        mixinSession,
-        mixinPagination,
-        mixinUtils
+        mixinSession
     ],
     components: {
         'f-field-user-search': vueFormsFieldUserSearch
@@ -142,7 +141,7 @@ export default {
             let self = this;
             self.validator.clear();
             self.loading = true;
-            this.group.id = self.uuid();
+            this.group.id = uuid();
             formsAPI.group.add(this.group, function (response) {
                 if (response.ok && response.body.success) {
                     self.$router.go(-1);

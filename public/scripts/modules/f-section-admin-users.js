@@ -1,4 +1,5 @@
 import { default as formsAPI } from './api.js';
+import { exportCSV } from './export.js';
 import { default as vueFormsDialogExport } from './f-dialog-export.js';
 import { default as vueFormsDialogConfirmRemove } from './f-dialog-confirm-remove.js';
 import { default as vueFormsTableHeaderField } from './f-table-header-field.js';
@@ -135,7 +136,6 @@ export default {
     mixins: [
         mixinRoutes,
         mixinTableControls,
-        mixinUtils,
         mixinExport
     ],
     components: {
@@ -188,9 +188,8 @@ export default {
             this.search(false);
         },
         onExport: function (format, filename) {
-            console.log(format);
             this.hideExportDialog();
-            this.export(filename, this.items, { format: format, fields: ['id', 'email', 'name', 'created', 'accountType'] });
+            exportCSV(filename, this.items, { format: format, fields: ['id', 'email', 'name', 'created', 'accountType'] });
         },
         remove: function () {
             let self = this;
