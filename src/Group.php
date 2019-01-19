@@ -256,9 +256,6 @@
                 case "creationDate":
                     $sqlSortBy = "[GROUP].creation_date";
                 break;
-                case "accountType":
-                    $sqlSortBy = "[GROUP].account_type";
-                break;
                 case "name":
                 default:
                     $sqlSortBy = "[GROUP].name";
