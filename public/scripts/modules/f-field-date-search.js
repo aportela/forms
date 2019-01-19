@@ -2,7 +2,7 @@ const template = function () {
     return `
         <div class="field has-addons">
             <div class="control has-icons-left has-icons-left is-expanded">
-                <div class="select">
+                <div class="select is-fullwidth">
                     <select v-bind:disabled="disabled" v-model.number="selected" v-on:change="onChange">
                         <option value="0">Any date</option>
                         <option value="1">Today</option>
