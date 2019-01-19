@@ -1,6 +1,6 @@
 import { default as formsAPI } from './api.js';
 import { exportCSV } from './export.js';
-import { mixinRoutes, mixinExport, mixinTableControls } from './mixins.js';
+import { mixinRoutes, mixinExport, mixinTableControls, mixinDates } from './mixins.js';
 import { default as vueFormsDialogExport } from './f-dialog-export.js';
 import { default as vueFormsDialogConfirmRemove } from './f-dialog-confirm-remove.js';
 import { default as vueFormsTableHeaderField } from './f-table-header-field.js';
@@ -36,7 +36,7 @@ const template = function () {
                             <f-field-text-search v-bind:disabled="loading" v-bind:placeholder="'search by creator name'" v-on:searchTriggered="searchByCreatorName = $event; search(true);"></f-field-text-search>
                         </th>
                         <th>
-                            <f-field-date-search v-bind:disabled="loading || true" v-on:searchTriggered="searchFromCreationDate = $event.from; searchToCreationDate = $event.to; search(true);"></f-field-date-search>
+                            <f-field-date-search v-bind:disabled="loading" v-on:searchTriggered="searchFromCreationDate = $event.from; searchToCreationDate = $event.to; search(true);"></f-field-date-search>
                         </th>
                         <th>
                             <f-table-controls v-bind:loading="loading" v-bind:configuration="{ showAddButton: true, showRefreshButton: true, showExportButton: true }" v-on:add="onAdd" v-on:refresh="onRefresh" v-on:export="showExportDialog"></f-table-controls>
@@ -48,7 +48,7 @@ const template = function () {
                         <td>{{ attribute.name }}</td>
                         <td>{{ attribute.description }}</td>
                         <td>{{ attribute.creator.name }}</td>
-                        <td>{{ attribute.creationDate }}</td>
+                        <td>{{ attribute.creationDate | parseJSONDate }}</td>
                         <td>
                             <div class="field is-grouped">
                                 <p class="control is-expanded">
@@ -93,7 +93,8 @@ export default {
     mixins: [
         mixinRoutes,
         mixinTableControls,
-        mixinExport
+        mixinExport,
+        mixinDates
     ],
     components: {
         'f-dialog-export': vueFormsDialogExport,
