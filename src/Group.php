@@ -164,6 +164,7 @@
                         throw new \Forms\Exception\DeletedException("");
                     } else {
                         $this->users = (\Forms\User::search($dbh, array("groupId" => $this->id), 1, 0, "name", "ASC"))->results;
+                        $this->userCount = count($this->users);
                     }
                 } else {
                     throw new \Forms\Exception\NotFoundException("");
