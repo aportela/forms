@@ -1,6 +1,6 @@
 import { bus } from './modules/bus.js';
 import { default as formsAPI } from './modules/api.js';
-
+import { mixinRoutes } from './modules/mixins.js';
 import { routes as routes } from './modules/routes.js';
 
 /**

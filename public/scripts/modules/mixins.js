@@ -39,7 +39,7 @@ export const mixinExport = {
 export const mixinTableControls = {
     data: function () {
         return ({
-            pager: this.getPager(),
+            pager: null,
             items: [],
             sortBy: null,
             sortOrder: "ASC",
@@ -47,6 +47,13 @@ export const mixinTableControls = {
         });
     },
     created: function () {
+        this.pager = {
+            currentPage: 1,
+            previousPage: 1,
+            nextPage: 1,
+            totalPages: 0,
+            resultsPage: initialState.defaultResultsPage
+        }
         this.search(true);
     },
     computed: {
@@ -54,9 +61,6 @@ export const mixinTableControls = {
             return (this.removeId != null);
         }
     },
-    mixins: [
-        mixinPagination
-    ],
     methods: {
         toggleSort: function (field) {
             if (!this.loading) {

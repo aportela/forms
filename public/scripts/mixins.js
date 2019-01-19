@@ -1,33 +1,3 @@
-
-/**
- * session mixins
- */
-
-/**
- * pagination properties mixin
- */
-const mixinPagination = {
-    methods: {
-        /**
-         * create & return a pagination object
-         */
-        getPager: function () {
-            return ({
-                currentPage: 1,
-                previousPage: 1,
-                nextPage: 1,
-                totalPages: 0,
-                resultsPage: initialState.defaultResultsPage
-            });
-        }
-    }
-}
-
-
-
-/**
- * common util mixins
- */
 const mixinUtils = {
     methods: {
         /**
