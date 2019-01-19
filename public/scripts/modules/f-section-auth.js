@@ -161,7 +161,7 @@ export default {
                             self.validator.setInvalid("password", "Incorrect password");
                             break;
                         default:
-                        self.showApiError(response.getApiErrorData());
+                            self.showApiError(response.getApiErrorData());
                             break;
                     }
                     self.loading = false;
@@ -202,7 +202,7 @@ export default {
                             }
                             break;
                         default:
-                        self.showApiError(response.getApiErrorData());
+                            self.showApiError(response.getApiErrorData());
                             break;
                     }
                     self.loading = false;

@@ -43,7 +43,7 @@ const getApiErrorDataFromResponse = function (r) {
  */
 Vue.http.interceptors.push((request, next) => {
     next((response) => {
-        if (!response.ok || ! response.body.success) {
+        if (!response.ok || !response.body.success) {
             response.rBody = request.body;
             response.rUrl = request.url;
             response.rMethod = request.method;
@@ -63,7 +63,7 @@ const app = new Vue({
     router,
     created: function () {
         console.log("[app]: created");
-        if (! initialState.session.logged) {
+        if (!initialState.session.logged) {
             console.debug("[app]: user not logged, auth redirect");
             this.changeRoute("auth");
         } else {
@@ -79,7 +79,7 @@ const app = new Vue({
         mixinRoutes
     ],
     methods: {
-        signOut: function() {
+        signOut: function () {
             formsAPI.user.signOut((response) => {
                 if (response.ok && response.body.success) {
                     initialState.session = {};

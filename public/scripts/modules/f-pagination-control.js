@@ -62,8 +62,8 @@ export default {
                 (this.data.currentPage < 1 || this.data.currentPage > this.data.totalPages)
             );
         },
-        isEnabled: function() {
-            return(this.resultsPage != 0);
+        isEnabled: function () {
+            return (this.resultsPage != 0);
         }
     },
     watch: {

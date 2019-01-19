@@ -127,7 +127,7 @@ export default {
                 self.$nextTick(() => self.$refs.search.focus());
             }, 500);
         },
-        signOut: function() {
+        signOut: function () {
             bus.$emit('signOut');
         }
     }

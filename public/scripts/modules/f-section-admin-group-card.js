@@ -94,7 +94,7 @@ export default {
         mixinPagination,
         mixinUtils
     ],
-    components:  {
+    components: {
         'f-field-user-search': vueFormsFieldUserSearch
     },
     filters: {
@@ -108,7 +108,7 @@ export default {
         }
     },
     methods: {
-        addUser: function(user) {
+        addUser: function (user) {
             if (this.group.users.find(u => u.id == user.id)) {
                 this.userAlreadyExists = true;
             } else {

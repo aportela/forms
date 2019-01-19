@@ -36,13 +36,13 @@ export default {
     },
     methods: {
         checkKeyEvent(event) {
-            switch(event.keyCode) {
+            switch (event.keyCode) {
                 case 13:
                     this.$emit('ok');
-                break;
+                    break;
                 case 27:
                     this.$emit('cancel');
-                break;
+                    break;
             }
         }
     }

@@ -63,8 +63,8 @@ const mixinTableControls = {
         this.search(true);
     },
     computed: {
-        removeConfirmationDialogVisible: function() {
-            return(this.removeId != null);
+        removeConfirmationDialogVisible: function () {
+            return (this.removeId != null);
         }
     },
     mixins: [
@@ -86,10 +86,10 @@ const mixinTableControls = {
                 this.search(false);
             }
         },
-        showRemoveConfirmationDialog: function(id) {
+        showRemoveConfirmationDialog: function (id) {
             this.removeId = id;
         },
-        hideRemoveConfirmationDialog: function() {
+        hideRemoveConfirmationDialog: function () {
             this.removeId = null;
         }
     }
