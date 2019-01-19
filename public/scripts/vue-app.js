@@ -56,6 +56,12 @@ Vue.http.interceptors.push((request, next) => {
     });
 });
 
+if (initialState.productionEnvironment) {
+    console = {
+        log: function () { }
+    };
+}
+
 /**
  * main app component
  */
@@ -64,14 +70,15 @@ const app = new Vue({
     created: function () {
         console.log("[app]: created");
         if (!initialState.session.logged) {
-            console.debug("[app]: user not logged, auth redirect");
+            console.log("[app]: user not logged, auth redirect");
             this.changeRoute("auth");
         } else {
-            console.log("[app]: user logged, main redirect to home or app route");
+            console.log("[app]: user logged");
+            console.log("[app] redirect to selected route");
             //this.changeRoute("home");
         }
         bus.$on("signOut", () => {
-            console.log("[app] signOut received");
+            console.log("[app] bus -> signOut received");
             this.signOut();
         });
     },

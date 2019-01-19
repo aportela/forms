@@ -24,7 +24,8 @@
                         'userName' => \Forms\UserSession::getName(),
                         'sessionTimeout' => ini_get("session.gc_maxlifetime")
                     ),
-                    'defaultResultsPage' => $this->get('settings')['common']['defaultResultsPage']
+                    'defaultResultsPage' => $this->get('settings')['common']['defaultResultsPage'],
+                    'productionEnvironment' => $this->get('settings')['twigParams']['production']
                 )
             )
         ));
@@ -49,7 +50,8 @@
                             'userName' => \Forms\UserSession::getName(),
                             'sessionTimeout' => ini_get("session.gc_maxlifetime")
                         ),
-                        'defaultResultsPage' => $this->get('settings')['common']['defaultResultsPage']
+                        'defaultResultsPage' => $this->get('settings')['common']['defaultResultsPage'],
+                        'productionEnvironment' => $this->get('settings')['twigParams']['production']
                     )
                 ], 200
             );
