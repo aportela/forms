@@ -1,5 +1,5 @@
 import { default as formsAPI } from './api.js';
-import { exportCSV } from './export.js';
+import { mixinExport, mixinTableControls } from './mixins.js';
 import { mixinExport } from './mixins.js';
 import { default as vueFormsDialogExport } from './f-dialog-export.js';
 import { default as vueFormsDialogConfirmRemove } from './f-dialog-confirm-remove.js';
