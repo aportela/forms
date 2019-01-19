@@ -189,7 +189,7 @@ export default {
         },
         onExport: function (format, filename) {
             this.hideExportDialog();
-            exportCSV(filename, this.items, { format: format, fields: ['id', 'email', 'name', 'created', 'accountType'] });
+            exportCSV(filename, this.items, { format: format, fields: ['id', 'email', 'name', 'accountType', 'enabled', 'creator', 'creationDate'] });
         },
         remove: function () {
             let self = this;
