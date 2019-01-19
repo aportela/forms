@@ -2,13 +2,6 @@
 /**
  * session mixins
  */
-const mixinSession = {
-    computed: {
-        isAdministrator: function () {
-            return (initialState.session.isAdministrator);
-        }
-    }
-};
 
 /**
  * pagination properties mixin

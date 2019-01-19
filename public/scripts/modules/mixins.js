@@ -12,6 +12,14 @@ export const mixinRoutes = {
     }
 };
 
+export const mixinSession = {
+    computed: {
+        isAdministrator: function () {
+            return (initialState.session.isAdministrator);
+        }
+    }
+};
+
 export const mixinExport = {
     data: function () {
         return ({

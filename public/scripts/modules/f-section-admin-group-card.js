@@ -1,7 +1,7 @@
 import { default as formsAPI } from './api.js';
 import { default as validator } from './validator.js';
 import { uuid } from './utils.js';
-import { mixinRoutes } from './mixins.js';
+import { mixinRoutes, mixinSession } from './mixins.js';
 import { default as vueFormsFieldUserSearch } from './f-field-user-search.js';
 
 const template = function () {

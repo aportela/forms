@@ -1,5 +1,5 @@
 import { bus } from './bus.js';
-import { mixinRoutes } from './mixins.js';
+import { mixinRoutes, mixinSession } from './mixins.js';
 
 const template = function () {
     return `

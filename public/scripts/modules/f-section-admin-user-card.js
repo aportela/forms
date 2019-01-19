@@ -1,6 +1,6 @@
 import { default as formsAPI } from './api.js';
 import { default as validator } from './validator.js';
-import { mixinRoutes } from './mixins.js';
+import { mixinRoutes, mixinSession } from './mixins.js';
 import { uuid } from './utils.js';
 
 const template = function () {
