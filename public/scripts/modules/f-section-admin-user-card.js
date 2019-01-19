@@ -47,7 +47,7 @@ const template = function () {
                         <label class="label">Account enabled/disabled</label>
                         <div class="select">
                             <select required v-bind:disabled="disabled" v-model="user.enabled">
-                                <option v-for="item in [{ name: 'Enabled', value: true }, { name: 'Disabled', value: false }]" v-bind:value="item.value">{{ item.name }}</option>
+                                <option v-for="item in [{ name: 'Enabled', value: true }, { name: 'Disabled', value: false }]" v-bind:value="item.value" v-bind:key="item.value">{{ item.name }}</option>
                             </select>
                         </div>
                     </div>

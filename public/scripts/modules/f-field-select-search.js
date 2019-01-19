@@ -4,7 +4,7 @@ const template = function () {
             <div class="control has-icons-left has-icons-left is-expanded">
                 <div class="select">
                     <select v-bind:disabled="disabled" v-model="selected">
-                        <option v-for="item in items" v-bind:value="item.id">{{ item.name }}</option>
+                        <option v-for="item in items" v-bind:value="item.id" v-bind:key="item.id">{{ item.name }}</option>
                     </select>
                 </div>
                 <span class="icon is-small is-left">

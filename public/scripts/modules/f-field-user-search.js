@@ -24,7 +24,7 @@ const template = function () {
             <div class="dropdown is-active" v-if="showResults">
                 <div class="dropdown-menu">
                     <div class="dropdown-content is-unselectable">
-                        <a href="#" v-show="hasResults" class="dropdown-item" v-for="user in users" v-on:click.prevent="onUserSelected(user)">
+                        <a href="#" v-show="hasResults" class="dropdown-item" v-for="user in users" v-bind:key="user.id" v-on:click.prevent="onUserSelected(user)">
                             <span v-if="! isUserSelectionDenied(user)"><i class="fas fa-user" aria-hidden="true"></i></span>
                             <span v-else><i class="fas fa-ban" aria-hidden="true"></i></span>
                             <span>{{ user.name }}</span>
