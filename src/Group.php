@@ -50,7 +50,7 @@
                     } else {
                         $params[] = (new \Forms\Database\DBParam())->null(":description");
                     }
-                    if ($dbh->execute("INSERT INTO [GROUP] (id, name, description, creation_date, creator) VALUES(:id, :name, :description, CURRENT_TIMESTAMP, :creator)", $params)) {
+                    if ($dbh->execute("INSERT INTO [GROUP] (id, name, description, creation_date, creator) VALUES(:id, :name, :description, strftime('%s', 'now'), :creator)", $params)) {
                         return($this->setUsers($dbh));
                     } else {
                         return(false);
@@ -131,7 +131,7 @@
          */
         public function delete(\Forms\Database\DB $dbh) {
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
-                return($dbh->execute("UPDATE [GROUP] SET deletion_date = CURRENT_TIMESTAMP WHERE id = :id ", array(
+                return($dbh->execute("UPDATE [GROUP] SET deletion_date = strftime('%s', 'now') WHERE id = :id ", array(
                     (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)))
                 ));
             } else {
@@ -226,6 +226,14 @@
                 if (isset($filter["description"]) && ! empty($filter["description"])) {
                     $conditions[] = " [GROUP].description LIKE :description ";
                     $params[] = (new \Forms\Database\DBParam())->str(":description", "%" . $filter["description"] . "%");
+                }
+                if (isset($filter["fromCreationDate"]) && ! empty($filter["fromCreationDate"])) {
+                    $conditions[] = " [GROUP].creation_date >= :creation_date ";
+                    $params[] = (new \Forms\Database\DBParam())->str(":creation_date", $filter["fromCreationDate"]);
+                }
+                if (isset($filter["toCreationDate"]) && ! empty($filter["toCreationDate"])) {
+                    $conditions[] = " [GROUP].creation_date <= :creation_date ";
+                    $params[] = (new \Forms\Database\DBParam())->str(":creation_date", $filter["fromCreationDate"]);
                 }
                 if (isset($filter["creatorName"]) && ! empty($filter["creatorName"])) {
                     $conditions[] = " U.name LIKE :creator_name ";

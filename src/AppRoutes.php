@@ -128,6 +128,12 @@
                 if (isset($requestFilter["name"]) && ! empty($requestFilter["name"])) {
                     $filter["name"] = $requestFilter["name"];
                 }
+                if (isset($requestFilter["fromCreationDate"]) && ! empty($requestFilter["fromCreationDate"])) {
+                    $filter["fromCreationDate"] = $requestFilter["fromCreationDate"];
+                }
+                if (isset($requestFilter["toCreationDate"]) && ! empty($requestFilter["toCreationDate"])) {
+                    $filter["toCreationDate"] = $requestFilter["toCreationDate"];
+                }
                 if (isset($requestFilter["creatorName"]) && ! empty($requestFilter["creatorName"])) {
                     $filter["creatorName"] = $requestFilter["creatorName"];
                 }
@@ -287,6 +293,12 @@
                 if (isset($requestFilter["description"]) && ! empty($requestFilter["description"])) {
                     $filter["description"] = $requestFilter["description"];
                 }
+                if (isset($requestFilter["fromCreationDate"]) && ! empty($requestFilter["fromCreationDate"])) {
+                    $filter["fromCreationDate"] = $requestFilter["fromCreationDate"];
+                }
+                if (isset($requestFilter["toCreationDate"]) && ! empty($requestFilter["toCreationDate"])) {
+                    $filter["toCreationDate"] = $requestFilter["toCreationDate"];
+                }
                 if (isset($requestFilter["creatorName"]) && ! empty($requestFilter["creatorName"])) {
                     $filter["creatorName"] = $requestFilter["creatorName"];
                 }
@@ -413,6 +425,12 @@
                 }
                 if (isset($requestFilter["description"]) && ! empty($requestFilter["description"])) {
                     $filter["description"] = $requestFilter["description"];
+                }
+                if (isset($requestFilter["fromCreationDate"]) && ! empty($requestFilter["fromCreationDate"])) {
+                    $filter["fromCreationDate"] = $requestFilter["fromCreationDate"];
+                }
+                if (isset($requestFilter["toCreationDate"]) && ! empty($requestFilter["toCreationDate"])) {
+                    $filter["toCreationDate"] = $requestFilter["toCreationDate"];
                 }
                 if (isset($requestFilter["creatorName"]) && ! empty($requestFilter["creatorName"])) {
                     $filter["creatorName"] = $requestFilter["creatorName"];

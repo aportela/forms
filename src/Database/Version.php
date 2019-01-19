@@ -19,7 +19,7 @@
                     );
                 ',
                 '
-                    INSERT INTO VERSION VALUES ("1.00", current_timestamp);
+                    INSERT INTO VERSION VALUES ("1.00", strftime("%s", "now"));
                 ',
                 '
                     PRAGMA journal_mode=WAL;
@@ -176,7 +176,7 @@
                 INSERT INTO VERSION
                     (num, date)
                 VALUES
-                    (:num, current_timestamp);
+                    (:num, strftime("%s", "now"));
             ';
             return($this->dbh->execute($query, $params));
         }
