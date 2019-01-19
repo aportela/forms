@@ -1,5 +1,6 @@
 import { default as formsAPI } from './api.js';
 import { default as validator } from './validator.js';
+import { default as vueFormsFieldUserSearch } from './f-field-user-search.js';
 
 const template = function () {
     return `
@@ -26,7 +27,7 @@ const template = function () {
                     </div>
                     <div class="field">
                         <label class="label">User list</label>
-                        <f-search-user-field v-bind:disabled="loading" v-bind:placeholder="'search user name'" v-bind:denyUsers="group.users" v-on:userSelected="addUser($event)"></f-search-user-field>
+                        <f-field-user-search v-bind:disabled="loading" v-bind:placeholder="'search user name'" v-bind:denyUsers="group.users" v-on:userSelected="addUser($event)"></f-field-user-search>
                         <p v-show="userAlreadyExists" class="help is-danger">User already on group</p>
                     </div>
                     <table class="table is-striped is-narrow is-fullwidth is-unselectable">
@@ -93,6 +94,9 @@ export default {
         mixinPagination,
         mixinUtils
     ],
+    components:  {
+        'f-field-user-search': vueFormsFieldUserSearch
+    },
     filters: {
         getAccountTypeName: function (accountType) {
             return (accountType == "A" ? "Administrator" : "Normal user");

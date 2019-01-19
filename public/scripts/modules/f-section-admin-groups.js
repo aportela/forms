@@ -2,6 +2,9 @@ import { default as formsAPI } from './api.js';
 import { default as vueFormsDialogExport } from './f-dialog-export.js';
 import { default as vueFormsDialogConfirmRemove } from './f-dialog-confirm-remove.js';
 import { default as vueFormsTableHeaderField } from './f-table-header-field.js';
+import { default as vueFormsFieldTextSearch } from './f-field-text-search.js';
+import { default as vueFormsFieldNumberSearch } from './f-field-number-search.js';
+import { default as vueFormsFieldDateSearch } from './f-field-date-search.js';
 import { default as vueFormsTableControls } from './f-table-controls.js';
 import { default as vueFormsPaginationControl } from './f-pagination-control.js';
 
@@ -24,19 +27,19 @@ const template = function () {
                     </tr>
                     <tr>
                         <th>
-                            <f-search-text-field v-bind:disabled="loading" v-bind:placeholder="'search by name'" v-on:searchTriggered="searchByName = $event; search(true);"></f-search-text-field>
+                            <f-field-text-search v-bind:disabled="loading" v-bind:placeholder="'search by name'" v-on:searchTriggered="searchByName = $event; search(true);"></f-field-text-search>
                         </th>
                         <th>
-                            <f-search-text-field v-bind:disabled="loading" v-bind:placeholder="'search by description'" v-on:searchTriggered="searchByDescription = $event; search(true);"></f-search-text-field>
+                            <f-field-text-search v-bind:disabled="loading" v-bind:placeholder="'search by description'" v-on:searchTriggered="searchByDescription = $event; search(true);"></f-field-text-search>
                         </th>
                         <th>
-                            <f-search-number-field v-bind:disabled="loading || true" v-bind:placeholderfrom="'from users'" v-bind:placeholderto="'to users'"v-on:searchTriggered="searchFromUserCount = $event.from; searchToUserCount = $event.to; search(true);"></f-search-number-field>
+                            <f-field-number-search v-bind:disabled="loading || true" v-bind:placeholderfrom="'from users'" v-bind:placeholderto="'to users'"v-on:searchTriggered="searchFromUserCount = $event.from; searchToUserCount = $event.to; search(true);"></f-field-number-search>
                         </th>
                         <th>
-                            <f-search-text-field v-bind:disabled="loading" v-bind:placeholder="'search by creator name'" v-on:searchTriggered="searchByCreatorName = $event; search(true);"></f-search-text-field>
+                            <f-field-text-search v-bind:disabled="loading" v-bind:placeholder="'search by creator name'" v-on:searchTriggered="searchByCreatorName = $event; search(true);"></f-field-text-search>
                         </th>
                         <th>
-                            <f-search-date-field v-bind:disabled="loading || true" v-on:searchTriggered="searchFromCreationDate = $event.from; searchToCreationDate = $event.to; search(true);"></f-search-date-field>
+                            <f-field-date-search v-bind:disabled="loading || true" v-on:searchTriggered="searchFromCreationDate = $event.from; searchToCreationDate = $event.to; search(true);"></f-field-date-search>
                         </th>
                         <th>
                             <f-table-controls v-bind:loading="loading" v-bind:configuration="{ showAddButton: true, showRefreshButton: true, showExportButton: true }" v-on:add="onAdd" v-on:refresh="onRefresh" v-on:export="showExportDialog"></f-table-controls>
@@ -103,6 +106,9 @@ export default {
         'f-dialog-export': vueFormsDialogExport,
         'f-dialog-confirm-remove': vueFormsDialogConfirmRemove,
         'f-table-header-field': vueFormsTableHeaderField,
+        'f-field-text-search': vueFormsFieldTextSearch,
+        'f-field-number-search': vueFormsFieldNumberSearch,
+        'f-field-date-search': vueFormsFieldDateSearch,
         'f-table-controls': vueFormsTableControls,
         'f-pagination-control': vueFormsPaginationControl
     },

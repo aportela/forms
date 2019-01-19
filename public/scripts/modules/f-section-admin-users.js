@@ -2,6 +2,9 @@ import { default as formsAPI } from './api.js';
 import { default as vueFormsDialogExport } from './f-dialog-export.js';
 import { default as vueFormsDialogConfirmRemove } from './f-dialog-confirm-remove.js';
 import { default as vueFormsTableHeaderField } from './f-table-header-field.js';
+import { default as vueFormsFieldTextSearch } from './f-field-text-search.js';
+import { default as vueFormsFieldSelectSearch } from './f-field-select-search.js';
+import { default as vueFormsFieldDateSearch } from './f-field-date-search.js';
 import { default as vueFormsTableControls } from './f-table-controls.js';
 import { default as vueFormsPaginationControl } from './f-pagination-control.js';
 
@@ -25,22 +28,22 @@ const template = function () {
                     </tr>
                     <tr>
                         <th>
-                            <f-search-text-field v-bind:disabled="loading" v-bind:placeholder="'search by email'" v-on:searchTriggered="searchByEmail = $event; search(true);"></f-search-text-field>
+                            <f-field-text-search v-bind:disabled="loading" v-bind:placeholder="'search by email'" v-on:searchTriggered="searchByEmail = $event; search(true);"></f-field-text-search>
                         </th>
                         <th>
-                            <f-search-text-field v-bind:disabled="loading" v-bind:placeholder="'search by name'" v-on:searchTriggered="searchByName = $event; search(true);"></f-search-text-field>
+                            <f-field-text-search v-bind:disabled="loading" v-bind:placeholder="'search by name'" v-on:searchTriggered="searchByName = $event; search(true);"></f-field-text-search>
                         </th>
                         <th>
-                            <f-search-user-account-type-field v-bind:disabled="loading" v-on:searchTriggered="searchByAccountType = $event; search(true);"></f-search-user-account-type-field>
+                            <f-field-select-search v-bind:disabled="loading" v-bind:items="accountTypeItems" v-on:searchTriggered="searchByAccountType = $event; search(true);"></f-field-select-search>
                         </th>
                         <th>
-                            <f-search-select-field v-bind:disabled="loading" v-bind:items="enabledItems" v-on:searchTriggered="searchByEnabled = $event; search(true);"></f-search-select-field>
+                            <f-field-select-search v-bind:disabled="loading" v-bind:items="enabledItems" v-on:searchTriggered="searchByEnabled = $event; search(true);"></f-field-select-search>
                         </th>
                         <th>
-                            <f-search-text-field v-bind:disabled="loading" v-bind:placeholder="'search by creator name'" v-on:searchTriggered="searchByCreatorName = $event; search(true);"></f-search-text-field>
+                            <f-field-text-search v-bind:disabled="loading" v-bind:placeholder="'search by creator name'" v-on:searchTriggered="searchByCreatorName = $event; search(true);"></f-field-text-search>
                         </th>
                         <th>
-                            <f-search-date-field v-bind:disabled="loading || true" v-on:searchTriggered="searchFromCreationDate = $event.from; searchToCreationDate = $event.to; search(true);"></f-search-date-field>
+                            <f-field-date-search v-bind:disabled="loading || true" v-on:searchTriggered="searchFromCreationDate = $event.from; searchToCreationDate = $event.to; search(true);"></f-field-date-search>
                         </th>
                         <th>
                             <f-table-controls v-bind:loading="loading" v-bind:configuration="{ showAddButton: true, showRefreshButton: true, showExportButton: true }" v-on:add="onAdd" v-on:refresh="onRefresh" v-on:export="showExportDialog"></f-table-controls>
@@ -101,7 +104,7 @@ export default {
             searchToCreationDate: null,
             enabledItems: [
                 {
-                    id: "",
+                    id: null,
                     name: "Any value"
                 },
                 {
@@ -111,6 +114,20 @@ export default {
                 {
                     id: "N",
                     name: "Disabled accounts"
+                }
+            ],
+            accountTypeItems: [
+                {
+                    id: null,
+                    name: 'Any value'
+                },
+                {
+                    id: "A",
+                    name: "Administrators"
+                },
+                {
+                    id: "U",
+                    name: "Users"
                 }
             ]
         });
@@ -125,6 +142,9 @@ export default {
         'f-dialog-export': vueFormsDialogExport,
         'f-dialog-confirm-remove': vueFormsDialogConfirmRemove,
         'f-table-header-field': vueFormsTableHeaderField,
+        'f-field-text-search': vueFormsFieldTextSearch,
+        'f-field-select-search': vueFormsFieldSelectSearch,
+        'f-field-date-search': vueFormsFieldDateSearch,
         'f-table-controls': vueFormsTableControls,
         'f-pagination-control': vueFormsPaginationControl
     },
