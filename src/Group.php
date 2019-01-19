@@ -253,6 +253,9 @@
                 case "description":
                     $sqlSortBy = "[GROUP].description";
                 break;
+                case "userCount":
+                    $sqlSortBy = "COALESCE(TMP_GROUP_USER_COUNT.totalUsers, 0)";
+                break;
                 case "creationDate":
                     $sqlSortBy = "[GROUP].creation_date";
                 break;
