@@ -115,9 +115,6 @@
             );
         });
 
-        /**
-         * USER API routes (BEGIN)
-         */
         $this->group("/users", function() {
 
             $this->post('/search', function (Request $request, Response $response, array $args) {
@@ -277,13 +274,6 @@
 
         })->add(new \Forms\Middleware\AuthenticationRequired($this->getContainer()));
 
-        /**
-         * USER API routes (END)
-         */
-
-        /**
-         * GROUP API routes (BEGIN)
-         */
         $this->group("/groups", function() {
 
             $this->post('/search', function (Request $request, Response $response, array $args) {
@@ -411,9 +401,122 @@
 
         })->add(new \Forms\Middleware\AuthenticationRequired($this->getContainer()));
 
-        /**
-         * GROUP API routes (END)
-         */
+        $this->group("/attributes", function() {
+
+            $this->post('/search', function (Request $request, Response $response, array $args) {
+                $requestFilter = $request->getParam("filter");
+                $filter = array();
+                if (isset($requestFilter["name"]) && ! empty($requestFilter["name"])) {
+                    $filter["name"] = $requestFilter["name"];
+                }
+                if (isset($requestFilter["description"]) && ! empty($requestFilter["description"])) {
+                    $filter["description"] = $requestFilter["description"];
+                }
+                if (isset($requestFilter["creatorName"]) && ! empty($requestFilter["creatorName"])) {
+                    $filter["creatorName"] = $requestFilter["creatorName"];
+                }
+                $data = \Forms\Attribute::search(
+                    new \Forms\Database\DB(
+                        $this
+                    ),
+                    $filter,
+                    $request->getParam("currentPage", 1),
+                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    $request->getParam("sortBy", ""),
+                    $request->getParam("sortOrder", "")
+                );
+                return $response->withJson(
+                    [
+                        'success' => true,
+                        'attributes' => $data->results,
+                        "pagination" => array(
+                            'totalResults' => $data->totalResults,
+                            'currentPage' => $data->currentPage,
+                            'resultsPage' => $data->resultsPage,
+                            'totalPages' => $data->totalPages
+                        )
+                    ], 200
+                );
+            });
+
+            $this->get('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $attribute = new \Forms\Attribute(
+                    $route->getArgument("id"),
+                    "",
+                    "" ,
+                    array()
+                );
+                $dbh = new \Forms\Database\DB($this);
+                $attribute->get($dbh);
+                return $response->withJson(
+                    [
+                        'success' => true,
+                        "attribute" => $attribute
+                    ], 200
+                );
+            });
+
+            $this->post('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $attribute = new \Forms\Attribute(
+                    $route->getArgument("id"),
+                    $request->getParam("name", ""),
+                    $request->getParam("description", "")
+                );
+                $dbh = new \Forms\Database\DB($this);
+                if (\Forms\Attribute::existsName($dbh, $attribute->name)) {
+                    throw new \Forms\Exception\AlreadyExistsException("name");
+                } else {
+                    $attribute->add($dbh);
+                    return $response->withJson(
+                        [
+                            'success' => true,
+                            "attribute" => $attribute
+                        ], 200
+                    );
+                }
+            })->add(new \Forms\Middleware\AdministrationPrivilegesRequired($this->getContainer()));
+
+            $this->put('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $attribute = new \Forms\Attribute(
+                    $route->getArgument("id"),
+                    $request->getParam("name", ""),
+                    $request->getParam("description", "")
+                );
+                $dbh = new \Forms\Database\DB($this);
+                if (\Forms\Attribute::existsName($dbh, $attribute->name, $attribute->id)) {
+                    throw new \Forms\Exception\AlreadyExistsException("name");
+                } else {
+                    $attribute->update($dbh);
+                    return $response->withJson(
+                        [
+                            'success' => true,
+                            "attribute" => $attribute
+                        ], 200
+                    );
+                }
+            })->add(new \Forms\Middleware\AdministrationPrivilegesRequired($this->getContainer()));
+
+            $this->delete('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $attribute = new \Forms\Attribute(
+                    $route->getArgument("id"),
+                    "",
+                    "",
+                    array()
+                );
+                $dbh = new \Forms\Database\DB($this);
+                $attribute->delete($dbh);
+                return $response->withJson(
+                    [
+                        'success' => true,
+                    ], 200
+                );
+            })->add(new \Forms\Middleware\AdministrationPrivilegesRequired($this->getContainer()));
+
+        })->add(new \Forms\Middleware\AuthenticationRequired($this->getContainer()));
 
     })->add(new \Forms\Middleware\APIExceptionCatcher($this->app->getContainer()));
 ?>

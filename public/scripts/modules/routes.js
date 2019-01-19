@@ -6,6 +6,8 @@ import { default as vueFormsSectionAdminUsers } from './f-section-admin-users.js
 import { default as vueFormsSectionAdminUserCard } from './f-section-admin-user-card.js';
 import { default as vueFormsSectionAdminGroups } from './f-section-admin-groups.js';
 import { default as vueFormsSectionAdminGroupCard } from './f-section-admin-group-card.js';
+import { default as vueFormsSectionAdminAttributes } from './f-section-admin-attributes.js';
+import { default as vueFormsSectionAdminAttributeCard } from './f-section-admin-attribute-card.js';
 import { default as vueFormsSectionAPIError } from './f-section-api-error.js';
 
 export const routes = [
@@ -29,7 +31,10 @@ export const routes = [
             { path: 'profile', name: 'profile', component: vueFormsSectionAdminUserCard },
             { path: 'administration/groups/search', name: 'groups', component: vueFormsSectionAdminGroups },
             { path: 'administration/groups/add', name: 'addGroup', component: vueFormsSectionAdminGroupCard },
-            { path: 'administration/groups/update/:id', name: 'updateGroup', component: vueFormsSectionAdminGroupCard }
+            { path: 'administration/groups/update/:id', name: 'updateGroup', component: vueFormsSectionAdminGroupCard },
+            { path: 'administration/attribute/search', name: 'attributes', component: vueFormsSectionAdminAttributes },
+            { path: 'administration/attribute/add', name: 'addAttribute', component: vueFormsSectionAdminAttributeCard },
+            { path: 'administration/attribute/update/:id', name: 'updateAttribute', component: vueFormsSectionAdminAttributeCard }
         ]
     },
     { path: '/api-error', name: 'apiError', component: vueFormsSectionAPIError }

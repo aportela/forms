@@ -246,5 +246,99 @@ export default {
                 }
             );
         }
+    },
+    attribute: {
+        get: function (id, callback) {
+            Vue.http.get("api/attributes/" + id).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        add: function (attribute, callback) {
+            Vue.http.post("api/attributes/" + attribute.id, attribute).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        update: function (attribute, callback) {
+            Vue.http.put("api/attributes/" + attribute.id, attribute).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        remove: function (id, callback) {
+            Vue.http.delete("api/attributes/" + id).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        search: function (searchByName, searchByDescription, searchByCreatorName, searchFromCreationDate, searchToCreationDate, currentPage, resultsPage, sortBy, sortOrder, callback) {
+            let params = {
+                filter: {},
+                currentPage: currentPage,
+                resultsPage: resultsPage,
+                sortBy: sortBy,
+                sortOrder: sortOrder,
+            };
+            if (searchByName) {
+                params.filter.name = searchByName;
+            }
+            if (searchByDescription) {
+                params.filter.description = searchByDescription;
+            }
+            if (searchByCreatorName) {
+                params.filter.creatorName = searchByCreatorName;
+            }
+            if (searchFromCreationDate) {
+                params.filter.fromCreationDate = searchFromCreationDate;
+            }
+            if (searchToCreationDate) {
+                params.filter.toCreationDate = searchToCreationDate;
+            }
+            Vue.http.post("api/attributes/search", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        }
     }
 }
