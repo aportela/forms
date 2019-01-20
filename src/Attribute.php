@@ -199,12 +199,12 @@
                     $params[] = (new \Forms\Database\DBParam())->str(":description", "%" . $filter["description"] . "%");
                 }
                 if (isset($filter["fromCreationDate"]) && ! empty($filter["fromCreationDate"])) {
-                    $conditions[] = " [ATTRIBUTE].creation_date >= :creation_date ";
-                    $params[] = (new \Forms\Database\DBParam())->str(":creation_date", $filter["fromCreationDate"]);
+                    $conditions[] = " [ATTRIBUTE].creation_date >= :from_creation_date ";
+                    $params[] = (new \Forms\Database\DBParam())->str(":from_creation_date", $filter["fromCreationDate"]);
                 }
                 if (isset($filter["toCreationDate"]) && ! empty($filter["toCreationDate"])) {
-                    $conditions[] = " [ATTRIBUTE].creation_date <= :creation_date ";
-                    $params[] = (new \Forms\Database\DBParam())->str(":creation_date", $filter["fromCreationDate"]);
+                    $conditions[] = " [ATTRIBUTE].creation_date <= :to_creation_date ";
+                    $params[] = (new \Forms\Database\DBParam())->str(":to_creation_date", $filter["toCreationDate"]);
                 }
                 if (isset($filter["creatorName"]) && ! empty($filter["creatorName"])) {
                     $conditions[] = " U.name LIKE :creator_name ";
@@ -228,48 +228,50 @@
 
             $data = new \Forms\SearchResult($currentPage, $resultsPage, intval($results[0]->total));
 
-            $sqlSortBy = "";
-            switch($sortBy) {
-                case "description":
-                    $sqlSortBy = "[ATTRIBUTE].description";
-                break;
-                case "creationDate":
-                    $sqlSortBy = "[ATTRIBUTE].creation_date";
-                break;
-                case "name":
-                default:
-                    $sqlSortBy = "[ATTRIBUTE].name";
-                break;
+            if ($data->totalResults > 0) {
+                $sqlSortBy = "";
+                switch($sortBy) {
+                    case "description":
+                        $sqlSortBy = "[ATTRIBUTE].description";
+                    break;
+                    case "creationDate":
+                        $sqlSortBy = "[ATTRIBUTE].creation_date";
+                    break;
+                    case "name":
+                    default:
+                        $sqlSortBy = "[ATTRIBUTE].name";
+                    break;
+                }
+                $data->results = $dbh->query(
+                    sprintf(
+                        "
+                            SELECT
+                            [ATTRIBUTE].id, [ATTRIBUTE].name, [ATTRIBUTE].description, strftime('%s', datetime([ATTRIBUTE].creation_date, 'unixepoch')) AS creationDate, [ATTRIBUTE].creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
+                            FROM [ATTRIBUTE]
+                            LEFT JOIN USER U ON [ATTRIBUTE].creator = U.id
+                            WHERE [ATTRIBUTE].deletion_date IS NULL
+                            %s
+                            ORDER BY %s COLLATE NOCASE %s
+                            %s
+                        ",
+                        \Forms\Database\DB::SQLITE_STRFTIME_FORMAT,
+                        $whereCondition,
+                        $sqlSortBy,
+                        $sortOrder == "DESC" ? "DESC": "ASC",
+                        $data->isPaginationEnabled() ? sprintf("LIMIT %d OFFSET %d", $data->resultsPage, $data->getSQLPageOffset()) : null
+                    ), $params
+                );
+                foreach($data->results as $attribute) {
+                    $creatorId = $attribute->creatorId;
+                    $creatorEmail = $attribute->creatorEmail;
+                    $creatorName = $attribute->creatorName;
+                    $attribute->creator = new \stdclass();
+                    $attribute->creator->id = $creatorId;
+                    $attribute->creator->email = $creatorEmail;
+                    $attribute->creator->name = $creatorName;
+                }
+                return($data);
             }
-            $data->results = $dbh->query(
-                sprintf(
-                    "
-                        SELECT
-                        [ATTRIBUTE].id, [ATTRIBUTE].name, [ATTRIBUTE].description, strftime('%s', datetime([ATTRIBUTE].creation_date, 'unixepoch')) AS creationDate, [ATTRIBUTE].creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
-                        FROM [ATTRIBUTE]
-                        LEFT JOIN USER U ON [ATTRIBUTE].creator = U.id
-                        WHERE [ATTRIBUTE].deletion_date IS NULL
-                        %s
-                        ORDER BY %s COLLATE NOCASE %s
-                        %s
-                    ",
-                    \Forms\Database\DB::SQLITE_STRFTIME_FORMAT,
-                    $whereCondition,
-                    $sqlSortBy,
-                    $sortOrder == "DESC" ? "DESC": "ASC",
-                    $data->isPaginationEnabled() ? sprintf("LIMIT %d OFFSET %d", $data->resultsPage, $data->getSQLPageOffset()) : null
-                ), $params
-            );
-            foreach($data->results as $attribute) {
-                $creatorId = $attribute->creatorId;
-                $creatorEmail = $attribute->creatorEmail;
-                $creatorName = $attribute->creatorName;
-                $attribute->creator = new \stdclass();
-                $attribute->creator->id = $creatorId;
-                $attribute->creator->email = $creatorEmail;
-                $attribute->creator->name = $creatorName;
-            }
-            return($data);
         }
 
     }

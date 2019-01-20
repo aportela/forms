@@ -300,13 +300,19 @@
                     $conditions[] = " USER.name LIKE :name ";
                     $params[] = (new \Forms\Database\DBParam())->str(":name", "%" . $filter["name"] . "%");
                 }
-                if (isset($filter["fromCreationDate"]) && ! empty($filter["fromCreationDate"])) {
-                    $conditions[] = " USER.creation_date >= :creation_date ";
-                    $params[] = (new \Forms\Database\DBParam())->str(":creation_date", $filter["fromCreationDate"]);
+                if (isset($filter["ationDate"]) && ! empty($filter["ationDate"])) {
+                    $conditions[] = sprintf(
+                        " strftime('%s', datetime(USER.creation_date, 'unixepoch')) >= :from_creation_date ",
+                        \Forms\Database\DB::SQLITE_STRFTIME_FORMAT
+                    );
+                    $params[] = (new \Forms\Database\DBParam())->str(":from_creation_date", $filter["ationDate"]);
                 }
                 if (isset($filter["toCreationDate"]) && ! empty($filter["toCreationDate"])) {
-                    $conditions[] = " USER.creation_date <= :creation_date ";
-                    $params[] = (new \Forms\Database\DBParam())->str(":creation_date", $filter["fromCreationDate"]);
+                    $conditions[] = sprintf(
+                        " strftime('%s', datetime(USER.creation_date, 'unixepoch')) <= :to_creation_date ",
+                        \Forms\Database\DB::SQLITE_STRFTIME_FORMAT
+                    );
+                    $params[] = (new \Forms\Database\DBParam())->str(":to_creation_date", $filter["toCreationDate"]);
                 }
                 if (isset($filter["creatorName"]) && ! empty($filter["creatorName"])) {
                     $conditions[] = " U.name LIKE :creator_name ";
@@ -338,53 +344,55 @@
 
             $data = new \Forms\SearchResult($currentPage, $resultsPage, intval($results[0]->total));
 
-            $sqlSortBy = "";
-            switch($sortBy) {
-                case "name":
-                    $sqlSortBy = "USER.name";
-                break;
-                case "creationDate":
-                    $sqlSortBy = "USER.creation_date";
-                break;
-                case "accountType":
-                    $sqlSortBy = "USER.account_type";
-                break;
-                case "enabled":
-                    $sqlSortBy = "USER.enabled";
-                break;
-                case "email":
-                default:
-                    $sqlSortBy = "USER.email";
-                break;
-            }
-            $data->results = $dbh->query(
-                sprintf(
-                    "
-                        SELECT
-                            USER.id, USER.email, USER.name, strftime('%s', datetime(USER.creation_date, 'unixepoch')) AS creationDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName, USER.enabled AS enabled
-                        FROM USER
-                        LEFT JOIN USER U ON USER.creator = U.id
-                        WHERE USER.deletion_date IS NULL
-                        %s
-                        ORDER BY %s COLLATE NOCASE %s
-                        %s
-                    ",
-                    \Forms\Database\DB::SQLITE_STRFTIME_FORMAT,
-                    $whereCondition,
-                    $sqlSortBy,
-                    $sortOrder == "DESC" ? "DESC": "ASC",
-                    $data->isPaginationEnabled() ? sprintf("LIMIT %d OFFSET %d", $data->resultsPage, $data->getSQLPageOffset()) : null
-                ), $params
-            );
-            foreach($data->results as $user) {
-                $creatorId = $user->creatorId;
-                $creatorEmail = $user->creatorEmail;
-                $creatorName = $user->creatorName;
-                $user->creator = new \stdclass();
-                $user->creator->id = $creatorId;
-                $user->creator->email = $creatorEmail;
-                $user->creator->name = $creatorName;
-                $user->enabled = $user->enabled == "Y";
+            if ($data->totalResults > 0) {
+                $sqlSortBy = "";
+                switch($sortBy) {
+                    case "name":
+                        $sqlSortBy = "USER.name";
+                    break;
+                    case "creationDate":
+                        $sqlSortBy = "USER.creation_date";
+                    break;
+                    case "accountType":
+                        $sqlSortBy = "USER.account_type";
+                    break;
+                    case "enabled":
+                        $sqlSortBy = "USER.enabled";
+                    break;
+                    case "email":
+                    default:
+                        $sqlSortBy = "USER.email";
+                    break;
+                }
+                $data->results = $dbh->query(
+                    sprintf(
+                        "
+                            SELECT
+                                USER.id, USER.email, USER.name, strftime('%s', datetime(USER.creation_date, 'unixepoch')) AS creationDate, USER.account_type AS accountType, USER.creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName, USER.enabled AS enabled
+                            FROM USER
+                            LEFT JOIN USER U ON USER.creator = U.id
+                            WHERE USER.deletion_date IS NULL
+                            %s
+                            ORDER BY %s COLLATE NOCASE %s
+                            %s
+                        ",
+                        \Forms\Database\DB::SQLITE_STRFTIME_FORMAT,
+                        $whereCondition,
+                        $sqlSortBy,
+                        $sortOrder == "DESC" ? "DESC": "ASC",
+                        $data->isPaginationEnabled() ? sprintf("LIMIT %d OFFSET %d", $data->resultsPage, $data->getSQLPageOffset()) : null
+                    ), $params
+                );
+                foreach($data->results as $user) {
+                    $creatorId = $user->creatorId;
+                    $creatorEmail = $user->creatorEmail;
+                    $creatorName = $user->creatorName;
+                    $user->creator = new \stdclass();
+                    $user->creator->id = $creatorId;
+                    $user->creator->email = $creatorEmail;
+                    $user->creator->name = $creatorName;
+                    $user->enabled = $user->enabled == "Y";
+                }
             }
             return($data);
         }

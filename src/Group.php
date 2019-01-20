@@ -240,12 +240,12 @@
                     $params[] = (new \Forms\Database\DBParam())->str(":description", "%" . $filter["description"] . "%");
                 }
                 if (isset($filter["fromCreationDate"]) && ! empty($filter["fromCreationDate"])) {
-                    $conditions[] = " [GROUP].creation_date >= :creation_date ";
-                    $params[] = (new \Forms\Database\DBParam())->str(":creation_date", $filter["fromCreationDate"]);
+                    $conditions[] = " [GROUP].creation_date >= :from_creation_date ";
+                    $params[] = (new \Forms\Database\DBParam())->str(":from_creation_date", $filter["fromCreationDate"]);
                 }
                 if (isset($filter["toCreationDate"]) && ! empty($filter["toCreationDate"])) {
-                    $conditions[] = " [GROUP].creation_date <= :creation_date ";
-                    $params[] = (new \Forms\Database\DBParam())->str(":creation_date", $filter["fromCreationDate"]);
+                    $conditions[] = " [GROUP].creation_date <= :to_creation_date ";
+                    $params[] = (new \Forms\Database\DBParam())->str(":to_creation_date", $filter["toCreationDate"]);
                 }
                 if (isset($filter["creatorName"]) && ! empty($filter["creatorName"])) {
                     $conditions[] = " U.name LIKE :creator_name ";
@@ -269,57 +269,59 @@
 
             $data = new \Forms\SearchResult($currentPage, $resultsPage, intval($results[0]->total));
 
-            $sqlSortBy = "";
-            switch($sortBy) {
-                case "description":
-                    $sqlSortBy = "[GROUP].description";
-                break;
-                case "userCount":
-                    $sqlSortBy = "COALESCE(TMP_GROUP_USER_COUNT.totalUsers, 0)";
-                break;
-                case "creationDate":
-                    $sqlSortBy = "[GROUP].creation_date";
-                break;
-                case "name":
-                default:
-                    $sqlSortBy = "[GROUP].name";
-                break;
-            }
-            $data->results = $dbh->query(
-                sprintf(
-                    "
-                        SELECT
-                        [GROUP].id, [GROUP].name, [GROUP].description, COALESCE(TMP_GROUP_USER_COUNT.totalUsers, 0) AS userCount, strftime('%s', datetime([GROUP].creation_date, 'unixepoch')) AS creationDate, [GROUP].creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
-                        FROM [GROUP]
-                        LEFT JOIN (
-                            SELECT COUNT(USER_GROUP.user_id) AS totalUsers, USER_GROUP.group_id
-                            FROM USER_GROUP
-                            LEFT JOIN USER ON USER.id = USER_GROUP.user_id
-                            WHERE USER.deletion_date IS NULL
-                            GROUP BY USER_GROUP.group_id
-                        ) TMP_GROUP_USER_COUNT ON TMP_GROUP_USER_COUNT.group_id = [GROUP].id
-                        LEFT JOIN USER U ON [GROUP].creator = U.id
-                        WHERE [GROUP].deletion_date IS NULL
-                        %s
-                        ORDER BY %s COLLATE NOCASE %s
-                        %s
-                    ",
-                    \Forms\Database\DB::SQLITE_STRFTIME_FORMAT,
-                    $whereCondition,
-                    $sqlSortBy,
-                    $sortOrder == "DESC" ? "DESC": "ASC",
-                    $data->isPaginationEnabled() ? sprintf("LIMIT %d OFFSET %d", $data->resultsPage, $data->getSQLPageOffset()) : null
-                ), $params
-            );
-            foreach($data->results as $group) {
-                $creatorId = $group->creatorId;
-                $creatorEmail = $group->creatorEmail;
-                $creatorName = $group->creatorName;
-                $group->userCount = intval($group->userCount);
-                $group->creator = new \stdclass();
-                $group->creator->id = $creatorId;
-                $group->creator->email = $creatorEmail;
-                $group->creator->name = $creatorName;
+            if ($data->totalResults > 0) {
+                $sqlSortBy = "";
+                switch($sortBy) {
+                    case "description":
+                        $sqlSortBy = "[GROUP].description";
+                    break;
+                    case "userCount":
+                        $sqlSortBy = "COALESCE(TMP_GROUP_USER_COUNT.totalUsers, 0)";
+                    break;
+                    case "creationDate":
+                        $sqlSortBy = "[GROUP].creation_date";
+                    break;
+                    case "name":
+                    default:
+                        $sqlSortBy = "[GROUP].name";
+                    break;
+                }
+                $data->results = $dbh->query(
+                    sprintf(
+                        "
+                            SELECT
+                            [GROUP].id, [GROUP].name, [GROUP].description, COALESCE(TMP_GROUP_USER_COUNT.totalUsers, 0) AS userCount, strftime('%s', datetime([GROUP].creation_date, 'unixepoch')) AS creationDate, [GROUP].creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
+                            FROM [GROUP]
+                            LEFT JOIN (
+                                SELECT COUNT(USER_GROUP.user_id) AS totalUsers, USER_GROUP.group_id
+                                FROM USER_GROUP
+                                LEFT JOIN USER ON USER.id = USER_GROUP.user_id
+                                WHERE USER.deletion_date IS NULL
+                                GROUP BY USER_GROUP.group_id
+                            ) TMP_GROUP_USER_COUNT ON TMP_GROUP_USER_COUNT.group_id = [GROUP].id
+                            LEFT JOIN USER U ON [GROUP].creator = U.id
+                            WHERE [GROUP].deletion_date IS NULL
+                            %s
+                            ORDER BY %s COLLATE NOCASE %s
+                            %s
+                        ",
+                        \Forms\Database\DB::SQLITE_STRFTIME_FORMAT,
+                        $whereCondition,
+                        $sqlSortBy,
+                        $sortOrder == "DESC" ? "DESC": "ASC",
+                        $data->isPaginationEnabled() ? sprintf("LIMIT %d OFFSET %d", $data->resultsPage, $data->getSQLPageOffset()) : null
+                    ), $params
+                );
+                foreach($data->results as $group) {
+                    $creatorId = $group->creatorId;
+                    $creatorEmail = $group->creatorEmail;
+                    $creatorName = $group->creatorName;
+                    $group->userCount = intval($group->userCount);
+                    $group->creator = new \stdclass();
+                    $group->creator->id = $creatorId;
+                    $group->creator->email = $creatorEmail;
+                    $group->creator->name = $creatorName;
+                }
             }
             return($data);
         }
