@@ -61,7 +61,7 @@ const template = function () {
                             <i title="Account is disabled"v-else class="fas fa-exclamation-circle f-cursor-help"></i>
                         </td>
                         <td>{{ user.creatorName }}</td>
-                        <td>{{ user.creationDate | parseJSONDate }}</td>
+                        <td>{{ user.creationDate | parseJSONDateTime }}</td>
                         <td>
                             <div class="field is-grouped">
                                 <p class="control is-expanded">

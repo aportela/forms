@@ -53,7 +53,7 @@ const template = function () {
                         <td>{{ group.description }}</td>
                         <td>{{ group.userCount }}</td>
                         <td>{{ group.creator.name }}</td>
-                        <td>{{ group.creationDate | parseJSONDate }}</td>
+                        <td>{{ group.creationDate | parseJSONDateTime }}</td>
                         <td>
                             <div class="field is-grouped">
                                 <p class="control is-expanded">
