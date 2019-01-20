@@ -90,6 +90,9 @@ export const mixinDates = {
     filters: {
         parseJSONDate: function(jsonDate) {
             return(dateFns.format(new Date(jsonDate), 'YYYY-MM-DD'));
+        },
+        parseJSONDateTime: function(jsonDate) {
+            return(dateFns.format(new Date(jsonDate), 'YYYY-MM-DD H:m:ss'));
         }
     }
 }
