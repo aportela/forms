@@ -199,11 +199,17 @@
                     $params[] = (new \Forms\Database\DBParam())->str(":description", "%" . $filter["description"] . "%");
                 }
                 if (isset($filter["fromCreationDate"]) && ! empty($filter["fromCreationDate"])) {
-                    $conditions[] = " [ATTRIBUTE].creation_date >= :from_creation_date ";
+                    $conditions[] = sprintf(
+                        " strftime('%s', datetime([ATTRIBUTE].creation_date, 'unixepoch')) >= :from_creation_date ",
+                        \Forms\Database\DB::SQLITE_STRFTIME_FORMAT
+                    );
                     $params[] = (new \Forms\Database\DBParam())->str(":from_creation_date", $filter["fromCreationDate"]);
                 }
                 if (isset($filter["toCreationDate"]) && ! empty($filter["toCreationDate"])) {
-                    $conditions[] = " [ATTRIBUTE].creation_date <= :to_creation_date ";
+                    $conditions[] = sprintf(
+                        " strftime('%s', datetime([ATTRIBUTE].creation_date, 'unixepoch')) <= :to_creation_date ",
+                        \Forms\Database\DB::SQLITE_STRFTIME_FORMAT
+                    );
                     $params[] = (new \Forms\Database\DBParam())->str(":to_creation_date", $filter["toCreationDate"]);
                 }
                 if (isset($filter["creatorName"]) && ! empty($filter["creatorName"])) {

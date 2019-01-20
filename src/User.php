@@ -300,12 +300,12 @@
                     $conditions[] = " USER.name LIKE :name ";
                     $params[] = (new \Forms\Database\DBParam())->str(":name", "%" . $filter["name"] . "%");
                 }
-                if (isset($filter["ationDate"]) && ! empty($filter["ationDate"])) {
+                if (isset($filter["fromCreationDate"]) && ! empty($filter["fromCreationDate"])) {
                     $conditions[] = sprintf(
                         " strftime('%s', datetime(USER.creation_date, 'unixepoch')) >= :from_creation_date ",
                         \Forms\Database\DB::SQLITE_STRFTIME_FORMAT
                     );
-                    $params[] = (new \Forms\Database\DBParam())->str(":from_creation_date", $filter["ationDate"]);
+                    $params[] = (new \Forms\Database\DBParam())->str(":from_creation_date", $filter["fromCreationDate"]);
                 }
                 if (isset($filter["toCreationDate"]) && ! empty($filter["toCreationDate"])) {
                     $conditions[] = sprintf(
