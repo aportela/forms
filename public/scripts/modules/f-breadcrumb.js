@@ -13,6 +13,9 @@ const template = function () {
             <li v-if="isRouteActive('groups') || isRouteActive('addGroup') || isRouteActive('updateGroup')" aria-current="page"><a href="#" v-on:click.prevent="changeRoute('groups')"><span class="icon is-small"><i class="fas fa-users" aria-hidden="true"></i></span><span>Group management</span></a></li>
             <li v-if="isRouteActive('addGroup')" aria-current="page"><a href="#"><span class="icon is-small"><i class="fas fa-plus" aria-hidden="true"></i></span><span>Add group</span></a></li>
             <li v-if="isRouteActive('updateGroup')" aria-current="page"><a href="#"><span class="icon is-small"><i class="fas fa-pen" aria-hidden="true"></i></span><span>Update group</span></a></li>
+            <li v-if="isRouteActive('attributes') || isRouteActive('addAttribute') || isRouteActive('updateAttribute')" aria-current="page"><a href="#" v-on:click.prevent="changeRoute('attributes')"><span class="icon is-small"><i class="fas fa-tag" aria-hidden="true"></i></span><span>Attribute management</span></a></li>
+            <li v-if="isRouteActive('addAttribute')" aria-current="page"><a href="#"><span class="icon is-small"><i class="fas fa-plus" aria-hidden="true"></i></span><span>Add attribute</span></a></li>
+            <li v-if="isRouteActive('updateAttribute')" aria-current="page"><a href="#"><span class="icon is-small"><i class="fas fa-pen" aria-hidden="true"></i></span><span>Update attribute</span></a></li>
             </ul>
         </nav>
     `;
@@ -38,7 +41,9 @@ export default {
                 this.isRouteActive("groups") ||
                 this.isRouteActive("addGroup") ||
                 this.isRouteActive("updateGroup") ||
-                this.isRouteActive("attributes")
+                this.isRouteActive("attributes") ||
+                this.isRouteActive("addAttribute") ||
+                this.isRouteActive("updateAttribute")
             );
         }
     }
