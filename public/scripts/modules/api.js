@@ -304,7 +304,7 @@ export default {
                 }
             );
         },
-        search: function (searchByName, searchByDescription, searchByCreatorName, searchFromCreationDate, searchToCreationDate, currentPage, resultsPage, sortBy, sortOrder, callback) {
+        search: function (searchByName, searchByDescription, searchByType, searchByCreatorName, searchFromCreationDate, searchToCreationDate, currentPage, resultsPage, sortBy, sortOrder, callback) {
             let params = {
                 filter: {},
                 currentPage: currentPage,
@@ -317,6 +317,9 @@ export default {
             }
             if (searchByDescription) {
                 params.filter.description = searchByDescription;
+            }
+            if (searchByType) {
+                params.filter.type = searchByType;
             }
             if (searchByCreatorName) {
                 params.filter.creatorName = searchByCreatorName;
