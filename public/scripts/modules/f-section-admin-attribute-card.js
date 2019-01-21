@@ -31,7 +31,7 @@ const template = function () {
                     <div class="field">
                         <label class="label">Attribute type</label>
                         <div class="select">
-                            <select required v-bind:disabled="disabled" v-model="attribute.type">
+                            <select required v-bind:disabled="isTypeDisabled" v-model="attribute.type">
                                 <option v-for="item in availableTypes" v-bind:key="item.id" v-bind:value="item.id">{{ item.name }}</option>
                             </select>
                         </div>
@@ -50,7 +50,7 @@ const template = function () {
                     <div v-show="attribute.type">
                         <div class="field" v-show="isListType">
                             <label class="label">Value collection</label>
-                            <f-attribute-list-definition v-bind:disabled="loading ? true: false" v-bind:items="attribute.definition.valueList" v-on:itemAdded="onListItemAdded($event)" v-on:itemRemoved="onListItemRemoved($event)"></f-attribute-list-definition>
+                            <f-attribute-list-definition v-bind:disabled="loading ? true: false" v-bind:items="valueListItems" v-on:itemAdded="onListItemAdded($event)" v-on:itemRemoved="onListItemRemoved($event)"></f-attribute-list-definition>
                         </div>
                         <div class="field">
                             <label class="label">Default value</label>
@@ -71,11 +71,11 @@ const template = function () {
                             <label class="label">Length restriction</label>
                             <div class="field has-addons">
                                 <p class="control has-icons-left">
-                                    <input class="input" type="text" placeholder="min string length" v-model="attribute.definition.minLength">
+                                    <input class="input" type="text" placeholder="min string length" v-model.number="attribute.definition.minLength">
                                     <span class="icon is-small is-left"><i class="fas fa-greater-than-equal"></i></span>
                                 </p>
                                 <p class="control has-icons-left">
-                                    <input class="input" type="text" placeholder="max string length" v-model="attribute.definition.maxLength">
+                                    <input class="input" type="text" placeholder="max string length" v-model.number="attribute.definition.maxLength">
                                     <span class="icon is-small is-left"><i class="fas fa-less-than-equal"></i></span>
                                 </p>
                             </div>
@@ -84,11 +84,11 @@ const template = function () {
                             <label class="label">Range restriction</label>
                             <div class="field has-addons">
                                 <p class="control has-icons-left">
-                                    <input class="input" type="text" placeholder="min value" v-model="attribute.definition.minValue">
+                                    <input class="input" type="text" placeholder="min value" v-model.number="attribute.definition.minValue">
                                     <span class="icon is-small is-left"><i class="fas fa-greater-than-equal"></i></span>
                                 </p>
                                 <p class="control has-icons-left">
-                                    <input class="input" type="text" placeholder="max value" v-model="attribute.definition.maxValue">
+                                    <input class="input" type="text" placeholder="max value" v-model.number="attribute.definition.maxValue">
                                     <span class="icon is-small is-left"><i class="fas fa-less-than-equal"></i></span>
                                 </p>
                             </div>
@@ -96,7 +96,7 @@ const template = function () {
                         <div class="field" v-show="isDecimalNumberType">
                             <label class="label">Decimal precision</label>
                             <p class="control has-icons-left">
-                                <input class="input" type="text" placeholder="decimal numbers" v-model="attribute.definition.decimalPrecision">
+                                <input class="input" type="text" placeholder="decimal numbers" v-model.number="attribute.definition.decimalPrecision">
                                 <span class="icon is-small is-left"><i class="fas fa-calculator"></i></span>
                             </p>
                         </div>
@@ -157,6 +157,9 @@ export default {
         }
     },
     computed: {
+        isTypeDisabled: function() {
+            return(this.disabled || this.$route.params.id);
+        },
         isStringType: function () {
             return (this.attribute.type == "SHORT_STRING" || this.attribute.type == "STRING");
         },
@@ -174,6 +177,13 @@ export default {
         },
         isListType: function () {
             return (this.attribute.type == "LIST");
+        },
+        valueListItems: function() {
+            if (this.attribute.definition.valueList && this.attribute.definition.valueList.length > 0) {
+                return(this.attribute.definition.valueList);
+            } else {
+                return([]);
+            }
         }
     },
     methods: {
@@ -257,7 +267,6 @@ export default {
         update: function () {
             let self = this;
             self.loading = true;
-            console.log(this.attribute);
             formsAPI.attribute.update(this.attribute, function (response) {
                 if (response.ok && response.body.success) {
                     self.$router.go(-1);

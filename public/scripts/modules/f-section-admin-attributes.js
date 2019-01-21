@@ -1,10 +1,12 @@
 import { default as formsAPI } from './api.js';
 import { exportCSV } from './export.js';
 import { mixinRoutes, mixinExport, mixinTableControls, mixinDates } from './mixins.js';
+import { types as attributeTypes } from './f-attribute-types.js';
 import { default as vueFormsDialogExport } from './f-dialog-export.js';
 import { default as vueFormsDialogConfirmRemove } from './f-dialog-confirm-remove.js';
 import { default as vueFormsTableHeaderField } from './f-table-header-field.js';
 import { default as vueFormsFieldTextSearch } from './f-field-text-search.js';
+import { default as vueFormsFieldSelectSearch } from './f-field-select-search.js';
 import { default as vueFormsFieldDateSearch } from './f-field-date-search.js';
 import { default as vueFormsTableControls } from './f-table-controls.js';
 import { default as vueFormsPaginationControl } from './f-pagination-control.js';
@@ -21,6 +23,7 @@ const template = function () {
                     <tr>
                         <f-table-header-field v-bind:name="'name'" v-bind:isSorted="sortBy == 'name'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('name');"></f-table-header-field>
                         <f-table-header-field v-bind:name="'description'" v-bind:isSorted="sortBy == 'description'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('description');"></f-table-header-field>
+                        <f-table-header-field v-bind:name="'type'" v-bind:isSorted="sortBy == 'type'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('type');"></f-table-header-field>
                         <f-table-header-field v-bind:name="'Creator'" v-bind:isSorted="sortBy == 'creator'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('creator');"></f-table-header-field>
                         <f-table-header-field v-bind:name="'Created'" v-bind:isSorted="sortBy == 'creationDate'" v-bind:sortOrder="sortOrder" v-on:sortClicked="toggleSort('creationDate');"></f-table-header-field>
                         <th class="has-text-centered">Operations</th>
@@ -31,6 +34,9 @@ const template = function () {
                         </th>
                         <th>
                             <f-field-text-search v-bind:disabled="loading" v-bind:placeholder="'search by description'" v-on:searchTriggered="searchByDescription = $event; search(true);"></f-field-text-search>
+                        </th>
+                        <th>
+                            <f-field-select-search v-bind:disabled="loading" v-bind:items="types" v-on:searchTriggered="searchByType = $event; search(true);"></f-field-select-search>
                         </th>
                         <th>
                             <f-field-text-search v-bind:disabled="loading" v-bind:placeholder="'search by creator name'" v-on:searchTriggered="searchByCreatorName = $event; search(true);"></f-field-text-search>
@@ -47,6 +53,7 @@ const template = function () {
                     <tr v-for="attribute in items" v-bind:key="attribute.id">
                         <td>{{ attribute.name }}</td>
                         <td>{{ attribute.description }}</td>
+                        <td>{{ attribute.type | parseType }}</td>
                         <td>{{ attribute.creator.name }}</td>
                         <td>{{ attribute.creationDate | parseJSONDateTime }}</td>
                         <td>
@@ -82,9 +89,11 @@ export default {
     template: template(),
     data: function () {
         return ({
+            types: [],
             loading: false,
             searchByName: null,
             searchByDescription: null,
+            searchByType: null,
             searchByCreatorName: "",
             searchFromCreationDate: null,
             searchToCreationDate: null
@@ -101,6 +110,7 @@ export default {
         'f-dialog-confirm-remove': vueFormsDialogConfirmRemove,
         'f-table-header-field': vueFormsTableHeaderField,
         'f-field-text-search': vueFormsFieldTextSearch,
+        'f-field-select-search': vueFormsFieldSelectSearch,
         'f-field-date-search': vueFormsFieldDateSearch,
         'f-table-controls': vueFormsTableControls,
         'f-pagination-control': vueFormsPaginationControl
@@ -108,7 +118,21 @@ export default {
     created: function () {
         this.sortBy = "name";
         this.sortOrder = "ASC";
+        this.types.push({
+            id: null,
+            name: "Any type"
+        });
+        this.types = this.types.concat(attributeTypes);
         console.log("[attribute]: created");
+    },
+    filters: {
+        parseType: function(attributeType) {
+            if (attributeType) {
+                return((attributeTypes.find(item => (item.id == attributeType))).name);
+            } else {
+                return(null);
+            }
+        }
     },
     methods: {
         search(resetPager) {
@@ -117,7 +141,7 @@ export default {
                 self.pager.currentPage = 1;
             }
             self.loading = true;
-            formsAPI.attribute.search(self.searchByName, self.searchByDescription, self.searchByCreatorName, self.searchFromCreationDate, self.searchToCreationDate, self.pager.currentPage, self.pager.resultsPage, self.sortBy, self.sortOrder, function (response) {
+            formsAPI.attribute.search(self.searchByName, self.searchByDescription, self.searchByType, self.searchByCreatorName, self.searchFromCreationDate, self.searchToCreationDate, self.pager.currentPage, self.pager.resultsPage, self.sortBy, self.sortOrder, function (response) {
                 self.loading = false;
                 if (response.ok && response.body.success) {
                     self.pager.currentPage = response.body.pagination.currentPage;
