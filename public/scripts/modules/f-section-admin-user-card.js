@@ -64,7 +64,7 @@ const template = function () {
                     -->
                     <hr>
                     <p class="control">
-                        <button type="submit" class="button is-primary" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading ? true: false">
+                        <button type="submit" class="button is-primary" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading">
                             <span class="icon"><i class="fa fa-save"></i></span>
                             <span>Save</span>
                         </button>

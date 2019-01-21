@@ -13,7 +13,7 @@ const template = function () {
                     <div class="field">
                         <label class="label">Name</label>
                         <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('name') }">
-                            <input class="input" type="text" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('name') }" v-bind:disabled="loading ? true: false" v-model="attribute.name">
+                            <input class="input" type="text" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('name') }" v-bind:disabled="loading" v-model="attribute.name">
                             <span class="icon is-small is-left"><i class="fa fa-tag"></i></span>
                             <span class="icon is-small is-right" v-show="validator.hasInvalidField('name')"><i class="fa fa-warning"></i></span>
                             <p class="help is-danger" v-show="validator.hasInvalidField('name')">{{ validator.getInvalidFieldMessage('name') }}</p>
@@ -22,7 +22,7 @@ const template = function () {
                     <div class="field">
                         <label class="label">Description</label>
                         <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('description') }">
-                            <input class="input" type="text" maxlength="255" v-bind:class="{ 'is-danger': validator.hasInvalidField('description') }" v-bind:disabled="loading ? true: false" v-model="attribute.description">
+                            <input class="input" type="text" maxlength="255" v-bind:class="{ 'is-danger': validator.hasInvalidField('description') }" v-bind:disabled="loading" v-model="attribute.description">
                             <span class="icon is-small is-left"><i class="fa fa-info"></i></span>
                             <span class="icon is-small is-right" v-show="validator.hasInvalidField('description')"><i class="fa fa-warning"></i></span>
                             <p class="help is-danger" v-show="validator.hasInvalidField('description')">{{ validator.getInvalidFieldMessage('description') }}</p>
@@ -50,7 +50,7 @@ const template = function () {
                     <div v-show="attribute.type">
                         <div class="field" v-show="isListType">
                             <label class="label">Value collection</label>
-                            <f-attribute-list-definition v-bind:disabled="loading ? true: false" v-bind:items="valueListItems" v-on:itemAdded="onListItemAdded($event)" v-on:itemRemoved="onListItemRemoved($event)"></f-attribute-list-definition>
+                            <f-attribute-list-definition v-bind:disabled="loading" v-bind:items="valueListItems" v-on:itemAdded="onListItemAdded($event)" v-on:itemRemoved="onListItemRemoved($event)"></f-attribute-list-definition>
                         </div>
                         <div class="field">
                             <label class="label">Default value</label>
@@ -103,7 +103,7 @@ const template = function () {
                     </div>
                     <hr>
                     <p class="control">
-                        <button type="submit" class="button is-primary" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading ? true: false">
+                        <button type="submit" class="button is-primary" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading">
                             <span class="icon"><i class="fa fa-save"></i></span>
                             <span>Save</span>
                         </button>
