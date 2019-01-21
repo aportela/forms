@@ -426,6 +426,9 @@
                 if (isset($requestFilter["description"]) && ! empty($requestFilter["description"])) {
                     $filter["description"] = $requestFilter["description"];
                 }
+                if (isset($requestFilter["type"]) && ! empty($requestFilter["type"])) {
+                    $filter["type"] = $requestFilter["type"];
+                }
                 if (isset($requestFilter["fromCreationDate"]) && ! empty($requestFilter["fromCreationDate"])) {
                     $filter["fromCreationDate"] = $requestFilter["fromCreationDate"];
                 }
@@ -464,8 +467,9 @@
                 $attribute = new \Forms\Attribute(
                     $route->getArgument("id"),
                     "",
-                    "" ,
-                    array()
+                    "",
+                    "",
+                    ""
                 );
                 $dbh = new \Forms\Database\DB($this);
                 $attribute->get($dbh);
@@ -482,7 +486,11 @@
                 $attribute = new \Forms\Attribute(
                     $route->getArgument("id"),
                     $request->getParam("name", ""),
-                    $request->getParam("description", "")
+                    $request->getParam("description", ""),
+                    $request->getParam("type", ""),
+                    json_encode(
+                        $request->getParam("definition", new \stdclass())
+                    )
                 );
                 $dbh = new \Forms\Database\DB($this);
                 if (\Forms\Attribute::existsName($dbh, $attribute->name)) {
@@ -503,7 +511,11 @@
                 $attribute = new \Forms\Attribute(
                     $route->getArgument("id"),
                     $request->getParam("name", ""),
-                    $request->getParam("description", "")
+                    $request->getParam("description", ""),
+                    $request->getParam("type", ""),
+                    json_encode(
+                        $request->getParam("definition", new \stdclass())
+                    )
                 );
                 $dbh = new \Forms\Database\DB($this);
                 if (\Forms\Attribute::existsName($dbh, $attribute->name, $attribute->id)) {
@@ -525,7 +537,8 @@
                     $route->getArgument("id"),
                     "",
                     "",
-                    array()
+                    "",
+                    ""
                 );
                 $dbh = new \Forms\Database\DB($this);
                 $attribute->delete($dbh);

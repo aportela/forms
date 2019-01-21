@@ -147,6 +147,23 @@
                             [deletion_date] INTEGER
                         );
                     '
+                ),
+                "1.10" => array(
+                    '
+                        DROP TABLE [ATTRIBUTE]
+                    ',
+                    '
+                        CREATE TABLE [ATTRIBUTE] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [name] VARCHAR(64) NOT NULL,
+                            [description] VARCHAR(255),
+                            [type] VARCHAR(32) NOT NULL,
+                            [json_definition] VARCHAR(4096) NOT NULL,
+                            [creation_date] INTEGER NOT NULL,
+                            [creator] VARCHAR(36) NOT NULL,
+                            [deletion_date] INTEGER
+                        );
+                    '
                 )
             ),
         );

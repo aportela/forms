@@ -12,13 +12,17 @@
         public $id;
         public $name;
         public $description;
+        public $type;
+        public $definition;
         public $creationDate;
         public $deletionDate;
 
-        public function __construct (string $id = "", string $name = "", string $description = "") {
+        public function __construct (string $id = "", string $name = "", string $description = "", string $type = "", string $definition = "") {
             $this->id = $id;
             $this->name = $name;
             $this->description = $description;
+            $this->type = $type;
+            $this->definition = $definition;
         }
 
         public function __destruct() {
@@ -35,6 +39,8 @@
                     $params = array(
                         (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
                         (new \Forms\Database\DBParam())->str(":name", $this->name),
+                        (new \Forms\Database\DBParam())->str(":type", $this->type),
+                        (new \Forms\Database\DBParam())->str(":definition", $this->definition),
                         (new \Forms\Database\DBParam())->str(":creator", \Forms\UserSession::getUserId())
                     );
                     if (! empty($this->description)) {
@@ -46,7 +52,7 @@
                     } else {
                         $params[] = (new \Forms\Database\DBParam())->null(":description");
                     }
-                    return($dbh->execute("INSERT INTO [ATTRIBUTE] (id, name, description, creation_date, creator) VALUES(:id, :name, :description, strftime('%s', 'now'), :creator)", $params));
+                    return($dbh->execute("INSERT INTO [ATTRIBUTE] (id, name, description, type, json_definition, creation_date, creator) VALUES(:id, :name, :description, :type, :definition, strftime('%s', 'now'), :creator)", $params));
                 } else {
                     throw new \Forms\Exception\InvalidParamsException("name");
                 }
@@ -66,7 +72,8 @@
                     $params = array(
                         (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
                         (new \Forms\Database\DBParam())->str(":name", $this->name),
-
+                        (new \Forms\Database\DBParam())->str(":type", $this->type),
+                        (new \Forms\Database\DBParam())->str(":definition", $this->definition)
                     );
                     if (! empty($this->description)) {
                         if (mb_strlen($this->description) <= 255) {
@@ -77,7 +84,7 @@
                     } else {
                         $params[] = (new \Forms\Database\DBParam())->null(":description");
                     }
-                    return($dbh->execute("UPDATE [ATTRIBUTE] SET name = :name, description = :description WHERE id = :id", $params));
+                    return($dbh->execute("UPDATE [ATTRIBUTE] SET name = :name, description = :description, type = :type, json_definition = :definition WHERE id = :id", $params));
                 } else {
                     throw new \Forms\Exception\InvalidParamsException("name");
                 }
@@ -114,7 +121,7 @@
                     sprintf(
                         "
                             SELECT
-                                [ATTRIBUTE].id, [ATTRIBUTE].name, [ATTRIBUTE].description, strftime('%s', datetime([ATTRIBUTE].creation_date, 'unixepoch')) AS creationDate, [ATTRIBUTE].deletion_date AS deletionDate, [ATTRIBUTE].creator AS creatorId, USER.email AS creatorEmail, USER.name AS creatorName
+                                [ATTRIBUTE].id, [ATTRIBUTE].name, [ATTRIBUTE].description, [ATTRIBUTE].type, [ATTRIBUTE].json_definition AS definition, strftime('%s', datetime([ATTRIBUTE].creation_date, 'unixepoch')) AS creationDate, [ATTRIBUTE].deletion_date AS deletionDate, [ATTRIBUTE].creator AS creatorId, USER.email AS creatorEmail, USER.name AS creatorName
                             FROM [ATTRIBUTE]
                             LEFT JOIN USER ON USER.id = [ATTRIBUTE].creator
                             WHERE [ATTRIBUTE].id = :id
@@ -130,6 +137,8 @@
                     $this->name = $results[0]->name;
                     $this->description = $results[0]->description;
                     $this->creationDate = $results[0]->creationDate;
+                    $this->type = $results[0]->type;
+                    $this->definition = json_decode($results[0]->definition);
                     $this->creator = new \stdclass();
                     $this->creator->id = $results[0]->creatorId;
                     $this->creator->email = $results[0]->creatorEmail;
@@ -198,6 +207,10 @@
                     $conditions[] = " [ATTRIBUTE].description LIKE :description ";
                     $params[] = (new \Forms\Database\DBParam())->str(":description", "%" . $filter["description"] . "%");
                 }
+                if (isset($filter["type"]) && ! empty($filter["type"])) {
+                    $conditions[] = " [ATTRIBUTE].type = :type ";
+                    $params[] = (new \Forms\Database\DBParam())->str(":type", $filter["type"]);
+                }
                 if (isset($filter["fromCreationDate"]) && ! empty($filter["fromCreationDate"])) {
                     $conditions[] = sprintf(
                         " strftime('%s', datetime([ATTRIBUTE].creation_date, 'unixepoch')) >= :from_creation_date ",
@@ -240,6 +253,9 @@
                     case "description":
                         $sqlSortBy = "[ATTRIBUTE].description";
                     break;
+                    case "type":
+                        $sqlSortBy = "[ATTRIBUTE].type";
+                    break;
                     case "creationDate":
                         $sqlSortBy = "[ATTRIBUTE].creation_date";
                     break;
@@ -252,7 +268,7 @@
                     sprintf(
                         "
                             SELECT
-                            [ATTRIBUTE].id, [ATTRIBUTE].name, [ATTRIBUTE].description, strftime('%s', datetime([ATTRIBUTE].creation_date, 'unixepoch')) AS creationDate, [ATTRIBUTE].creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
+                            [ATTRIBUTE].id, [ATTRIBUTE].name, [ATTRIBUTE].description, [ATTRIBUTE].type, strftime('%s', datetime([ATTRIBUTE].creation_date, 'unixepoch')) AS creationDate, [ATTRIBUTE].creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
                             FROM [ATTRIBUTE]
                             LEFT JOIN USER U ON [ATTRIBUTE].creator = U.id
                             WHERE [ATTRIBUTE].deletion_date IS NULL
