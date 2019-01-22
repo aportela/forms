@@ -3,7 +3,7 @@ import { default as validator } from './validator.js';
 import { uuid } from './utils.js';
 import { mixinRoutes, mixinSession } from './mixins.js';
 import { types as vueFormsAttributeTypes } from './f-attribute-types.js';
-import { default as vuelFormsAttributeListDefinition } from './f-attribute-list-definition.js';
+import { default as vueFormsAttributeListDefinition } from './f-attribute-list-definition.js';
 
 const template = function () {
     return `
@@ -32,71 +32,71 @@ const template = function () {
                         <label class="label">Attribute type</label>
                         <div class="select">
                             <select required v-bind:disabled="isTypeDisabled" v-model="attribute.type">
-                                <option v-for="item in availableTypes" v-bind:key="item.id" v-bind:value="item.id">{{ item.name }}</option>
+                                <option v-for="item in attributeTypes" v-bind:key="item.id" v-bind:value="item.id">{{ item.name }}</option>
                             </select>
                         </div>
                     </div>
-                    <div class="field">
-                        <label class="label">Required value</label>
-                        <div class="control">
-                            <label class="radio">
-                                <input type="radio" v-bind:value="true" name="required_flag" v-model="attribute.definition.required"> Yes
-                            </label>
-                            <label class="radio">
-                                <input type="radio" v-bind:value="false" name="required_flag" v-model="attribute.definition.required"> No
-                            </label>
-                        </div>
-                    </div>
                     <div v-show="attribute.type">
-                        <div class="field" v-show="isListType">
+                        <div class="field" v-show="isList">
                             <label class="label">Value collection</label>
-                            <f-attribute-list-definition v-bind:disabled="loading" v-bind:items="valueListItems" v-on:itemAdded="onListItemAdded($event)" v-on:itemRemoved="onListItemRemoved($event)"></f-attribute-list-definition>
+                            <f-attribute-list-definition v-bind:disabled="loading" v-bind:items="valueList" v-on:itemAdded="onListItemAdded($event)" v-on:itemRemoved="onListItemRemoved($event)"></f-attribute-list-definition>
                         </div>
-                        <div class="field">
+                        <div class="field" v-show="attribute.type">
                             <label class="label">Default value</label>
-                            <p class="control has-icons-left" v-show="isNotBooleanType">
-                                <input class="input" type="text" v-model="attribute.definition.defaultValue">
+                            <p class="control has-icons-left" v-show="isShortString">
+                                <input class="input" type="text" placeholder="type default short string value" v-model.trim="defaultShortStringValue">
                                 <span class="icon is-small is-left"><i class="fas fa-edit"></i></span>
                             </p>
-                            <div class="control" v-show="isBooleanType">
+                            <p class="control" v-show="isString">
+                                <textarea class="textarea" placeholder="Type default string value" v-model.trim="defaultStringValue"></textarea>
+                            </p>
+                            <p class="control has-icons-left" v-show="isInteger">
+                                <input class="input" type="text" placeholder="type default integer value" v-model.number="defaultIntegerValue">
+                                <span class="icon is-small is-left"><i class="fas fa-edit"></i></span>
+                            </p>
+                            <p class="control has-icons-left" v-show="isDecimalNumber">
+                                <input class="input" type="text" placeholder="type default decimal value" v-model.number="defaultDecimalValue">
+                                <span class="icon is-small is-left"><i class="fas fa-edit"></i></span>
+                            </p>
+                            <div class="control" v-show="isBoolean">
                                 <label class="radio">
-                                    <input type="radio" v-bind:value="true" name="default_boolean_flag" v-model="attribute.definition.defaultValue"> True
+                                    <input type="radio" v-bind:value="true" name="default_boolean_flag" v-model="defaultBooleanValue"> True
                                 </label>
                                 <label class="radio">
-                                    <input type="radio" v-bind:value="false" name="default_boolean_flag" v-model="attribute.definition.defaultValue"> False
+                                    <input type="radio" v-bind:value="false" name="default_boolean_flag" v-model="defaultBooleanValue"> False
                                 </label>
                             </div>
                         </div>
-                        <div class="field" v-show="isStringType">
+                        <div class="field" v-show="isShortString || isString ">
                             <label class="label">Length restriction</label>
                             <div class="field has-addons">
                                 <p class="control has-icons-left">
-                                    <input class="input" type="text" placeholder="min string length" v-model.number="attribute.definition.minLength">
+                                    <input class="input" type="text" placeholder="min string length" v-model.number="minLength">
                                     <span class="icon is-small is-left"><i class="fas fa-greater-than-equal"></i></span>
                                 </p>
                                 <p class="control has-icons-left">
-                                    <input class="input" type="text" placeholder="max string length" v-model.number="attribute.definition.maxLength">
+                                    <input class="input" type="text" placeholder="max string length" v-model.number="maxLength">
                                     <span class="icon is-small is-left"><i class="fas fa-less-than-equal"></i></span>
                                 </p>
                             </div>
                         </div>
-                        <div class="field" v-show="isNumberType">
+                        <div class="field" v-show="isInteger || isDecimalNumber">
                             <label class="label">Range restriction</label>
                             <div class="field has-addons">
                                 <p class="control has-icons-left">
-                                    <input class="input" type="text" placeholder="min value" v-model.number="attribute.definition.minValue">
+                                    <input class="input" type="text" placeholder="min value" v-model.number="minValue">
                                     <span class="icon is-small is-left"><i class="fas fa-greater-than-equal"></i></span>
                                 </p>
                                 <p class="control has-icons-left">
-                                    <input class="input" type="text" placeholder="max value" v-model.number="attribute.definition.maxValue">
+                                    <input class="input" type="text" placeholder="max value" v-model.number="maxValue">
                                     <span class="icon is-small is-left"><i class="fas fa-less-than-equal"></i></span>
                                 </p>
                             </div>
                         </div>
-                        <div class="field" v-show="isDecimalNumberType">
+                        <div class="field" v-show="isDecimalNumber">
                             <label class="label">Decimal precision</label>
                             <p class="control has-icons-left">
-                                <input class="input" type="text" placeholder="decimal numbers" v-model.number="attribute.definition.decimalPrecision">
+                                <input class="input" type="text" placeholder="decimal numbers" v-model.number="decimalPrecision">
                                 <span class="icon is-small is-left"><i class="fas fa-calculator"></i></span>
                             </p>
                         </div>
@@ -121,24 +121,27 @@ export default {
         return ({
             loading: false,
             validator: validator,
+            attributeTypes: vueFormsAttributeTypes,
+            defaultShortStringValue: null,
+            defaultStringValue: null,
+            defaultIntegerValue: null,
+            defaultDecimalValue: null,
+            defaultBooleanValue: null,
+            defaultListValue: null,
+            minLength: null,
+            maxLength: null,
+            minValue: null,
+            maxValue: null,
+            decimalPrecision: null,
+            valueList: [],
             attribute: {
                 id: null,
                 name: null,
                 description: null,
                 type: null,
                 required: true,
-                definition: {
-                    required: false,
-                    defaultValue: null,
-                    minLength: null,
-                    maxLength: null,
-                    minValue: null,
-                    maxValue: null,
-                    decimalPrecision: null,
-                    valueList: []
-                }
+                definition: {}
             },
-            availableTypes: vueFormsAttributeTypes
         });
     },
     props: [
@@ -149,57 +152,114 @@ export default {
         mixinSession
     ],
     components: {
-        'f-attribute-list-definition': vuelFormsAttributeListDefinition
+        'f-attribute-list-definition': vueFormsAttributeListDefinition
     },
     created: function () {
+        this.validator.clear();
         if (this.$route.params.id) {
             this.load(this.$route.params.id);
         }
     },
     computed: {
-        isTypeDisabled: function() {
-            return(this.disabled || this.$route.params.id);
+        isTypeDisabled: function () {
+            return (this.disabled || this.$route.params.id);
         },
-        isStringType: function () {
-            return (this.attribute.type == "SHORT_STRING" || this.attribute.type == "STRING");
+        isShortString: function () {
+            return (this.attribute.type == "SHORT_STRING");
         },
-        isNumberType: function () {
-            return (this.attribute.type == "INTEGER" || this.attribute.type == "DECIMAL");
+        isString: function () {
+            return (this.attribute.type == "STRING");
         },
-        isDecimalNumberType: function () {
+        isInteger: function () {
+            return (this.attribute.type == "INTEGER");
+        },
+        isDecimalNumber: function () {
             return (this.attribute.type == "DECIMAL");
         },
-        isBooleanType: function () {
+        isBoolean: function () {
             return (this.attribute.type == "BOOLEAN");
         },
-        isNotBooleanType: function () {
-            return (this.attribute.type != "BOOLEAN");
-        },
-        isListType: function () {
+        isList: function () {
             return (this.attribute.type == "LIST");
-        },
-        valueListItems: function() {
-            if (this.attribute.definition.valueList && this.attribute.definition.valueList.length > 0) {
-                return(this.attribute.definition.valueList);
-            } else {
-                return([]);
-            }
         }
     },
     methods: {
-        createDefaultDefinition: function () {
-            return (
-                {
-                    required: false,
-                    defaultValue: null,
-                    minLength: null,
-                    maxLength: null,
-                    minValue: null,
-                    maxValue: null,
-                    decimalPrecision: null,
-                    valueList: []
-                }
-            );
+        setModelDefinition() {
+            this.attribute.definition = {};
+            switch (this.attribute.type) {
+                case "SHORT_STRING":
+                    this.attribute.definition = {
+                        defaultValue: this.defaultShortStringValue || null,
+                        minLength: this.minLength || null,
+                        maxLength: this.maxLength || null
+                    };
+                    break;
+                case "STRING":
+                    this.attribute.definition = {
+                        defaultValue: this.defaultStringValue || null,
+                        minLength: this.minLength || null,
+                        maxLength: this.maxLength || null
+                    };
+                    break;
+                case "INTEGER":
+                    this.attribute.definition = {
+                        defaultValue: this.defaultIntegerValue || null,
+                        minValue: this.minValue || null,
+                        maxValue: this.maxValue || null
+                    };
+                    break;
+                case "DECIMAL":
+                    this.attribute.definition = {
+                        defaultValue: this.defaultDecimalValue || null,
+                        decimalPrecision: this.decimalPrecision,
+                        minValue: this.minValue || null,
+                        maxValue: this.maxValue || null
+                    };
+                    break;
+                case "BOOLEAN":
+                    this.attribute.definition = {
+                        defaultValue: this.defaultBooleanValue
+                    };
+                    break;
+                case "LIST":
+                    this.attribute.definition = {
+                        defaultValue: this.defaultListValue || null,
+                        valueList: []
+                    };
+                    break;
+            }
+        },
+        setDefinitionModel() {
+            switch (this.attribute.type) {
+                case "SHORT_STRING":
+                    this.defaultShortStringValue = this.attribute.definition.defaultValue;
+                    this.minLength = this.attribute.definition.minLength;
+                    this.maxLength = this.attribute.definition.maxLength;
+                    break;
+                case "STRING":
+                    this.defaultStringValue = this.attribute.definition.defaultValue;
+                    this.minLength = this.attribute.definition.minLength;
+                    this.maxLength = this.attribute.definition.maxLength;
+                    break;
+                case "INTEGER":
+                    this.defaultIntegerValue = this.attribute.definition.defaultValue;
+                    this.minValue = this.attribute.definition.minValue;
+                    this.maxValue = this.attribute.definition.maxValue;
+                    break;
+                case "DECIMAL":
+                    this.defaultDecimalValue = this.attribute.definition.defaultValue;
+                    this.minValue = this.attribute.definition.minValue;
+                    this.maxValue = this.attribute.definition.maxValue;
+                    this.decimalPrecision = this.attribute.definition.decimalPrecision;
+                    break;
+                case "BOOLEAN":
+                    this.defaultBooleanValue = this.attribute.definition.defaultValue;
+                    break;
+                case "LIST":
+                    this.defaultListValue = this.attribute.definition.defaultValue;
+                    this.valueList = this.attribute.definition.valueList;
+                    break;
+            }
         },
         onListItemAdded: function (newItem) {
             this.attribute.definition.valueList.push(newItem);
@@ -214,9 +274,7 @@ export default {
             formsAPI.attribute.get(id, function (response) {
                 if (response.ok && response.body.success) {
                     self.attribute = response.body.attribute;
-                    if (!self.attribute.definition) {
-                        self.attribute.definition = self.createDefaultDefinition();
-                    }
+                    self.setDefinitionModel();
                     self.loading = false;
                 } else {
                     self.showApiError(response.getApiErrorData());
@@ -224,6 +282,7 @@ export default {
             });
         },
         save: function () {
+            this.setModelDefinition();
             if (this.$route.params.id) {
                 this.update();
             } else {
