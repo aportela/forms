@@ -109,6 +109,7 @@ export default {
         }
     },
     created: function () {
+        this.validator.clear();
         this.loadData();
     },
     computed: {

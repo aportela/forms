@@ -103,6 +103,7 @@ export default {
         }
     },
     created: function () {
+        this.validator.clear();
         if (this.$route.params.id) {
             this.load(this.$route.params.id);
         }
