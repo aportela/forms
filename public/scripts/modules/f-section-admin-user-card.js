@@ -11,7 +11,7 @@ const template = function () {
                     <div class="field">
                         <label class="label">Email</label>
                         <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('email') }">
-                            <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': validator.hasInvalidField('email') }" v-bind:disabled="loading" v-model="user.email">
+                            <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': validator.hasInvalidField('email') }" v-bind:disabled="loading" v-model.trim="user.email">
                             <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
                             <span class="icon is-small is-right" v-show="validator.hasInvalidField('email')"><i class="fa fa-warning"></i></span>
                             <p class="help is-danger" v-show="validator.hasInvalidField('email')">{{ validator.getInvalidFieldMessage('email') }}</p>
@@ -20,7 +20,7 @@ const template = function () {
                     <div class="field">
                         <label class="label">Name</label>
                         <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('name') }">
-                            <input class="input" type="text" name="name" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('name') }" v-bind:disabled="loading" v-model="user.name">
+                            <input class="input" type="text" name="name" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('name') }" v-bind:disabled="loading" v-model.trim="user.name">
                             <span class="icon is-small is-left"><i class="fa fa-user"></i></span>
                             <span class="icon is-small is-right" v-show="validator.hasInvalidField('name')"><i class="fa fa-warning"></i></span>
                             <p class="help is-danger" v-show="validator.hasInvalidField('name')">{{ validator.getInvalidFieldMessage('name') }}</p>

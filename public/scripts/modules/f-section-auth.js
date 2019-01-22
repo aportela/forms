@@ -35,7 +35,7 @@ const template = function () {
                             <div class="field">
                                 <label class="label">Email</label>
                                 <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('email') }">
-                                    <input class="input" type="email" name="email" maxlength="255" ref="signInEmail" required autofocus v-bind:class="{ 'is-danger': validator.hasInvalidField('email') }" v-bind:disabled="loading" v-model="signInEmail">
+                                    <input class="input" type="email" name="email" maxlength="255" ref="signInEmail" required autofocus v-bind:class="{ 'is-danger': validator.hasInvalidField('email') }" v-bind:disabled="loading" v-model.trim="signInEmail">
                                     <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
                                     <span class="icon is-small is-right" v-show="validator.hasInvalidField('email')"><i class="fa fa-warning"></i></span>
                                     <p class="help is-danger" v-show="validator.hasInvalidField('email')">{{ validator.getInvalidFieldMessage('email') }}</p>
@@ -64,7 +64,7 @@ const template = function () {
                             <div class="field">
                                 <label class="label">Email</label>
                                 <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('email') }">
-                                    <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': validator.hasInvalidField('email') }" v-bind:disabled="loading" v-model="signUpEmail">
+                                    <input class="input" type="email" name="email" maxlength="255" required autofocus v-bind:class="{ 'is-danger': validator.hasInvalidField('email') }" v-bind:disabled="loading" v-model.trim="signUpEmail">
                                     <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
                                     <span class="icon is-small is-right" v-show="validator.hasInvalidField('email')"><i class="fa fa-warning"></i></span>
                                     <p class="help is-danger" v-show="validator.hasInvalidField('email')">{{ validator.getInvalidFieldMessage('email') }}</p>
@@ -73,7 +73,7 @@ const template = function () {
                             <div class="field">
                                 <label class="label">Name</label>
                                 <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('name') }">
-                                    <input class="input" type="test" name="name" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('name') }" v-bind:disabled="loading" v-model="signUpName">
+                                    <input class="input" type="test" name="name" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('name') }" v-bind:disabled="loading" v-model.trim="signUpName">
                                     <span class="icon is-small is-left"><i class="fa fa-user"></i></span>
                                     <span class="icon is-small is-right" v-show="validator.hasInvalidField('name')"><i class="fa fa-warning"></i></span>
                                     <p class="help is-danger" v-show="validator.hasInvalidField('name')">{{ validator.getInvalidFieldMessage('name') }}</p>
