@@ -74,6 +74,10 @@ const template = function () {
                                     <input type="radio" v-bind:value="false" name="default_boolean_flag" v-model="defaultBooleanValue"> False
                                 </label>
                             </div>
+                            <p class="control has-icons-left" v-show="isDate">
+                                <input class="input" type="date" v-bind:value="defaultDateValue && defaultDateValue.toISOString().split('T')[0]" @input="defaultDateValue = $event.target.valueAsDate">
+                                <span class="icon is-small is-left"><i class="fas fa-edit"></i></span>
+                            </p>
                         </div>
                         <div class="field" v-show="isShortString || isString ">
                             <label class="label">Length restriction</label>
@@ -146,6 +150,7 @@ export default {
             defaultIntegerValue: null,
             defaultDecimalValue: null,
             defaultBooleanValue: null,
+            defaultDateValue: null,
             defaultListValue: null,
             minLength: null,
             maxLength: null,
@@ -198,6 +203,9 @@ export default {
         isBoolean: function () {
             return (this.attribute.type == "BOOLEAN");
         },
+        isDate: function() {
+            return(this.attribute.type == "DATE");
+        },
         isList: function () {
             return (this.attribute.type == "LIST");
         }
@@ -245,6 +253,12 @@ export default {
                         defaultValue: this.defaultBooleanValue
                     };
                     break;
+                case "DATE":
+                    this.attribute.definition = {
+                        required: this.required,
+                        defaultValue: this.defaultDateValue
+                    };
+                    break;
                 case "LIST":
                     this.attribute.definition = {
                         required: this.required,
@@ -281,6 +295,9 @@ export default {
                 case "BOOLEAN":
                     this.defaultBooleanValue = this.attribute.definition.defaultValue;
                     break;
+                case "DATE":
+                    this.defaultDateValue = this.attribute.definition.defaultValue ? new Date(this.attribute.definition.defaultValue): null;
+                break;
                 case "LIST":
                     this.defaultListValue = this.attribute.definition.defaultValue;
                     this.valueList = this.attribute.definition.valueList;
