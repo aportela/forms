@@ -94,7 +94,7 @@ const app = new Vue({
                     initialState.session = {};
                     this.changeRoute("auth");
                 } else {
-                    // TODO: show error
+                    this.showApiError(response.getApiErrorData());
                 }
             });
         }
