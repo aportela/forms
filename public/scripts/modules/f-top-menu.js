@@ -71,6 +71,12 @@ const template = function () {
                                     <span>Attribute management</span>
                                 </a>
                             </div>
+                            <div class="navbar-item">
+                                <a v-on:click.prevent="changeRoute('templates')">
+                                    <span class="icon is-small"><i class="fas fa-file"></i> </span>
+                                    <span>Template management</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                     <a class="navbar-item is-tab" v-on:click.prevent="changeRoute('profile')" v-bind:class="{ 'is-active': isRouteActive('profile') }">
