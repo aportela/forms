@@ -164,6 +164,18 @@
                             [deletion_date] INTEGER
                         );
                     '
+                ),
+                "1.11" => array(
+                    '
+                        CREATE TABLE [TEMPLATE] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [name] VARCHAR(64) NOT NULL,
+                            [description] VARCHAR(255),
+                            [creation_date] INTEGER NOT NULL,
+                            [creator] VARCHAR(36) NOT NULL,
+                            [deletion_date] INTEGER
+                        );
+                    '
                 )
             ),
         );
