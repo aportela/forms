@@ -9,6 +9,16 @@
      */
     class Attribute {
 
+        public const TYPES = array(
+            "SHORT_STRING",
+            "STRING",
+            "INTEGER",
+            "DECIMAL",
+            "BOOLEAN",
+            "DATE",
+            "LIST"
+        );
+
         public $id;
         public $name;
         public $description;
@@ -28,6 +38,10 @@
         public function __destruct() {
         }
 
+        private function hasValidType () {
+            return(in_array($this->type, self::TYPES));
+        }
+
         /**
          * add attribute
          *
@@ -36,23 +50,31 @@
         public function add(\Forms\Database\DB $dbh) {
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
                 if (! empty($this->name) && mb_strlen($this->name) <= 64) {
-                    $params = array(
-                        (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
-                        (new \Forms\Database\DBParam())->str(":name", $this->name),
-                        (new \Forms\Database\DBParam())->str(":type", $this->type),
-                        (new \Forms\Database\DBParam())->str(":definition", $this->definition),
-                        (new \Forms\Database\DBParam())->str(":creator", \Forms\UserSession::getUserId())
-                    );
-                    if (! empty($this->description)) {
-                        if (mb_strlen($this->description) <= 255) {
-                            $params[] = (new \Forms\Database\DBParam())->str(":description", $this->description);
+                    if ($this->hasValidType()) {
+                        if (! empty($this->definition) && $this->definition != "{}") {
+                            $params = array(
+                                (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
+                                (new \Forms\Database\DBParam())->str(":name", $this->name),
+                                (new \Forms\Database\DBParam())->str(":type", $this->type),
+                                (new \Forms\Database\DBParam())->str(":definition", $this->definition),
+                                (new \Forms\Database\DBParam())->str(":creator", \Forms\UserSession::getUserId())
+                            );
+                            if (! empty($this->description)) {
+                                if (mb_strlen($this->description) <= 255) {
+                                    $params[] = (new \Forms\Database\DBParam())->str(":description", $this->description);
+                                } else {
+                                    throw new \Forms\Exception\InvalidParamsException("description");
+                                }
+                            } else {
+                                $params[] = (new \Forms\Database\DBParam())->null(":description");
+                            }
+                            return($dbh->execute("INSERT INTO [ATTRIBUTE] (id, name, description, type, json_definition, creation_date, creator) VALUES(:id, :name, :description, :type, :definition, strftime('%s', 'now'), :creator)", $params));
                         } else {
-                            throw new \Forms\Exception\InvalidParamsException("description");
+                            throw new \Forms\Exception\InvalidParamsException("definition");
                         }
                     } else {
-                        $params[] = (new \Forms\Database\DBParam())->null(":description");
+                        throw new \Forms\Exception\InvalidParamsException("type");
                     }
-                    return($dbh->execute("INSERT INTO [ATTRIBUTE] (id, name, description, type, json_definition, creation_date, creator) VALUES(:id, :name, :description, :type, :definition, strftime('%s', 'now'), :creator)", $params));
                 } else {
                     throw new \Forms\Exception\InvalidParamsException("name");
                 }
@@ -69,22 +91,25 @@
         public function update(\Forms\Database\DB $dbh) {
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
                 if (! empty($this->name) && mb_strlen($this->name) <= 64) {
-                    $params = array(
-                        (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
-                        (new \Forms\Database\DBParam())->str(":name", $this->name),
-                        (new \Forms\Database\DBParam())->str(":type", $this->type),
-                        (new \Forms\Database\DBParam())->str(":definition", $this->definition)
-                    );
-                    if (! empty($this->description)) {
-                        if (mb_strlen($this->description) <= 255) {
-                            $params[] = (new \Forms\Database\DBParam())->str(":description", $this->description);
+                    if (! empty($this->definition) && $this->definition != "{}") {
+                        $params = array(
+                            (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
+                            (new \Forms\Database\DBParam())->str(":name", $this->name),
+                            (new \Forms\Database\DBParam())->str(":definition", $this->definition)
+                        );
+                        if (! empty($this->description)) {
+                            if (mb_strlen($this->description) <= 255) {
+                                $params[] = (new \Forms\Database\DBParam())->str(":description", $this->description);
+                            } else {
+                                throw new \Forms\Exception\InvalidParamsException("description");
+                            }
                         } else {
-                            throw new \Forms\Exception\InvalidParamsException("description");
+                            $params[] = (new \Forms\Database\DBParam())->null(":description");
                         }
+                        return($dbh->execute("UPDATE [ATTRIBUTE] SET name = :name, description = :description, json_definition = :definition WHERE id = :id", $params));
                     } else {
-                        $params[] = (new \Forms\Database\DBParam())->null(":description");
+                        throw new \Forms\Exception\InvalidParamsException("definition");
                     }
-                    return($dbh->execute("UPDATE [ATTRIBUTE] SET name = :name, description = :description, type = :type, json_definition = :definition WHERE id = :id", $params));
                 } else {
                     throw new \Forms\Exception\InvalidParamsException("name");
                 }
