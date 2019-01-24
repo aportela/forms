@@ -75,7 +75,7 @@ const app = new Vue({
         } else {
             console.log("[app]: user logged");
             console.log("[app] redirect to selected route");
-            if (! this.$route.name) {
+            if (! this.$route.name || ! this.$router.resolve({ name: this.$route.name })) {
                 this.changeRoute("home");
             }
         }
