@@ -75,7 +75,9 @@ const app = new Vue({
         } else {
             console.log("[app]: user logged");
             console.log("[app] redirect to selected route");
-            //this.changeRoute("home");
+            if (! this.$route.name) {
+                this.changeRoute("home");
+            }
         }
         bus.$on("signOut", () => {
             console.log("[app] bus -> signOut received");
