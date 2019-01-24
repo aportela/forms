@@ -6,6 +6,7 @@
 
     require __DIR__ . '/../vendor/autoload.php';
 
+    session_name("FORMSPHPSESSID");
     session_start();
 
     $app = (new \Forms\App())->get();
