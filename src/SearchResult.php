@@ -9,6 +9,7 @@
         public $resultsPage;
         public $totalResults;
         public $totalPages;
+        public $results;
 
         public function __construct (int $currentPage = 1, int $resultsPage = 0, int $totalResults = 0) {
             $this->currentPage = $currentPage;
@@ -19,7 +20,7 @@
             } else {
                 $this->totalPages = $this->totalResults > 0 ? 1: 0;
             }
-
+            $this->results = array();
         }
 
         public function __destruct() { }
