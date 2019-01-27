@@ -14,11 +14,13 @@
         public $description;
         public $creationDate;
         public $deletionDate;
+        public $formPermissions;
 
-        public function __construct (string $id = "", string $name = "", string $description = "") {
+        public function __construct (string $id = "", string $name = "", string $description = "", $formPermissions = array()) {
             $this->id = $id;
             $this->name = $name;
             $this->description = $description;
+            $this->formPermissions = $formPermissions;
         }
 
         public function __destruct() {
@@ -46,12 +48,40 @@
                     } else {
                         $params[] = (new \Forms\Database\DBParam())->null(":description");
                     }
-                    return($dbh->execute("INSERT INTO [TEMPLATE] (id, name, description, creation_date, creator) VALUES(:id, :name, :description, strftime('%s', 'now'), :creator)", $params));
+                    if ($dbh->execute("INSERT INTO [TEMPLATE] (id, name, description, creation_date, creator) VALUES(:id, :name, :description, strftime('%s', 'now'), :creator)", $params)) {
+                        return($this->setFormPermissions($dbh));
+                    }
                 } else {
                     throw new \Forms\Exception\InvalidParamsException("name");
                 }
             } else {
                 throw new \Forms\Exception\InvalidParamsException("id");
+            }
+        }
+
+        /**
+         * set template form permissions
+         */
+        private function setFormPermissions(\Forms\Database\DB $dbh) {
+            $params = array(
+                (new \Forms\Database\DBParam())->str(":template_id", mb_strtolower($this->id))
+            );
+            if ($dbh->execute(" DELETE FROM [TEMPLATE_FORM_PERMISSION] WHERE template_id = :template_id", $params)) {
+                foreach($this->formPermissions as $permission) {
+                    $params = array(
+                        (new \Forms\Database\DBParam())->str(":id", mb_strtolower($permission->id)),
+                        (new \Forms\Database\DBParam())->str(":template_id", mb_strtolower($this->id)),
+                        (new \Forms\Database\DBParam())->str(":group_id", mb_strtolower($permission->group->id)),
+                        (new \Forms\Database\DBParam())->str(":allow_read", $permission->allowRead ? "Y": "N"),
+                        (new \Forms\Database\DBParam())->str(":allow_write", $permission->allowWrite ? "Y": "N")
+                    );
+                    if (! $dbh->execute(" INSERT INTO [TEMPLATE_FORM_PERMISSION] (id, template_id, group_id, allow_read, allow_write) VALUES (:id, :template_id, :group_id, :allow_read, :allow_write) ", $params)) {
+                        return(false);
+                    }
+                }
+                return(true);
+            } else {
+                return(false);
             }
         }
 
@@ -77,7 +107,11 @@
                     } else {
                         $params[] = (new \Forms\Database\DBParam())->null(":description");
                     }
-                    return($dbh->execute("UPDATE [TEMPLATE] SET name = :name, description = :description WHERE id = :id", $params));
+                    if ($dbh->execute("UPDATE [TEMPLATE] SET name = :name, description = :description WHERE id = :id", $params)) {
+                        return($this->setFormPermissions($dbh));
+                    } else {
+                        return(false);
+                    }
                 } else {
                     throw new \Forms\Exception\InvalidParamsException("name");
                 }
@@ -98,6 +132,28 @@
                 ));
             } else {
                 throw new \Forms\Exception\InvalidParamsException("id");
+            }
+        }
+
+        /**
+         * get form permissions
+         */
+        private function getFormPermissions(\Forms\Database\DB $dbh) {
+            $this->formPermissions = array();
+            $params = array(
+                (new \Forms\Database\DBParam())->str(":template_id", mb_strtolower($this->id))
+            );
+            $results = $dbh->query(
+                "
+                    SELECT TEMPLATE_FORM_PERMISSION.id, TEMPLATE_FORM_PERMISSION.group_id AS groupId, [GROUP].name AS groupName, TEMPLATE_FORM_PERMISSION.allow_read AS allowRead, TEMPLATE_FORM_PERMISSION.allow_write AS allowWrite
+                    FROM TEMPLATE_FORM_PERMISSION
+                    LEFT JOIN [GROUP] ON [GROUP].id = TEMPLATE_FORM_PERMISSION.group_id
+                    WHERE TEMPLATE_FORM_PERMISSION.template_id = :template_id
+                    AND [GROUP].deletion_date IS NULL
+                ", $params
+            );
+            foreach($results as $result) {
+                $this->formPermissions[] = new \Forms\FormPermission($result->id, new \Forms\GroupBase($result->groupId, $result->groupName), $result->allowRead == "Y", $result->allowWrite == "Y");
             }
         }
 
@@ -137,6 +193,7 @@
                     if (! empty($results[0]->deletionDate)) {
                         throw new \Forms\Exception\DeletedException("");
                     }
+                    return($this->getFormPermissions($dbh));
                 } else {
                     throw new \Forms\Exception\NotFoundException("");
                 }

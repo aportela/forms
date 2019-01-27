@@ -348,7 +348,7 @@
                 $route = $request->getAttribute('route');
                 $groupUsers = array();
                 foreach($request->getParam("users", array()) as $user) {
-                    $groupUsers[] = new \Forms\User($user["id"]);
+                    $groupUsers[] = new \Forms\UserBase($user["id"], $user["name"]);
                 }
                 $group = new \Forms\Group(
                     $route->getArgument("id"),
@@ -614,10 +614,15 @@
 
             $this->post('/{id}', function (Request $request, Response $response, array $args) {
                 $route = $request->getAttribute('route');
+                $formPermissions = array();
+                foreach($request->getParam("formPermissions", array()) as $formPermission) {
+                    $formPermissions[] = new \Forms\FormPermission($formPermission["id"], new \Forms\GroupBase($formPermission["group"]["id"]), $formPermission["allowRead"], $formPermission["allowWrite"]);
+                }
                 $template = new \Forms\Template(
                     $route->getArgument("id"),
                     $request->getParam("name", ""),
-                    $request->getParam("description", "")
+                    $request->getParam("description", ""),
+                    $formPermissions
                 );
                 $dbh = new \Forms\Database\DB($this);
                 if (\Forms\Template::existsName($dbh, $template->name)) {
@@ -635,10 +640,15 @@
 
             $this->put('/{id}', function (Request $request, Response $response, array $args) {
                 $route = $request->getAttribute('route');
+                $formPermissions = array();
+                foreach($request->getParam("formPermissions", array()) as $formPermission) {
+                    $formPermissions[] = new \Forms\FormPermission($formPermission["id"], new \Forms\GroupBase($formPermission["group"]["id"]), $formPermission["allowRead"], $formPermission["allowWrite"]);
+                }
                 $template = new \Forms\Template(
                     $route->getArgument("id"),
                     $request->getParam("name", ""),
-                    $request->getParam("description", "")
+                    $request->getParam("description", ""),
+                    $formPermissions
                 );
                 $dbh = new \Forms\Database\DB($this);
                 if (\Forms\Template::existsName($dbh, $template->name, $template->id)) {
