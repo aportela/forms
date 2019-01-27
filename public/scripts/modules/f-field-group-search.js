@@ -6,7 +6,7 @@ const template = function () {
             <div class="field has-addons">
                 <p class="control has-icons-left">
                     <input class="input" type="text" v-bind:placeholder="placeholder" maxlength="255" v-model="groupNameCondition" v-bind:disabled="isDisabled">
-                    <span class="icon is-small is-left"><i class="fa fa-group"></i></span>
+                    <span class="icon is-small is-left"><i class="fa fa-users"></i></span>
                 </p>
                 <div class="control">
                     <button type="button" class="button" v-show="! hasResults" v-bind:disabled="disabled" v-on:click.prevent="searchGroups()">
