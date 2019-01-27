@@ -176,6 +176,17 @@
                             [deletion_date] INTEGER
                         );
                     '
+                ),
+                "1.12" => array(
+                    '
+                        CREATE TABLE [TEMPLATE_FORM_PERMISSION] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [template_id] VARCHAR(36) NOT NULL,
+                            [group_id] VARCHAR(36) NOT NULL,
+                            [allow_read] VARCHAR(1) NOT NULL DEFAULT "Y",
+                            [allow_write] VARCHAR(1) NOT NULL DEFAULT "Y"
+                        );
+                    '
                 )
             ),
         );
