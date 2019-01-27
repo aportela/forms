@@ -7,17 +7,13 @@
     /**
      * User class
      */
-    class User {
+    class User extends \Forms\UserBase {
 
         const ACCOUNT_TYPE_USER = "U";
         const ACCOUNT_TYPE_ADMINISTRATOR = "A";
 
-        public $id;
-        public $email;
-        public $name;
         public $password;
         public $passwordHash;
-        public $accountType;
         public $creationDate;
         public $deletionDate;
         public $enabled;

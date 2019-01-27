@@ -7,10 +7,8 @@
     /**
      * Group class
      */
-    class Group {
+    class Group extends \Forms\GroupBase {
 
-        public $id;
-        public $name;
         public $description;
         public $creationDate;
         public $deletionDate;
@@ -175,7 +173,10 @@
                     if (! empty($results[0]->deletionDate)) {
                         throw new \Forms\Exception\DeletedException("");
                     } else {
-                        $this->users = (\Forms\User::search($dbh, array("groupId" => $this->id), 1, 0, "name", "ASC"))->results;
+                        $groupUsers = (\Forms\User::search($dbh, array("groupId" => $this->id), 1, 0, "name", "ASC"))->results;
+                        foreach($groupUsers as $user) {
+                            $this->users[] = new \Forms\UserBase($user->id, $user->email, $user->name);
+                        }
                         $this->userCount = count($this->users);
                     }
                 } else {
