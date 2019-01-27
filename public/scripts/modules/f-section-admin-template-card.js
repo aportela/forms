@@ -14,19 +14,19 @@ const template = function () {
                     <div class="tabs is-toggle">
                         <ul>
                             <li v-bind:class="{ 'is-active': tab == 'metadata' }"><a v-on:click.prevent="tab = 'metadata'"><span class="icon is-small"><i class="far fa-list-alt" aria-hidden="true"></i></span><span>Template metadata</span></a></li>
+                            <li v-bind:class="{ 'is-active': tab == 'formMetadata' }"><a v-on:click.prevent="tab = 'formMetadata'"><span class="icon is-small"><i class="fas fa-list-alt" aria-hidden="true"></i></span><span>Form metadata</span></a></li>
                             <li v-bind:class="{ 'is-active': tab == 'formPermissions' }"><a v-on:click.prevent="tab = 'formPermissions'"><span class="icon is-small"><i class="fas fa-users" aria-hidden="true"></i></span><span>Form permissions ({{ formPermissionCount }})</span></a></li>
-                            <li v-bind:class="{ 'is-active': tab == 'attributes' }"><a v-on:click.prevent="tab = 'attributes'"><span class="icon is-small"><i class="fas fa-tag" aria-hidden="true"></i></span><span>Form attributes ({{ formFieldCount }})</span></a></li>
+                            <li v-bind:class="{ 'is-active': tab == 'attributes' }"><a v-on:click.prevent="tab = 'attributes'"><span class="icon is-small"><i class="fas fa-tag" aria-hidden="true"></i></span><span>Form fields ({{ formFieldCount }})</span></a></li>
                             <li v-bind:class="{ 'is-active': tab == 'preview' }"><a v-on:click.prevent="tab = 'preview'"><span class="icon is-small"><i class="fab fa-wpforms" aria-hidden="true"></i></span><span>Form preview</span></a></li>
                         </ul>
                     </div>
 
                     <div v-show="tab == 'metadata'">
-
                         <div class="field">
                             <label class="label">Name</label>
                             <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('name') }">
                                 <input class="input" type="text" maxlength="255" required v-on:keydown.enter.prevent v-bind:class="{ 'is-danger': validator.hasInvalidField('name') }" v-bind:disabled="loading" v-model.trim="template.name">
-                                <span class="icon is-small is-left"><i class="fa fa-users"></i></span>
+                                <span class="icon is-small is-left"><i class="fas fa-file"></i></span>
                                 <span class="icon is-small is-right" v-show="validator.hasInvalidField('name')"><i class="fa fa-warning"></i></span>
                                 <p class="help is-danger" v-show="validator.hasInvalidField('name')">{{ validator.getInvalidFieldMessage('name') }}</p>
                             </p>
@@ -42,10 +42,31 @@ const template = function () {
                         </div>
                     </div>
 
+                    <div v-show="tab == 'formMetadata'">
+                        <div class="field">
+                            <label class="checkbox">
+                                <input type="checkbox" v-model="template.allowFormAttachments">
+                                Allow attachments
+                            </label>
+                        </div>
+                        <div class="field">
+                            <label class="checkbox">
+                                <input type="checkbox" v-model="template.allowFormNotes">
+                                Allow notes
+                            </label>
+                        </div>
+                        <div class="field">
+                            <label class="checkbox">
+                                <input type="checkbox" v-model="template.allowFormLinks">
+                                Allow links
+                            </label>
+                        </div>
+                    </div>
+
                     <div v-show="tab == 'formPermissions'">
                         <div class="field">
                             <label class="label">Group list</label>
-                            <f-field-group-search v-bind:disabled="loading" v-bind:placeholder="'search group name'" v-bind:denyGroups="template.formPermissions" v-on:groupSelected="addPermission($event)"></f-field-group-search>
+                            <f-field-group-search v-bind:disabled="loading" v-bind:placeholder="'search group name'" v-bind:denyGroups="template.formPermissions" v-on:groupSelected="addFormPermission($event)"></f-field-group-search>
                             <p v-show="groupAlreadyExists" class="help is-danger">Group already on permissions</p>
                         </div>
 
@@ -57,13 +78,13 @@ const template = function () {
                                 <th class="has-text-centered">Operations</th>
                             </thead>
                             <tbody>
-                                <tr v-for="permission in template.formPermissions" v-bind:key="permission.group.id">
-                                    <td>{{ permission.group.name }}</td>
-                                    <td><input type="checkbox" v-model="permission.allowRead"></td>
-                                    <td><input type="checkbox" v-model="permission.allowWrite"></td>
+                                <tr v-for="formPermission in template.formPermissions" v-bind:key="formPermission.id">
+                                    <td>{{ formPermission.group.name }}</td>
+                                    <td><input type="checkbox" v-model="formPermission.allowRead"></td>
+                                    <td><input type="checkbox" v-model="formPermission.allowWrite"></td>
                                     <td>
                                         <p class="control has-text-centered">
-                                            <button type="button" class="button is-small is-danger" v-bind:disabled="loading" v-on:click.prevent="removePermission(permission.group.id)">
+                                            <button type="button" class="button is-small is-danger" v-bind:disabled="loading" v-on:click.prevent="removeFormPermission(formPermission.id)">
                                                 <span class="icon is-small"><i class="fas fa-trash-alt"></i></span>
                                                 <span>Remove</span>
                                             </button>
@@ -77,22 +98,28 @@ const template = function () {
                     <div v-show="tab == 'attributes'">
                         <div class="field">
                             <label class="label">Attribute list</label>
-                            <f-field-attribute-search v-bind:disabled="loading" v-bind:placeholder="'search attribute name'" v-bind:denyAttributes="[]" v-on:attributeSelected="addField($event)"></f-field-attribute-search>
+                            <f-field-attribute-search v-bind:disabled="loading" v-bind:placeholder="'search attribute name'" v-bind:denyAttributes="[]" v-on:attributeSelected="addFormField($event)"></f-field-attribute-search>
                         </div>
 
                         <table class="table is-striped is-narrow is-fullwidth is-unselectable">
                             <thead>
-                                <th>Attribute</th>
+                                <th>Attribute name</th>
+                                <th>Attribute type</th>
+                                <th>Required value</th>
                                 <th>Labeled as</th>
                                 <th class="has-text-centered">Operations</th>
                             </thead>
                             <tbody>
-                                <tr v-for="field in template.fields" v-bind:key="field.id">
-                                    <td>{{ field.attribute.name }}</td>
-                                    <td><input class="input" type="text" required v-model.trim="field.label"></td>
+                                <tr v-for="formField in template.formFields" v-bind:key="formField.id">
+                                    <td>{{ formField.attribute.name }}</td>
+                                    <td></td>
+                                    <td>
+                                        <input type="checkbox" v-model="formField.required">
+                                    </td>
+                                    <td><input class="input" type="text" maxlength="32" required v-model.trim="formField.label"></td>
                                     <td>
                                         <p class="control has-text-centered">
-                                            <button type="button" class="button is-small is-danger" v-bind:disabled="loading" v-on:click.prevent="removePermission(field.id)">
+                                            <button type="button" class="button is-small is-danger" v-bind:disabled="loading" v-on:click.prevent="removeFormField(formField.id)">
                                                 <span class="icon is-small"><i class="fas fa-trash-alt"></i></span>
                                                 <span>Remove</span>
                                             </button>
@@ -105,16 +132,21 @@ const template = function () {
 
                     <div v-show="tab == 'preview'">
                         <div class="columns">
-                            <div class="column is-half">
-                                <div class="field" v-for="item in template.fields">
-                                    <label class="label">{{ item.label }}</label>
-                                    <input class="input" type="text" required>
-                                </div>
-                            </div>
-                            <div class="column is-half">
-                                <div class="field">
-                                    <label class="label">HTML source code</label>
-                                    <textarea class="textarea" disabled>TODO</textarea>
+                            <div class="column is-half is-offset-one-quarter">
+                                <div class="box">
+                                    <div class="tabs">
+                                        <ul>
+                                            <li class="is-active"><a><span class="icon is-small"><i class="fas fa-database" aria-hidden="true"></i></span> Metadata</a></li>
+                                            <li v-show="template.allowFormAttachments"><a><span class="icon is-small"><i class="fas fa-paperclip" aria-hidden="true"></i></span> Attachments</a></li>
+                                            <li v-show="template.allowFormNotes"><a><span class="icon is-small"><i class="far fa-comment-alt" aria-hidden="true"></i></span> Notes</a></li>
+                                            <li v-show="template.allowFormLinks"><a><span class="icon is-small"><i class="fas fa-link" aria-hidden="true"></i></span> Links</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="field" v-for="formField in template.formFields">
+                                        <label v-if="formField.required" class="label f-cursor-help" title="this field value is required"><i class="fas fa-exclamation"></i> {{ formField.label }}</label>
+                                        <label v-else class="label">{{ formField.label }}</label>
+                                        <input class="input" type="text">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -144,8 +176,11 @@ export default {
                 id: null,
                 name: null,
                 description: null,
+                allowFormAttachments: true,
+                allowFormNotes: true,
+                allowFormLinks: true,
                 formPermissions: [],
-                fields: []
+                formFields: []
             },
             tab: 'metadata',
             groupAlreadyExists: false
@@ -178,11 +213,11 @@ export default {
             return(this.template.formPermissions ? this.template.formPermissions.length: 0);
         },
         formFieldCount: function() {
-            return(this.template.fields ? this.template.fields.length: 0);
+            return(this.template.formFields ? this.template.formFields.length: 0);
         }
     },
     methods: {
-        addPermission: function (group) {
+        addFormPermission: function (group) {
             if (this.template.formPermissions.find(permission => permission.group.id == group.id)) {
                 this.groupAlreadyExists = true;
             } else {
@@ -197,18 +232,20 @@ export default {
                 );
             }
         },
-        removePermission: function (groupId) {
-            this.template.formPermissions = this.template.formPermissions.filter(permission => permission.group.id !== groupId);
+        removeFormPermission: function (permissionId) {
+            this.template.formPermissions = this.template.formPermissions.filter(permission => permission.id !== permissionId);
         },
-        addField: function(attribute) {
-            this.template.fields.push(
+        addFormField: function(attribute) {
+            this.template.formFields.push(
                 {
                     id: uuid(),
                     attribute: attribute,
                     label: attribute.name
                 }
             );
-
+        },
+        removeFormField: function (fieldId) {
+            this.template.formFields = this.template.formFields.filter(field => field.id !== fieldId);
         },
         load: function (id) {
             let self = this;

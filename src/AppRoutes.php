@@ -618,11 +618,16 @@
                 foreach($request->getParam("formPermissions", array()) as $formPermission) {
                     $formPermissions[] = new \Forms\FormPermission($formPermission["id"], new \Forms\GroupBase($formPermission["group"]["id"]), $formPermission["allowRead"], $formPermission["allowWrite"]);
                 }
+                $formFields = array();
+                foreach($request->getParam("formFields", array()) as $formField) {
+                    $formFields[] = new \Forms\FormField($formField["id"], new \Forms\Attribute($formField["attribute"]["id"], $formField["attribute"]["name"]), $formField["label"]);
+                }
                 $template = new \Forms\Template(
                     $route->getArgument("id"),
                     $request->getParam("name", ""),
                     $request->getParam("description", ""),
-                    $formPermissions
+                    $formPermissions,
+                    $formFields
                 );
                 $dbh = new \Forms\Database\DB($this);
                 if (\Forms\Template::existsName($dbh, $template->name)) {
@@ -644,11 +649,16 @@
                 foreach($request->getParam("formPermissions", array()) as $formPermission) {
                     $formPermissions[] = new \Forms\FormPermission($formPermission["id"], new \Forms\GroupBase($formPermission["group"]["id"]), $formPermission["allowRead"], $formPermission["allowWrite"]);
                 }
+                $formFields = array();
+                foreach($request->getParam("formFields", array()) as $formField) {
+                    $formFields[] = new \Forms\FormField($formField["id"], new \Forms\Attribute($formField["attribute"]["id"], $formField["attribute"]["name"]), $formField["label"]);
+                }
                 $template = new \Forms\Template(
                     $route->getArgument("id"),
                     $request->getParam("name", ""),
                     $request->getParam("description", ""),
-                    $formPermissions
+                    $formPermissions,
+                    $formFields
                 );
                 $dbh = new \Forms\Database\DB($this);
                 if (\Forms\Template::existsName($dbh, $template->name, $template->id)) {

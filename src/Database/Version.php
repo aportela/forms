@@ -187,6 +187,28 @@
                             [allow_write] VARCHAR(1) NOT NULL DEFAULT "Y"
                         );
                     '
+                ),
+                "1.13" => array(
+                    '
+                        CREATE TABLE [TEMPLATE_FORM_FIELD] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [template_id] VARCHAR(36) NOT NULL,
+                            [attribute_id] VARCHAR(36) NOT NULL
+                        );
+                    '
+                ),
+                "1.14" => array(
+                    '
+                        DROP TABLE [TEMPLATE_FORM_FIELD]
+                    ',
+                    '
+                        CREATE TABLE [TEMPLATE_FORM_FIELD] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [template_id] VARCHAR(36) NOT NULL,
+                            [attribute_id] VARCHAR(36) NOT NULL,
+                            [label] VARCHAR(32) NOT NULL
+                        );
+                    '
                 )
             ),
         );

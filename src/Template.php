@@ -14,13 +14,21 @@
         public $description;
         public $creationDate;
         public $deletionDate;
+        public $allowFormAttachments;
+        public $allowFormNotes;
+        public $allowFormLinks;
         public $formPermissions;
+        public $formFields;
 
-        public function __construct (string $id = "", string $name = "", string $description = "", $formPermissions = array()) {
+        public function __construct (string $id = "", string $name = "", string $description = "", $formPermissions = array(), $formFields = array()) {
             $this->id = $id;
             $this->name = $name;
             $this->description = $description;
             $this->formPermissions = $formPermissions;
+            $this->formFields = $formFields;
+            $this->allowFormAttachments = true;
+            $this->allowFormNotes = true;
+            $this->allowFormLinks = true;
         }
 
         public function __destruct() {
@@ -49,7 +57,11 @@
                         $params[] = (new \Forms\Database\DBParam())->null(":description");
                     }
                     if ($dbh->execute("INSERT INTO [TEMPLATE] (id, name, description, creation_date, creator) VALUES(:id, :name, :description, strftime('%s', 'now'), :creator)", $params)) {
-                        return($this->setFormPermissions($dbh));
+                        if ($this->setFormPermissions($dbh)) {
+                            return($this->setFormFields($dbh));
+                        } else {
+                            return(false);
+                        }
                     }
                 } else {
                     throw new \Forms\Exception\InvalidParamsException("name");
@@ -86,6 +98,31 @@
         }
 
         /**
+         * set template form fields
+         */
+        private function setFormFields(\Forms\Database\DB $dbh) {
+            $params = array(
+                (new \Forms\Database\DBParam())->str(":template_id", mb_strtolower($this->id))
+            );
+            if ($dbh->execute(" DELETE FROM [TEMPLATE_FORM_FIELD] WHERE template_id = :template_id", $params)) {
+                foreach($this->formFields as $field) {
+                    $params = array(
+                        (new \Forms\Database\DBParam())->str(":id", mb_strtolower($field->id)),
+                        (new \Forms\Database\DBParam())->str(":template_id", mb_strtolower($this->id)),
+                        (new \Forms\Database\DBParam())->str(":attribute_id", mb_strtolower($field->attribute->id)),
+                        (new \Forms\Database\DBParam())->str(":label", $field->label)
+                    );
+                    if (! $dbh->execute(" INSERT INTO [TEMPLATE_FORM_FIELD] (id, template_id, attribute_id, label) VALUES (:id, :template_id, :attribute_id, :label) ", $params)) {
+                        return(false);
+                    }
+                }
+                return(true);
+            } else {
+                return(false);
+            }
+        }
+
+        /**
          * update template (name, description fields)
          *
          * @param \Forms\Database\DB $dbh database handler
@@ -108,7 +145,11 @@
                         $params[] = (new \Forms\Database\DBParam())->null(":description");
                     }
                     if ($dbh->execute("UPDATE [TEMPLATE] SET name = :name, description = :description WHERE id = :id", $params)) {
-                        return($this->setFormPermissions($dbh));
+                        if ($this->setFormPermissions($dbh)) {
+                            return($this->setFormFields($dbh));
+                        } else {
+                            return(false);
+                        }
                     } else {
                         return(false);
                     }
@@ -155,6 +196,30 @@
             foreach($results as $result) {
                 $this->formPermissions[] = new \Forms\FormPermission($result->id, new \Forms\GroupBase($result->groupId, $result->groupName), $result->allowRead == "Y", $result->allowWrite == "Y");
             }
+            return(true);
+        }
+
+        /**
+         * get form fields
+         */
+        private function getFormFields(\Forms\Database\DB $dbh) {
+            $this->formFields = array();
+            $params = array(
+                (new \Forms\Database\DBParam())->str(":template_id", mb_strtolower($this->id))
+            );
+            $results = $dbh->query(
+                "
+                    SELECT TEMPLATE_FORM_FIELD.id, TEMPLATE_FORM_FIELD.attribute_id AS attributeId, ATTRIBUTE.name AS attributeName, ATTRIBUTE.type AS attributeType, TEMPLATE_FORM_FIELD.label
+                    FROM TEMPLATE_FORM_FIELD
+                    LEFT JOIN ATTRIBUTE ON ATTRIBUTE.id = TEMPLATE_FORM_FIELD.attribute_id
+                    WHERE TEMPLATE_FORM_FIELD.template_id = :template_id
+                    AND ATTRIBUTE.deletion_date IS NULL
+                ", $params
+            );
+            foreach($results as $result) {
+                $this->formFields[] = new \Forms\FormField($result->id, new \Forms\Attribute($result->attributeId, $result->attributeName, "", $result->attributeType), $result->label);
+            }
+            return($true);
         }
 
         /**
@@ -193,7 +258,11 @@
                     if (! empty($results[0]->deletionDate)) {
                         throw new \Forms\Exception\DeletedException("");
                     }
-                    return($this->getFormPermissions($dbh));
+                    if ($this->getFormPermissions($dbh)) {
+                        return($this->getFormFields($dbh));
+                    } else {
+                        return(false);
+                    }
                 } else {
                     throw new \Forms\Exception\NotFoundException("");
                 }
