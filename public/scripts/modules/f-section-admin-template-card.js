@@ -110,7 +110,7 @@ const template = function () {
                                 <th class="has-text-centered">Operations</th>
                             </thead>
                             <tbody>
-                                <tr v-for="formField in template.formFields" v-bind:key="formField.id">
+                                <tr v-for="(formField, index) in template.formFields" v-bind:key="formField.id">
                                     <td>{{ formField.attribute.name }}</td>
                                     <td></td>
                                     <td>
@@ -119,6 +119,14 @@ const template = function () {
                                     <td><input class="input" type="text" maxlength="32" required v-model.trim="formField.label"></td>
                                     <td>
                                         <p class="control has-text-centered">
+                                            <button type="button" class="button is-small is-info" v-bind:disabled="loading" v-on:click.prevent="moveFormFieldUp(index)">
+                                                <span class="icon is-small"><i class="fas fa-caret-up"></i></span>
+                                                <span>Move up</span>
+                                            </button>
+                                            <button type="button" class="button is-small is-info" v-bind:disabled="loading" v-on:click.prevent="moveFormFieldDown(index)">
+                                                <span class="icon is-small"><i class="fas fa-caret-down"></i></span>
+                                                <span>Move down</span>
+                                            </button>
                                             <button type="button" class="button is-small is-danger" v-bind:disabled="loading" v-on:click.prevent="removeFormField(formField.id)">
                                                 <span class="icon is-small"><i class="fas fa-trash-alt"></i></span>
                                                 <span>Remove</span>
@@ -209,11 +217,11 @@ export default {
         }
     },
     computed: {
-        formPermissionCount: function() {
-            return(this.template.formPermissions ? this.template.formPermissions.length: 0);
+        formPermissionCount: function () {
+            return (this.template.formPermissions ? this.template.formPermissions.length : 0);
         },
-        formFieldCount: function() {
-            return(this.template.formFields ? this.template.formFields.length: 0);
+        formFieldCount: function () {
+            return (this.template.formFields ? this.template.formFields.length : 0);
         }
     },
     methods: {
@@ -235,7 +243,7 @@ export default {
         removeFormPermission: function (permissionId) {
             this.template.formPermissions = this.template.formPermissions.filter(permission => permission.id !== permissionId);
         },
-        addFormField: function(attribute) {
+        addFormField: function (attribute) {
             this.template.formFields.push(
                 {
                     id: uuid(),
@@ -246,6 +254,16 @@ export default {
         },
         removeFormField: function (fieldId) {
             this.template.formFields = this.template.formFields.filter(field => field.id !== fieldId);
+        },
+        moveFormFieldUp: function (index) {
+            if (index > 0) {
+                this.template.formFields.splice(index - 1, 0, this.template.formFields.splice(index, 1)[0]);
+            }
+        },
+        moveFormFieldDown: function (index) {
+            if (index < this.template.formFields.length - 1) {
+                this.template.formFields.splice(index + 1, 0, this.template.formFields.splice(index, 1)[0]);
+            }
         },
         load: function (id) {
             let self = this;
