@@ -110,9 +110,10 @@
                         (new \Forms\Database\DBParam())->str(":id", mb_strtolower($field->id)),
                         (new \Forms\Database\DBParam())->str(":template_id", mb_strtolower($this->id)),
                         (new \Forms\Database\DBParam())->str(":attribute_id", mb_strtolower($field->attribute->id)),
-                        (new \Forms\Database\DBParam())->str(":label", $field->label)
+                        (new \Forms\Database\DBParam())->str(":label", $field->label),
+                        (new \Forms\Database\DBParam())->str(":required", $field->required ? "Y": "N")
                     );
-                    if (! $dbh->execute(" INSERT INTO [TEMPLATE_FORM_FIELD] (id, template_id, attribute_id, label) VALUES (:id, :template_id, :attribute_id, :label) ", $params)) {
+                    if (! $dbh->execute(" INSERT INTO [TEMPLATE_FORM_FIELD] (id, template_id, attribute_id, label, required) VALUES (:id, :template_id, :attribute_id, :label, :required) ", $params)) {
                         return(false);
                     }
                 }
@@ -209,7 +210,7 @@
             );
             $results = $dbh->query(
                 "
-                    SELECT TEMPLATE_FORM_FIELD.id, TEMPLATE_FORM_FIELD.attribute_id AS attributeId, ATTRIBUTE.name AS attributeName, ATTRIBUTE.type AS attributeType, TEMPLATE_FORM_FIELD.label
+                    SELECT TEMPLATE_FORM_FIELD.id, TEMPLATE_FORM_FIELD.attribute_id AS attributeId, ATTRIBUTE.name AS attributeName, ATTRIBUTE.type AS attributeType, TEMPLATE_FORM_FIELD.label, TEMPLATE_FORM_FIELD.required
                     FROM TEMPLATE_FORM_FIELD
                     LEFT JOIN ATTRIBUTE ON ATTRIBUTE.id = TEMPLATE_FORM_FIELD.attribute_id
                     WHERE TEMPLATE_FORM_FIELD.template_id = :template_id
@@ -217,7 +218,7 @@
                 ", $params
             );
             foreach($results as $result) {
-                $this->formFields[] = new \Forms\FormField($result->id, new \Forms\Attribute($result->attributeId, $result->attributeName, "", $result->attributeType), $result->label);
+                $this->formFields[] = new \Forms\FormField($result->id, new \Forms\Attribute($result->attributeId, $result->attributeName, "", $result->attributeType), $result->label, $result->required == "Y");
             }
             return(true);
         }

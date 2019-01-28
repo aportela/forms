@@ -37,14 +37,6 @@ const template = function () {
                         </div>
                     </div>
                     <div v-show="attribute.type">
-                        <div class="field">
-                            <label class="label">Required value</label>
-                            <div class="select">
-                                <select required v-bind:disabled="disabled" v-model="required">
-                                    <option v-for="item in requiredTypes" v-bind:key="item.id" v-bind:value="item.id">{{ item.name }}</option>
-                                </select>
-                            </div>
-                        </div>
                         <div class="field" v-show="isList">
                             <label class="label">Value collection</label>
                             <f-attribute-list-definition v-bind:disabled="loading" v-bind:items="valueList" v-on:itemAdded="onListItemAdded($event)" v-on:itemRemoved="onListItemRemoved($event)"></f-attribute-list-definition>
@@ -134,7 +126,6 @@ export default {
             loading: false,
             validator: validator,
             attributeTypes: vueFormsAttributeTypes,
-            required: false,
             requiredTypes: [
                 {
                     id: true,
@@ -163,7 +154,6 @@ export default {
                 name: null,
                 description: null,
                 type: null,
-                required: true,
                 definition: {}
             },
         });
@@ -216,7 +206,6 @@ export default {
             switch (this.attribute.type) {
                 case "SHORT_STRING":
                     this.attribute.definition = {
-                        required: this.required,
                         defaultValue: this.defaultShortStringValue || null,
                         minLength: this.minLength || null,
                         maxLength: this.maxLength || null
@@ -224,7 +213,6 @@ export default {
                     break;
                 case "STRING":
                     this.attribute.definition = {
-                        required: this.required,
                         defaultValue: this.defaultStringValue || null,
                         minLength: this.minLength || null,
                         maxLength: this.maxLength || null
@@ -232,7 +220,6 @@ export default {
                     break;
                 case "INTEGER":
                     this.attribute.definition = {
-                        required: this.required,
                         defaultValue: this.defaultIntegerValue || null,
                         minValue: this.minValue || null,
                         maxValue: this.maxValue || null
@@ -240,7 +227,6 @@ export default {
                     break;
                 case "DECIMAL":
                     this.attribute.definition = {
-                        required: this.required,
                         defaultValue: this.defaultDecimalValue || null,
                         decimalPrecision: this.decimalPrecision,
                         minValue: this.minValue || null,
@@ -249,19 +235,16 @@ export default {
                     break;
                 case "BOOLEAN":
                     this.attribute.definition = {
-                        required: this.required,
                         defaultValue: this.defaultBooleanValue
                     };
                     break;
                 case "DATE":
                     this.attribute.definition = {
-                        required: this.required,
                         defaultValue: this.defaultDateValue
                     };
                     break;
                 case "LIST":
                     this.attribute.definition = {
-                        required: this.required,
                         defaultValue: this.defaultListValue || null,
                         valueList: this.valueList
                     };
@@ -269,7 +252,6 @@ export default {
             }
         },
         setDefinitionModel() {
-            this.required = this.attribute.definition.required;
             switch (this.attribute.type) {
                 case "SHORT_STRING":
                     this.defaultShortStringValue = this.attribute.definition.defaultValue;

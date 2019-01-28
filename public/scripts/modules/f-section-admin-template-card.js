@@ -248,7 +248,8 @@ export default {
                 {
                     id: uuid(),
                     attribute: attribute,
-                    label: attribute.name
+                    label: attribute.name,
+                    required: false
                 }
             );
         },

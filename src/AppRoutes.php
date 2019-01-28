@@ -620,7 +620,7 @@
                 }
                 $formFields = array();
                 foreach($request->getParam("formFields", array()) as $formField) {
-                    $formFields[] = new \Forms\FormField($formField["id"], new \Forms\Attribute($formField["attribute"]["id"], $formField["attribute"]["name"]), $formField["label"]);
+                    $formFields[] = new \Forms\FormField($formField["id"], new \Forms\Attribute($formField["attribute"]["id"], $formField["attribute"]["name"]), $formField["label"], $formField["required"]);
                 }
                 $template = new \Forms\Template(
                     $route->getArgument("id"),
@@ -651,7 +651,7 @@
                 }
                 $formFields = array();
                 foreach($request->getParam("formFields", array()) as $formField) {
-                    $formFields[] = new \Forms\FormField($formField["id"], new \Forms\Attribute($formField["attribute"]["id"], $formField["attribute"]["name"]), $formField["label"]);
+                    $formFields[] = new \Forms\FormField($formField["id"], new \Forms\Attribute($formField["attribute"]["id"], $formField["attribute"]["name"]), $formField["label"], $formField["required"]);
                 }
                 $template = new \Forms\Template(
                     $route->getArgument("id"),
