@@ -219,7 +219,7 @@
             foreach($results as $result) {
                 $this->formFields[] = new \Forms\FormField($result->id, new \Forms\Attribute($result->attributeId, $result->attributeName, "", $result->attributeType), $result->label);
             }
-            return($true);
+            return(true);
         }
 
         /**
