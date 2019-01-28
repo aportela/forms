@@ -83,6 +83,17 @@ const template = function () {
                                     <span class="icon is-small is-left"><i class="fas fa-less-than-equal"></i></span>
                                 </p>
                             </div>
+                            <div class="field">
+                                <label class="label">Multi-line</label>
+                                <div class="control" v-show="isShortString || isString">
+                                    <label class="radio">
+                                        <input type="radio" v-bind:value="true" name="multiline_flag" v-model="multiline"> True
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" v-bind:value="false" name="multiline_flag" v-model="multiline"> False
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                         <div class="field" v-show="isInteger || isDecimalNumber">
                             <label class="label">Range restriction</label>
@@ -143,6 +154,7 @@ export default {
             defaultBooleanValue: null,
             defaultDateValue: null,
             defaultListValue: null,
+            multiline: false,
             minLength: null,
             maxLength: null,
             minValue: null,
@@ -208,14 +220,16 @@ export default {
                     this.attribute.definition = {
                         defaultValue: this.defaultShortStringValue || null,
                         minLength: this.minLength || null,
-                        maxLength: this.maxLength || null
+                        maxLength: this.maxLength || null,
+                        multiline: this.multiline
                     };
                     break;
                 case "STRING":
                     this.attribute.definition = {
                         defaultValue: this.defaultStringValue || null,
                         minLength: this.minLength || null,
-                        maxLength: this.maxLength || null
+                        maxLength: this.maxLength || null,
+                        multiline: this.multiline
                     };
                     break;
                 case "INTEGER":
@@ -257,11 +271,13 @@ export default {
                     this.defaultShortStringValue = this.attribute.definition.defaultValue;
                     this.minLength = this.attribute.definition.minLength;
                     this.maxLength = this.attribute.definition.maxLength;
+                    this.multiline = this.attribute.definition.multiline;
                     break;
                 case "STRING":
                     this.defaultStringValue = this.attribute.definition.defaultValue;
                     this.minLength = this.attribute.definition.minLength;
                     this.maxLength = this.attribute.definition.maxLength;
+                    this.multiline = this.attribute.definition.multiline;
                     break;
                 case "INTEGER":
                     this.defaultIntegerValue = this.attribute.definition.defaultValue;
