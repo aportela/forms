@@ -640,7 +640,7 @@
                     return $response->withJson(
                         [
                             'success' => true,
-                            "group" => $group
+                            "template" => $template
                         ], 200
                     );
                 }
