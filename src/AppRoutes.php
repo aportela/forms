@@ -626,6 +626,9 @@
                     $route->getArgument("id"),
                     $request->getParam("name", ""),
                     $request->getParam("description", ""),
+                    $request->getParam("allowFormAttachments", false),
+                    $request->getParam("allowFormNotes", false),
+                    $request->getParam("allowFormLinks", false),
                     $formPermissions,
                     $formFields
                 );
@@ -657,6 +660,9 @@
                     $route->getArgument("id"),
                     $request->getParam("name", ""),
                     $request->getParam("description", ""),
+                    $request->getParam("allowFormAttachments", false),
+                    $request->getParam("allowFormNotes", false),
+                    $request->getParam("allowFormLinks", false),
                     $formPermissions,
                     $formFields
                 );

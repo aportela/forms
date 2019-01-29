@@ -223,6 +223,24 @@
                             [required] VARCHAR(1) NOT NULL DEFAULT "N"
                         );
                     '
+                ),
+                "1.16" => array(
+                    '
+                        DROP TABLE [TEMPLATE]
+                    ',
+                    '
+                        CREATE TABLE [TEMPLATE] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [name] VARCHAR(64) NOT NULL,
+                            [description] VARCHAR(255),
+                            [allow_form_attachments] VARCHAR(1) NOT NULL DEFAULT "N",
+                            [allow_form_notes] VARCHAR(1) NOT NULL DEFAULT "N",
+                            [allow_form_links] VARCHAR(1) NOT NULL DEFAULT "N",
+                            [creation_date] INTEGER NOT NULL,
+                            [creator] VARCHAR(36) NOT NULL,
+                            [deletion_date] INTEGER
+                        );
+                    '
                 )
             ),
         );

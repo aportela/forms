@@ -20,15 +20,15 @@
         public $formPermissions;
         public $formFields;
 
-        public function __construct (string $id = "", string $name = "", string $description = "", $formPermissions = array(), $formFields = array()) {
+        public function __construct (string $id = "", string $name = "", string $description = "", bool $allowFormAttachments = false, bool $allowFormNotes = false, bool $allowFormLinks = false, $formPermissions = array(), $formFields = array()) {
             $this->id = $id;
             $this->name = $name;
             $this->description = $description;
+            $this->allowFormAttachments = $allowFormAttachments;
+            $this->allowFormNotes = $allowFormNotes;
+            $this->allowFormLinks = $allowFormLinks;
             $this->formPermissions = $formPermissions;
             $this->formFields = $formFields;
-            $this->allowFormAttachments = true;
-            $this->allowFormNotes = true;
-            $this->allowFormLinks = true;
         }
 
         public function __destruct() {
@@ -45,6 +45,9 @@
                     $params = array(
                         (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
                         (new \Forms\Database\DBParam())->str(":name", $this->name),
+                        (new \Forms\Database\DBParam())->str(":allow_form_attachments", $this->allowFormAttachments ? "Y": "N"),
+                        (new \Forms\Database\DBParam())->str(":allow_form_notes", $this->allowFormNotes ? "Y": "N"),
+                        (new \Forms\Database\DBParam())->str(":allow_form_links", $this->allowFormLinks ? "Y": "N"),
                         (new \Forms\Database\DBParam())->str(":creator", \Forms\UserSession::getUserId())
                     );
                     if (! empty($this->description)) {
@@ -56,7 +59,7 @@
                     } else {
                         $params[] = (new \Forms\Database\DBParam())->null(":description");
                     }
-                    if ($dbh->execute("INSERT INTO [TEMPLATE] (id, name, description, creation_date, creator) VALUES(:id, :name, :description, strftime('%s', 'now'), :creator)", $params)) {
+                    if ($dbh->execute("INSERT INTO [TEMPLATE] (id, name, description, allow_form_attachments, allow_form_notes, allow_form_links, creation_date, creator) VALUES(:id, :name, :description, :allow_form_attachments, :allow_form_notes, :allow_form_links, strftime('%s', 'now'), :creator)", $params)) {
                         if ($this->setFormPermissions($dbh)) {
                             return($this->setFormFields($dbh));
                         } else {
@@ -134,7 +137,9 @@
                     $params = array(
                         (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
                         (new \Forms\Database\DBParam())->str(":name", $this->name),
-
+                        (new \Forms\Database\DBParam())->str(":allow_form_attachments", $this->allowFormAttachments ? "Y": "N"),
+                        (new \Forms\Database\DBParam())->str(":allow_form_notes", $this->allowFormNotes ? "Y": "N"),
+                        (new \Forms\Database\DBParam())->str(":allow_form_links", $this->allowFormLinks ? "Y": "N")
                     );
                     if (! empty($this->description)) {
                         if (mb_strlen($this->description) <= 255) {
@@ -145,7 +150,7 @@
                     } else {
                         $params[] = (new \Forms\Database\DBParam())->null(":description");
                     }
-                    if ($dbh->execute("UPDATE [TEMPLATE] SET name = :name, description = :description WHERE id = :id", $params)) {
+                    if ($dbh->execute("UPDATE [TEMPLATE] SET name = :name, description = :description, allow_form_attachments = :allow_form_attachments, allow_form_notes = :allow_form_notes, allow_form_links = :allow_form_links WHERE id = :id", $params)) {
                         if ($this->setFormPermissions($dbh)) {
                             return($this->setFormFields($dbh));
                         } else {
@@ -210,7 +215,7 @@
             );
             $results = $dbh->query(
                 "
-                    SELECT TEMPLATE_FORM_FIELD.id, TEMPLATE_FORM_FIELD.attribute_id AS attributeId, ATTRIBUTE.name AS attributeName, ATTRIBUTE.type AS attributeType, TEMPLATE_FORM_FIELD.label, TEMPLATE_FORM_FIELD.required
+                    SELECT TEMPLATE_FORM_FIELD.id, TEMPLATE_FORM_FIELD.attribute_id AS attributeId, ATTRIBUTE.name AS attributeName, ATTRIBUTE.type AS attributeType, ATTRIBUTE.json_definition AS attributeDefinition, TEMPLATE_FORM_FIELD.label, TEMPLATE_FORM_FIELD.required
                     FROM TEMPLATE_FORM_FIELD
                     LEFT JOIN ATTRIBUTE ON ATTRIBUTE.id = TEMPLATE_FORM_FIELD.attribute_id
                     WHERE TEMPLATE_FORM_FIELD.template_id = :template_id
@@ -218,7 +223,9 @@
                 ", $params
             );
             foreach($results as $result) {
-                $this->formFields[] = new \Forms\FormField($result->id, new \Forms\Attribute($result->attributeId, $result->attributeName, "", $result->attributeType), $result->label, $result->required == "Y");
+                $attribute = new \Forms\Attribute($result->attributeId, $result->attributeName, "", $result->attributeType);
+                $attribute->definition = json_decode($result->attributeDefinition);
+                $this->formFields[] = new \Forms\FormField($result->id, $attribute, $result->label, $result->required == "Y");
             }
             return(true);
         }
@@ -236,7 +243,8 @@
                     sprintf(
                         "
                             SELECT
-                                [TEMPLATE].id, [TEMPLATE].name, [TEMPLATE].description, strftime('%s', datetime([TEMPLATE].creation_date, 'unixepoch')) AS creationDate, [TEMPLATE].deletion_date AS deletionDate, [TEMPLATE].creator AS creatorId, USER.email AS creatorEmail, USER.name AS creatorName
+                                [TEMPLATE].id, [TEMPLATE].name, [TEMPLATE].description, [TEMPLATE].allow_form_attachments AS allowFormAttachments, [TEMPLATE].allow_form_notes AS allowFormNotes, [TEMPLATE].allow_form_links AS allowFormLinks,
+                                strftime('%s', datetime([TEMPLATE].creation_date, 'unixepoch')) AS creationDate, [TEMPLATE].deletion_date AS deletionDate, [TEMPLATE].creator AS creatorId, USER.email AS creatorEmail, USER.name AS creatorName
                             FROM [TEMPLATE]
                             LEFT JOIN USER ON USER.id = [TEMPLATE].creator
                             WHERE [TEMPLATE].id = :id
@@ -252,6 +260,9 @@
                     $this->name = $results[0]->name;
                     $this->description = $results[0]->description;
                     $this->creationDate = $results[0]->creationDate;
+                    $this->allowFormAttachments = $results[0]->allowFormAttachments == "Y";
+                    $this->allowFormNotes = $results[0]->allowFormNotes == "Y";
+                    $this->allowFormLinks = $results[0]->allowFormLinks == "Y";
                     $this->creator = new \stdclass();
                     $this->creator->id = $results[0]->creatorId;
                     $this->creator->email = $results[0]->creatorEmail;
