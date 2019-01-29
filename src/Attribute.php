@@ -293,7 +293,7 @@
                     sprintf(
                         "
                             SELECT
-                            [ATTRIBUTE].id, [ATTRIBUTE].name, [ATTRIBUTE].description, [ATTRIBUTE].type, strftime('%s', datetime([ATTRIBUTE].creation_date, 'unixepoch')) AS creationDate, [ATTRIBUTE].creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
+                            [ATTRIBUTE].id, [ATTRIBUTE].name, [ATTRIBUTE].description, [ATTRIBUTE].type, [ATTRIBUTE].json_definition AS definition, strftime('%s', datetime([ATTRIBUTE].creation_date, 'unixepoch')) AS creationDate, [ATTRIBUTE].creator AS creatorId, U.email AS creatorEmail, U.name AS creatorName
                             FROM [ATTRIBUTE]
                             LEFT JOIN USER U ON [ATTRIBUTE].creator = U.id
                             WHERE [ATTRIBUTE].deletion_date IS NULL
@@ -313,6 +313,7 @@
                     $creatorEmail = $attribute->creatorEmail;
                     $creatorName = $attribute->creatorName;
                     $attribute->creator = new \stdclass();
+                    $attribute->definition = json_decode($attribute->definition);
                     $attribute->creator->id = $creatorId;
                     $attribute->creator->email = $creatorEmail;
                     $attribute->creator->name = $creatorName;
