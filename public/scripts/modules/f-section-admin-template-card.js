@@ -4,6 +4,7 @@ import { uuid } from './utils.js';
 import { mixinRoutes, mixinSession } from './mixins.js';
 import { default as vueFormsFieldGroupSearch } from './f-field-group-search.js';
 import { default as vueFormsFieldAttributeSearch } from './f-field-attribute-search.js';
+import { default as vueFormsFormCard } from './f-form-card.js';
 
 const template = function () {
     return `
@@ -139,25 +140,7 @@ const template = function () {
                     </div>
 
                     <div v-show="tab == 'preview'">
-                        <div class="columns">
-                            <div class="column is-half is-offset-one-quarter">
-                                <div class="box">
-                                    <div class="tabs">
-                                        <ul>
-                                            <li class="is-active"><a><span class="icon is-small"><i class="fas fa-database" aria-hidden="true"></i></span> Metadata</a></li>
-                                            <li v-show="template.allowFormAttachments"><a><span class="icon is-small"><i class="fas fa-paperclip" aria-hidden="true"></i></span> Attachments</a></li>
-                                            <li v-show="template.allowFormNotes"><a><span class="icon is-small"><i class="far fa-comment-alt" aria-hidden="true"></i></span> Notes</a></li>
-                                            <li v-show="template.allowFormLinks"><a><span class="icon is-small"><i class="fas fa-link" aria-hidden="true"></i></span> Links</a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="field" v-for="formField in template.formFields">
-                                        <label v-if="formField.required" class="label f-cursor-help" title="this field value is required"><i class="fas fa-exclamation"></i> {{ formField.label }}</label>
-                                        <label v-else class="label">{{ formField.label }}</label>
-                                        <input class="input" type="text">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <f-form-card v-bind:template="template" v-bind:disabled="loading"></f-form-card>
                     </div>
 
                     <hr>
@@ -184,9 +167,9 @@ export default {
                 id: null,
                 name: null,
                 description: null,
-                allowFormAttachments: true,
-                allowFormNotes: true,
-                allowFormLinks: true,
+                allowFormAttachments: false,
+                allowFormNotes: false,
+                allowFormLinks: false,
                 formPermissions: [],
                 formFields: []
             },
@@ -203,7 +186,8 @@ export default {
     ],
     components: {
         'f-field-group-search': vueFormsFieldGroupSearch,
-        'f-field-attribute-search': vueFormsFieldAttributeSearch
+        'f-field-attribute-search': vueFormsFieldAttributeSearch,
+        'f-form-card': vueFormsFormCard
     },
     filters: {
         getAccountTypeName: function (accountType) {
