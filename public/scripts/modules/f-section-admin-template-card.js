@@ -120,11 +120,11 @@ const template = function () {
                                     <td><input class="input" type="text" maxlength="32" required v-model.trim="formField.label"></td>
                                     <td>
                                         <p class="control has-text-centered">
-                                            <button type="button" class="button is-small is-info" v-bind:disabled="loading" v-on:click.prevent="moveFormFieldUp(index)">
+                                            <button type="button" class="button is-small is-info" v-bind:disabled="loading || index == 0" v-on:click.prevent="moveFormFieldUp(index)">
                                                 <span class="icon is-small"><i class="fas fa-caret-up"></i></span>
                                                 <span>Move up</span>
                                             </button>
-                                            <button type="button" class="button is-small is-info" v-bind:disabled="loading" v-on:click.prevent="moveFormFieldDown(index)">
+                                            <button type="button" class="button is-small is-info" v-bind:disabled="loading || index == template.formFields.length - 1" v-on:click.prevent="moveFormFieldDown(index)">
                                                 <span class="icon is-small"><i class="fas fa-caret-down"></i></span>
                                                 <span>Move down</span>
                                             </button>
