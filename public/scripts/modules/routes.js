@@ -11,6 +11,7 @@ import { default as vueFormsSectionAdminAttributeCard } from './f-section-admin-
 import { default as vueFormsSectionAdminTemplates } from './f-section-admin-templates.js';
 import { default as vueFormsSectionAdminTemplateCard } from './f-section-admin-template-card.js';
 import { default as vueFormsSectionAPIError } from './f-section-api-error.js';
+import { default as vueFormsSectionAddForm } from './f-section-add-form.js';
 
 export const routes = [
     { path: '/auth', name: 'auth', component: vueFormsSectionAuth },
@@ -39,7 +40,8 @@ export const routes = [
             { path: 'administration/attribute/update/:id', name: 'updateAttribute', component: vueFormsSectionAdminAttributeCard },
             { path: 'administration/template/search', name: 'templates', component: vueFormsSectionAdminTemplates },
             { path: 'administration/template/add', name: 'addTemplate', component: vueFormsSectionAdminTemplateCard },
-            { path: 'administration/template/update/:id', name: 'updateTemplate', component: vueFormsSectionAdminTemplateCard }
+            { path: 'administration/template/update/:id', name: 'updateTemplate', component: vueFormsSectionAdminTemplateCard },
+            { path: 'addForm', name: 'addForm', component: vueFormsSectionAddForm }
         ]
     },
     { path: '/api-error', name: 'apiError', component: vueFormsSectionAPIError }
