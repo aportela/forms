@@ -1,3 +1,5 @@
+import { humanFileSize } from './utils.js';
+
 export const mixinRoutes = {
     methods: {
         isRouteActive: function (section) {
@@ -88,11 +90,19 @@ export const mixinTableControls = {
 
 export const mixinDates = {
     filters: {
-        parseJSONDate: function(jsonDate) {
-            return(dateFns.format(new Date(jsonDate), 'YYYY-MM-DD'));
+        parseJSONDate: function (jsonDate) {
+            return (dateFns.format(new Date(jsonDate), 'YYYY-MM-DD'));
         },
-        parseJSONDateTime: function(jsonDate) {
-            return(dateFns.format(new Date(jsonDate), 'YYYY-MM-DD H:m:ss'));
+        parseJSONDateTime: function (jsonDate) {
+            return (dateFns.format(new Date(jsonDate), 'YYYY-MM-DD H:m:ss'));
+        }
+    }
+}
+
+export const mixinSizes = {
+    filters: {
+        parseHumanFileSize: function (size) {
+            return (humanFileSize(size, true));
         }
     }
 }
