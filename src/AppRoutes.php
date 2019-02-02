@@ -698,5 +698,130 @@
 
         })->add(new \Forms\Middleware\AuthenticationRequired($this->getContainer()));
 
+        $this->group("/forms", function() {
+
+            $this->post('/search', function (Request $request, Response $response, array $args) {
+                $requestFilter = $request->getParam("filter");
+                $filter = array();
+                if (isset($requestFilter["description"]) && ! empty($requestFilter["description"])) {
+                    $filter["description"] = $requestFilter["description"];
+                }
+                if (isset($requestFilter["fromCreationDate"]) && ! empty($requestFilter["fromCreationDate"])) {
+                    $filter["fromCreationDate"] = $requestFilter["fromCreationDate"];
+                }
+                if (isset($requestFilter["toCreationDate"]) && ! empty($requestFilter["toCreationDate"])) {
+                    $filter["toCreationDate"] = $requestFilter["toCreationDate"];
+                }
+                if (isset($requestFilter["creatorName"]) && ! empty($requestFilter["creatorName"])) {
+                    $filter["creatorName"] = $requestFilter["creatorName"];
+                }
+                $data = \Forms\Form::search(
+                    new \Forms\Database\DB(
+                        $this
+                    ),
+                    $filter,
+                    $request->getParam("currentPage", 1),
+                    $request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage']),
+                    $request->getParam("sortBy", ""),
+                    $request->getParam("sortOrder", "")
+                );
+                return $response->withJson(
+                    [
+                        'success' => true,
+                        'forms' => $data->results,
+                        "pagination" => array(
+                            'totalResults' => $data->totalResults,
+                            'currentPage' => $data->currentPage,
+                            'resultsPage' => $data->resultsPage,
+                            'totalPages' => $data->totalPages
+                        )
+                    ], 200
+                );
+            });
+
+            $this->get('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $form = new \Forms\Form(
+                    $route->getArgument("id")
+                );
+                $dbh = new \Forms\Database\DB($this);
+                $form->get($dbh);
+                return $response->withJson(
+                    [
+                        'success' => true,
+                        "form" => $form
+                    ], 200
+                );
+            })->add(new \Forms\Middleware\FormReadPrivilegesRequired($this->getContainer()));
+
+            $this->post('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $form = new \Forms\Form(
+                    $route->getArgument("id"),
+                    $request->getParam("description", ""),
+                    new \Forms\Template($request->getParam("template")["id"])
+                );
+                $dbh = new \Forms\Database\DB($this);
+                $form->add($dbh);
+                return $response->withJson(
+                    [
+                        'success' => true,
+                        "form" => $form
+                    ], 200
+                );
+            })->add(new \Forms\Middleware\FormCreationPrivilegesRequired($this->getContainer()));
+
+            $this->put('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $formPermissions = array();
+                foreach($request->getParam("formPermissions", array()) as $formPermission) {
+                    $formPermissions[] = new \Forms\FormPermission($formPermission["id"], new \Forms\GroupBase($formPermission["group"]["id"]), $formPermission["allowRead"], $formPermission["allowWrite"]);
+                }
+                $formFields = array();
+                foreach($request->getParam("formFields", array()) as $formField) {
+                    $formFields[] = new \Forms\FormField($formField["id"], new \Forms\Attribute($formField["attribute"]["id"], $formField["attribute"]["name"]), $formField["label"], $formField["required"]);
+                }
+                $template = new \Forms\Template(
+                    $route->getArgument("id"),
+                    $request->getParam("name", ""),
+                    $request->getParam("description", ""),
+                    $request->getParam("allowFormAttachments", false),
+                    $request->getParam("allowFormNotes", false),
+                    $request->getParam("allowFormLinks", false),
+                    $formPermissions,
+                    $formFields
+                );
+                $dbh = new \Forms\Database\DB($this);
+                if (\Forms\Template::existsName($dbh, $template->name, $template->id)) {
+                    throw new \Forms\Exception\AlreadyExistsException("name");
+                } else {
+                    $template->update($dbh);
+                    return $response->withJson(
+                        [
+                            'success' => true,
+                            "template" => $template
+                        ], 200
+                    );
+                }
+            })->add(new \Forms\Middleware\FormCreationPrivilegesRequired($this->getContainer()));
+
+            $this->delete('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $template = new \Forms\Template(
+                    $route->getArgument("id"),
+                    "",
+                    ""
+                );
+                $dbh = new \Forms\Database\DB($this);
+                $template->delete($dbh);
+                return $response->withJson(
+                    [
+                        'success' => true,
+                    ], 200
+                );
+            })->add(new \Forms\Middleware\FormCreationPrivilegesRequired($this->getContainer()));
+
+        })->add(new \Forms\Middleware\AuthenticationRequired($this->getContainer()));
+
     })->add(new \Forms\Middleware\APIExceptionCatcher($this->app->getContainer()));
 ?>

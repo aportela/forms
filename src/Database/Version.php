@@ -244,8 +244,20 @@
                 ),
                 "1.17" => array(
                     ' ALTER TABLE [TEMPLATE_FORM_FIELD] ADD `order_idx` INTEGER NOT NULL DEFAULT 0; '
+                ),
+                "1.18" => array(
+                    '
+                        CREATE TABLE [FORM] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [template_id] VARCHAR(36) NOT NULL,
+                            [description] VARCHAR(255) NOT NULL,
+                            [creation_date] INTEGER NOT NULL,
+                            [creator] VARCHAR(36) NOT NULL,
+                            [deletion_date] INTEGER
+                        );
+                    '
                 )
-            ),
+            )
         );
 
         public function __construct (\Forms\Database\DB $dbh, string $databaseType) {
