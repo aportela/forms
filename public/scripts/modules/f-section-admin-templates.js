@@ -51,7 +51,7 @@ const template = function () {
                         <td>
                             <div class="field is-grouped">
                                 <p class="control is-expanded">
-                                    <button type="button" class="button is-small is-fullwidth is-link" v-bind:disabled="loading" v-on:click="$router.push({ name: 'addForm', params: { templateId: template.id } })">
+                                    <button type="button" class="button is-small is-fullwidth is-link" v-bind:disabled="loading" v-on:click="$router.push({ name: 'addFormFromTemplate', params: { templateId: template.id } })">
                                         <span class="icon is-small"><i class="fas fa-plus"></i></span>
                                         <span>Create</span>
                                     </button>

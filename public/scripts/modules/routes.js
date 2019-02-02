@@ -41,7 +41,7 @@ export const routes = [
             { path: 'administration/template/search', name: 'templates', component: vueFormsSectionAdminTemplates },
             { path: 'administration/template/add', name: 'addTemplate', component: vueFormsSectionAdminTemplateCard },
             { path: 'administration/template/update/:id', name: 'updateTemplate', component: vueFormsSectionAdminTemplateCard },
-            { path: 'addForm', name: 'addForm', component: vueFormsSectionAddForm }
+            { path: 'addFormFromTemplate/:templateId', name: 'addFormFromTemplate', component: vueFormsSectionAddForm }
         ]
     },
     { path: '/api-error', name: 'apiError', component: vueFormsSectionAPIError }

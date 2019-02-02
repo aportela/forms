@@ -19,7 +19,7 @@ const template = function () {
             <li v-if="isRouteActive('templates') || isRouteActive('addTemplate') || isRouteActive('updateTemplate')" aria-current="page"><a href="#" v-on:click.prevent="changeRoute('templates')"><span class="icon is-small"><i class="fas fa-file" aria-hidden="true"></i></span><span>Template management</span></a></li>
             <li v-if="isRouteActive('addTemplate')" aria-current="page"><a href="#"><span class="icon is-small"><i class="fas fa-plus" aria-hidden="true"></i></span><span>Add template</span></a></li>
             <li v-if="isRouteActive('updateTemplate')" aria-current="page"><a href="#"><span class="icon is-small"><i class="fas fa-pen" aria-hidden="true"></i></span><span>Update template</span></a></li>
-            <li v-if="isRouteActive('addForm')" aria-current="page"><a href="#"><span class="icon is-small"><i class="fas fa-plus" aria-hidden="true"></i></span><span>Add form</span></a></li>
+            <li v-if="isRouteActive('addFormFromTemplate')" aria-current="page"><a href="#"><span class="icon is-small"><i class="fas fa-plus" aria-hidden="true"></i></span><span>Add form</span></a></li>
             </ul>
         </nav>
     `;
