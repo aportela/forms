@@ -31,7 +31,6 @@ export default {
     created: function () {
         this.fieldValue = this.data.attribute.definition.defaultValue;
         this.validate();
-        console.log(this.data.attribute.definition);
     },
     computed: {
         isMultiLine: function() {
