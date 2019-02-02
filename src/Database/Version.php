@@ -241,6 +241,9 @@
                             [deletion_date] INTEGER
                         );
                     '
+                ),
+                "1.17" => array(
+                    ' ALTER TABLE [TEMPLATE_FORM_FIELD] ADD `order_idx` INTEGER NOT NULL DEFAULT 0; '
                 )
             ),
         );

@@ -108,15 +108,16 @@
                 (new \Forms\Database\DBParam())->str(":template_id", mb_strtolower($this->id))
             );
             if ($dbh->execute(" DELETE FROM [TEMPLATE_FORM_FIELD] WHERE template_id = :template_id", $params)) {
-                foreach($this->formFields as $field) {
+                foreach($this->formFields as $index => $field) {
                     $params = array(
                         (new \Forms\Database\DBParam())->str(":id", mb_strtolower($field->id)),
                         (new \Forms\Database\DBParam())->str(":template_id", mb_strtolower($this->id)),
                         (new \Forms\Database\DBParam())->str(":attribute_id", mb_strtolower($field->attribute->id)),
                         (new \Forms\Database\DBParam())->str(":label", $field->label),
-                        (new \Forms\Database\DBParam())->str(":required", $field->required ? "Y": "N")
+                        (new \Forms\Database\DBParam())->str(":required", $field->required ? "Y": "N"),
+                        (new \Forms\Database\DBParam())->int(":order_idx", $index)
                     );
-                    if (! $dbh->execute(" INSERT INTO [TEMPLATE_FORM_FIELD] (id, template_id, attribute_id, label, required) VALUES (:id, :template_id, :attribute_id, :label, :required) ", $params)) {
+                    if (! $dbh->execute(" INSERT INTO [TEMPLATE_FORM_FIELD] (id, template_id, attribute_id, label, required, order_idx) VALUES (:id, :template_id, :attribute_id, :label, :required, :order_idx) ", $params)) {
                         return(false);
                     }
                 }
@@ -220,6 +221,7 @@
                     LEFT JOIN ATTRIBUTE ON ATTRIBUTE.id = TEMPLATE_FORM_FIELD.attribute_id
                     WHERE TEMPLATE_FORM_FIELD.template_id = :template_id
                     AND ATTRIBUTE.deletion_date IS NULL
+                    ORDER BY order_idx ASC
                 ", $params
             );
             foreach($results as $result) {
