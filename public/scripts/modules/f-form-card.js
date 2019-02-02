@@ -26,7 +26,7 @@ const template = function () {
                     <div v-else-if="activeTab == 'attachments'">
                         <div class="file has-name is-fullwidth">
                             <label class="file-label">
-                                <input class="file-input" type="file" name="resume" v-on:change="onFileUploadChange">
+                                <input class="file-input" type="file" name="resume" v-on:change="onFileUploadChange" ref="f">
                                 <span class="file-cta">
                                     <span class="file-icon">
                                         <i class="fas fa-upload"></i>
@@ -176,11 +176,13 @@ export default {
                 fileSize: file.size
             });
             self.fileName = null;
+            self.$refs.f.value = null;
         })
     },
     methods: {
         onFileUploadChange: function (event) {
             if (event.target.files.length == 1) {
+                this.f = event.target.files[0];
                 this.fileName = event.target.files[0].name;
                 bus.$emit('uploadFile', event.target.files[0]);
             }
