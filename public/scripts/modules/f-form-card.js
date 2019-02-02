@@ -46,6 +46,7 @@ const template = function () {
                                     <th>User</th>
                                     <th>Filename</th>
                                     <th>Size</th>
+                                    <th>Comment/description</th>
                                     <th>Operations</th>
                                 </tr>
                             </thead>
@@ -55,6 +56,7 @@ const template = function () {
                                     <td>{{ item.creator.name }}</td>
                                     <td>{{ item.filename }}</td>
                                     <td>{{ item.fileSize | parseHumanFileSize }}</td>
+                                    <td></td>
                                     <td>
                                         <div class="field is-grouped">
                                             <p class="control is-expanded">
@@ -182,7 +184,6 @@ export default {
     methods: {
         onFileUploadChange: function (event) {
             if (event.target.files.length == 1) {
-                this.f = event.target.files[0];
                 this.fileName = event.target.files[0].name;
                 bus.$emit('uploadFile', event.target.files[0]);
             }
