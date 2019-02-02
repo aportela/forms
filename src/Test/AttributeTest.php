@@ -122,16 +122,28 @@
             $a->get(self::$dbh);
         }
 
-        public function testSearchWithoutFilter(): void {
+        public function testSearchWithoutFilterWithoutPagination(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $a = new \Forms\Attribute($id, $id, "attribute description", "STRING", " { } ");
             $a->add(self::$dbh);
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $a = new \Forms\Attribute($id, $id, "attribute description", "INTEGER", " { } ");
             $a->add(self::$dbh);
-            $attributes = \Forms\Attribute::search(self::$dbh, array(), 1, 0, "", "ASC");
-            $this->assertTrue(count($attributes) >= 0);
+            $data = \Forms\Attribute::search(self::$dbh, array(), 1, 0, "", "ASC");
+            $this->assertTrue(count($data->results) >= 0);
         }
+
+        public function testSearchWithoutFilterWitPagination(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $a = new \Forms\Attribute($id, $id, "attribute description", "STRING", " { } ");
+            $a->add(self::$dbh);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $a = new \Forms\Attribute($id, $id, "attribute description", "INTEGER", " { } ");
+            $a->add(self::$dbh);
+            $data = \Forms\Attribute::search(self::$dbh, array(), 1, 16, "", "ASC");
+            $this->assertTrue(count($data->results) >= 0);
+        }
+
     }
 
 ?>

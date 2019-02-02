@@ -163,7 +163,7 @@
             $t->get(self::$dbh);
         }
 
-        public function testSearchWithoutFilter(): void {
+        public function testSearchWithoutFilterWithoutPagination(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $t = new \Forms\Template($id, "name1 of ". $id, "template description", false, false, false);
             $t->add(self::$dbh);
@@ -171,6 +171,17 @@
             $t = new \Forms\Template($id, "name2 of ". $id, "template description", false, false, false);
             $t->add(self::$dbh);
             $data = \Forms\Template::search(self::$dbh, array(), 1, 0, "", "ASC");
+            $this->assertTrue(count($data->results) >= 0);
+        }
+
+        public function testSearchWithoutFilterWithPagination(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $t = new \Forms\Template($id, "name1 of ". $id, "template description", false, false, false);
+            $t->add(self::$dbh);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $t = new \Forms\Template($id, "name2 of ". $id, "template description", false, false, false);
+            $t->add(self::$dbh);
+            $data = \Forms\Template::search(self::$dbh, array(), 1, 16, "", "ASC");
             $this->assertTrue(count($data->results) >= 0);
         }
 

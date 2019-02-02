@@ -145,7 +145,7 @@
             $this->assertFalse(\Forms\User::existsName(self::$dbh, $g->name, $g->id));
         }
 
-        public function testSearchWithoutFilter(): void {
+        public function testSearchWithoutFilterWithoutPagination(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $g = new \Forms\Group($id, $id, "group description", array());
             $g->add(self::$dbh);
@@ -154,9 +154,23 @@
             $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER, true);
             $g->users = array($u);
             $g->add(self::$dbh);
-            $groups = \Forms\Group::search(self::$dbh, array(), 1, 0, "", "ASC");
-            $this->assertTrue(count($groups) >= 0);
+            $data = \Forms\Group::search(self::$dbh, array(), 1, 0, "", "ASC");
+            $this->assertTrue(count($data->results) >= 0);
         }
+
+        public function testSearchWithoutFilterWithPagination(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $g = new \Forms\Group($id, $id, "group description", array());
+            $g->add(self::$dbh);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $g = new \Forms\Group($id, $id, "group description", array());
+            $u = new \Forms\User($id, $id . "@server.com", "name of " . $id, "secret", \Forms\User::ACCOUNT_TYPE_USER, true);
+            $g->users = array($u);
+            $g->add(self::$dbh);
+            $data = \Forms\Group::search(self::$dbh, array(), 1, 16, "", "ASC");
+            $this->assertTrue(count($data->results) >= 0);
+        }
+
     }
 
 ?>

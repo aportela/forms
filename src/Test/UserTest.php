@@ -240,13 +240,13 @@
         }
 
         public function testSearchWithoutPagination(): void {
-            $users = \Forms\User::search(self::$dbh, array(), 1, 0, "", "ASC");
-            $this->assertTrue(count($users) >= 0);
+            $data = \Forms\User::search(self::$dbh, array(), 1, 0, "", "ASC");
+            $this->assertTrue(count($data->results) >= 0);
         }
 
         public function testSearchWithPagination(): void {
-            $users = \Forms\User::search(self::$dbh, array(), 1, 16, "", "ASC");
-            $this->assertTrue(count($users) >= 0);
+            $data = \Forms\User::search(self::$dbh, array(), 1, 16, "", "ASC");
+            $this->assertTrue(count($data->results) >= 0);
         }
 
         public function testLoginWithoutIdOrEmail(): void {
