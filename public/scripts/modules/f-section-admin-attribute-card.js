@@ -75,11 +75,11 @@ const template = function () {
                             <label class="label">Length restriction</label>
                             <div class="field has-addons">
                                 <p class="control has-icons-left">
-                                    <input class="input" type="text" placeholder="min string length" v-model.number="minLength">
+                                    <input class="input" type="number" placeholder="min string length" v-model.number="minLength">
                                     <span class="icon is-small is-left"><i class="fas fa-greater-than-equal"></i></span>
                                 </p>
                                 <p class="control has-icons-left">
-                                    <input class="input" type="text" placeholder="max string length" v-model.number="maxLength">
+                                    <input class="input" type="number" placeholder="max string length" v-model.number="maxLength">
                                     <span class="icon is-small is-left"><i class="fas fa-less-than-equal"></i></span>
                                 </p>
                             </div>
@@ -99,11 +99,11 @@ const template = function () {
                             <label class="label">Range restriction</label>
                             <div class="field has-addons">
                                 <p class="control has-icons-left">
-                                    <input class="input" type="text" placeholder="min value" v-model.number="minValue">
+                                    <input class="input" type="number" placeholder="min value" v-model.number="minValue">
                                     <span class="icon is-small is-left"><i class="fas fa-greater-than-equal"></i></span>
                                 </p>
                                 <p class="control has-icons-left">
-                                    <input class="input" type="text" placeholder="max value" v-model.number="maxValue">
+                                    <input class="input" type="number" placeholder="max value" v-model.number="maxValue">
                                     <span class="icon is-small is-left"><i class="fas fa-less-than-equal"></i></span>
                                 </p>
                             </div>
@@ -111,7 +111,7 @@ const template = function () {
                         <div class="field" v-show="isDecimalNumber">
                             <label class="label">Decimal precision</label>
                             <p class="control has-icons-left">
-                                <input class="input" type="text" placeholder="decimal numbers" v-model.number="decimalPrecision">
+                                <input class="input" type="number" placeholder="decimal numbers" v-model.number="decimalPrecision">
                                 <span class="icon is-small is-left"><i class="fas fa-calculator"></i></span>
                             </p>
                         </div>
