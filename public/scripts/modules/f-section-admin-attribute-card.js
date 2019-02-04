@@ -95,6 +95,19 @@ const template = function () {
                                 </div>
                             </div>
                         </div>
+                        <div class="field" v-show="isDate">
+                            <label class="label">Range restriction</label>
+                            <div class="field has-addons">
+                                <p class="control has-icons-left">
+                                    <input class="input" type="date" placeholder="min value" v-model="minValue">
+                                    <span class="icon is-small is-left"><i class="fas fa-greater-than-equal"></i></span>
+                                </p>
+                                <p class="control has-icons-left">
+                                    <input class="input" type="date" placeholder="max value" v-model="maxValue">
+                                    <span class="icon is-small is-left"><i class="fas fa-less-than-equal"></i></span>
+                                </p>
+                            </div>
+                        </div>
                         <div class="field" v-show="isInteger || isDecimalNumber">
                             <label class="label">Range restriction</label>
                             <div class="field has-addons">
@@ -254,7 +267,9 @@ export default {
                     break;
                 case "DATE":
                     this.attribute.definition = {
-                        defaultValue: this.defaultDateValue
+                        defaultValue: this.defaultDateValue,
+                        minValue: this.minValue || null,
+                        maxValue: this.maxValue || null
                     };
                     break;
                 case "LIST":
@@ -295,6 +310,8 @@ export default {
                     break;
                 case "DATE":
                     this.defaultDateValue = this.attribute.definition.defaultValue ? new Date(this.attribute.definition.defaultValue): null;
+                    this.minValue = this.attribute.definition.minValue;
+                    this.maxValue = this.attribute.definition.maxValue;
                 break;
                 case "LIST":
                     this.defaultListValue = this.attribute.definition.defaultValue;
