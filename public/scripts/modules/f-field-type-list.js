@@ -3,7 +3,7 @@ const template = function () {
         <div class="field">
             <label class="label">{{ data.label }}</label>
             <div class="control is-expanded has-icons-left">
-                <div class="select is-fullwidth">
+                <div class="select is-fullwidth" v-bind:class="{ 'is-danger': ! isValid }">
                     <select v-model="fieldValue" v-on:change="validate()">
                         <option v-for="item in data.attribute.definition.valueList" v-bind:key="item.id" v-bind:value="item.id">{{ item.name }}</option>
                     </select>
