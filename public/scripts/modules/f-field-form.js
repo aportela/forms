@@ -1,25 +1,17 @@
+import { default as vueFormsFieldTypeString } from './f-field-type-string.js';
+import { default as vueFormsFieldTypeNumber } from './f-field-type-number.js';
+import { default as vueFormsFieldTypeDate } from './f-field-type-date.js';
+import { default as vueFormsFieldTypeBoolean } from './f-field-type-boolean.js';
+import { default as vueFormsFieldTypeList } from './f-field-type-list.js';
+
 const template = function () {
     return `
-        <div class="field">
-            <label v-if="field.required" class="label f-cursor-help" title="this field value is required"><i class="fas fa-exclamation"></i> {{ field.label }}</label>
-            <label v-else class="label">{{ field.label }}</label>
-            <input class="input" type="text" v-if="isString && ! isMultiLine">
-            <textarea class="textarea" v-if="isString && isMultiLine"></textarea>
-            <input class="input" type="date" v-if="isDate">
-            <input class="input" type="number" v-bind:step="stepNumber" v-if="isNumber">
-            <div class="control" v-if="isBoolean">
-                <label class="radio">
-                    <input type="radio" v-bind:value="true" name="default_boolean_flag"> True
-                </label>
-                <label class="radio">
-                    <input type="radio" v-bind:value="false" name="default_boolean_flag"> False
-                </label>
-            </div>
-            <div class="select" v-if="isList">
-                <select>
-                    <option v-for="item in field.attribute.definition.valueList" v-bind:key="item.id" v-bind:value="item.id">{{ item.name }}</option>
-                </select>
-            </div>
+        <div>
+            <f-field-type-string v-bind:data="field" v-if="isString"></f-field-type-string>
+            <f-field-type-number v-bind:data="field" v-if="isNumber"></f-field-type-number>
+            <f-field-type-date v-bind:data="field" v-if="isDate"></f-field-type-date>
+            <f-field-type-boolean v-bind:data="field" v-if="isBoolean"></f-field-type-boolean>
+            <f-field-type-list v-bind:data="field" v-if="isList"></f-field-type-list>
         </div>
     `;
 };
@@ -32,30 +24,36 @@ export default {
         'field'
     ],
     computed: {
-        isString: function() {
-            return(this.field.attribute.type == "SHORT_STRING" || this.field.attribute.type == "STRING");
+        isString: function () {
+            return (this.field.attribute.type == "SHORT_STRING" || this.field.attribute.type == "STRING");
         },
-        isDate: function() {
-            return(this.field.attribute.type == "DATE");
+        isDate: function () {
+            return (this.field.attribute.type == "DATE");
         },
-        isMultiLine: function() {
-            return(this.field.attribute.definition.multiline);
+        isMultiLine: function () {
+            return (this.field.attribute.definition.multiline);
         },
-        isNumber: function() {
-            return(this.field.attribute.type == "INTEGER" || this.field.attribute.type == "DECIMAL");
+        isNumber: function () {
+            return (this.field.attribute.type == "INTEGER" || this.field.attribute.type == "DECIMAL");
         },
-        isBoolean: function() {
-            return(this.field.attribute.type == "BOOLEAN");
+        isBoolean: function () {
+            return (this.field.attribute.type == "BOOLEAN");
         },
-        isList: function() {
-            return(this.field.attribute.type == "LIST");
+        isList: function () {
+            return (this.field.attribute.type == "LIST");
         },
-        stepNumber: function() {
+        stepNumber: function () {
             if (this.field.attribute.type == "INTEGER") {
-                return("1");
+                return ("1");
             } else {
-                return(".01");
+                return (".01");
             }
         }
+    }, components: {
+        'f-field-type-string': vueFormsFieldTypeString,
+        'f-field-type-number': vueFormsFieldTypeNumber,
+        'f-field-type-date': vueFormsFieldTypeDate,
+        'f-field-type-boolean': vueFormsFieldTypeBoolean,
+        'f-field-type-list': vueFormsFieldTypeList
     }
 }
