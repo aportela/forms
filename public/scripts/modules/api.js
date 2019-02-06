@@ -437,5 +437,84 @@ export default {
                 }
             );
         }
+    },
+    form: {
+        get: function (id, callback) {
+            Vue.http.get("api/forms/" + id).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        add: function (form, callback) {
+            Vue.http.post("api/forms/" + form.id, form).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        update: function (form, callback) {
+            Vue.http.put("api/forms/" + form.id, form).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        remove: function (id, callback) {
+            Vue.http.delete("api/forms/" + id).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        search: function (currentPage, resultsPage, sortBy, sortOrder, callback) {
+            let params = {
+                filter: {},
+                currentPage: currentPage,
+                resultsPage: resultsPage,
+                sortBy: sortBy,
+                sortOrder: sortOrder,
+            };
+            Vue.http.post("api/forms/search", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        }
     }
 }
