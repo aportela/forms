@@ -31,21 +31,24 @@
          */
         public function add(\Forms\Database\DB $dbh) {
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
-                if (! empty($this->description) && mb_strlen($this->description) <= 255) {
-                    $params = array(
-                        (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
-                        (new \Forms\Database\DBParam())->str(":description", $this->description),
-                        (new \Forms\Database\DBParam())->str(":creator", \Forms\UserSession::getUserId())
-                    );
-                    if ($dbh->execute("INSERT INTO [FORM] (id, description, creation_date, creator) VALUES(:id, :description, strftime('%s', 'now'), :creator)", $params)) {
-                        if ($this->setFormPermissions($dbh)) {
+                if (! empty($this->template->id) && mb_strlen($this->template->id) == 36) {
+                    if (! empty($this->description) && mb_strlen($this->description) <= 255) {
+                        $params = array(
+                            (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
+                            (new \Forms\Database\DBParam())->str(":template_id", mb_strtolower($this->template->id)),
+                            (new \Forms\Database\DBParam())->str(":description", $this->description),
+                            (new \Forms\Database\DBParam())->str(":creator", \Forms\UserSession::getUserId())
+                        );
+                        if ($dbh->execute("INSERT INTO [FORM] (id, template_id, description, creation_date, creator) VALUES(:id, :template_id, :description, strftime('%s', 'now'), :creator)", $params)) {
                             return($this->setFormFields($dbh));
                         } else {
                             return(false);
                         }
+                    } else {
+                        throw new \Forms\Exception\InvalidParamsException("description");
                     }
                 } else {
-                    throw new \Forms\Exception\InvalidParamsException("description");
+                    throw new \Forms\Exception\InvalidParamsException("template");
                 }
             } else {
                 throw new \Forms\Exception\InvalidParamsException("id");
@@ -59,17 +62,13 @@
          */
         public function update(\Forms\Database\DB $dbh) {
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
-                if (! empty($this->name) && mb_strlen($this->description) <= 255) {
-                    $params = array(description
+                if (! empty($this->description) && mb_strlen($this->description) <= 255) {
+                    $params = array(
                         (new \Forms\Database\DBParam())->str(":id", mb_strtolower($this->id)),
                         (new \Forms\Database\DBParam())->str(":description", $this->description)
                     );
                     if ($dbh->execute("UPDATE [FORM] SET description = :description WHERE id = :id", $params)) {
-                        if ($this->setFormPermissions($dbh)) {
-                            return($this->setFormFields($dbh));
-                        } else {
-                            return(false);
-                        }
+                        return($this->setFormFields($dbh));
                     } else {
                         return(false);
                     }
@@ -79,6 +78,13 @@
             } else {
                 throw new \Forms\Exception\InvalidParamsException("id");
             }
+        }
+
+        /**
+         * set/save form fields
+         */
+        private function setFormFields(\Forms\Database\DB $dbh) {
+            return(true);
         }
 
         /**
@@ -109,7 +115,7 @@
                     sprintf(
                         "
                             SELECT
-                                [FORM].id, [FORM].description,
+                                [FORM].id, [FORM].template_id AS templateId, [FORM].description,
                                 strftime('%s', datetime([FORM].creation_date, 'unixepoch')) AS creationDate, [FORM].deletion_date AS deletionDate, [FORM].creator AS creatorId, USER.email AS creatorEmail, USER.name AS creatorName
                             FROM [FORM]
                             LEFT JOIN USER ON USER.id = [FORM].creator
@@ -123,6 +129,8 @@
                 );
                 if (count($results) == 1) {
                     $this->id = $results[0]->id;
+                    $this->template = new \Forms\Template($results[0]->templateId);
+                    $this->template->get($dbh);
                     $this->description = $results[0]->description;
                     $this->creationDate = $results[0]->creationDate;
                     $this->creator = new \stdclass();
