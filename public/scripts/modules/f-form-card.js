@@ -1,5 +1,6 @@
 import { bus } from './bus.js';
 import { uuid } from './utils.js';
+import { default as formsAPI } from './api.js';
 import { mixinDates, mixinSizes } from './mixins.js';
 import { default as fieldForm } from './f-field-form.js';
 
@@ -13,9 +14,13 @@ const template = function () {
                             Create form with template "foo"
                         </p>
                         <a href="#" class="card-header-icon" aria-label="more options">
-                            <button type="button" class="button is-small is-fullwidth is-info" v-bind:disabled="disabled" v-on:click="$router.push({ name: 'updateAttribute', params: { id: attribute.id } })">
+                            <button type="button" class="button is-small is-fullwidth is-info" v-bind:disabled="disabled || ! isValid" v-on:click.prevent="save()">
                                 <span class="icon is-small"><i class="fas fa-pen"></i></span>
                                 <span>Save</span>
+                            </button>
+                            <button type="button" class="button is-small is-fullwidth is-danger" v-bind:disabled="disabled || ! exists" v-on:click.prevent="remove()">
+                                <span class="icon is-small"><i class="fas fa-trash-alt"></i></span>
+                                <span>Remove</span>
                             </button>
                         </a>
                     </header>
@@ -23,8 +28,14 @@ const template = function () {
                     <div class="card-content">
 
                         <div class="field">
-                            <label class="label">Form title</label>
-                            <input class="input" type="text" placeholder="type a descriptive title for this new element">
+                            <label class="label">Form description</label>
+                            <div class="control has-icons-right">
+                                <input class="input" required maxlength="255" placeholder="type a descriptive title for this new element" v-bind:disabled="disabled" v-bind:class="{ 'is-danger': ! hasValidFormDescription }" type="text" v-model="form.description">
+                                <span class="icon is-small is-right">
+                                    <i class="fas" v-bind:class="{ 'fa-check': isValid, 'fa-exclamation-triangle': ! hasValidFormDescription }"></i>
+                                </span>
+                            </div>
+                            <p v-show="! hasValidFormDescription" class="help is-danger">This field is required</p>
                         </div>
                         <div class="tabs">
                             <ul>
@@ -159,12 +170,17 @@ export default {
     template: template(),
     data: function () {
         return ({
+            exists: false,
             activeTab: 'metadata',
             fileToUpload: null,
             fileName: null,
             noteBody: null,
             attachments: [],
-            notes: []
+            notes: [],
+            form: {
+                id: null,
+                description: null
+            }
         });
     },
     props: [
@@ -180,6 +196,9 @@ export default {
     ],
     created: function () {
         let self = this;
+        this.form.template = {
+            id: this.template.id
+        };
         bus.$on('fileUploaded', function (file) {
             self.attachments.unshift({
                 id: uuid(),
@@ -195,6 +214,14 @@ export default {
             self.fileName = null;
             self.$refs.f.value = null;
         })
+    },
+    computed: {
+        hasValidFormDescription: function () {
+            return (this.form.description && this.form.description.length > 0 && this.form.description < 256);
+        },
+        isValid: function () {
+            return (true);
+        }
     },
     methods: {
         onFileUploadChange: function (event) {
@@ -217,6 +244,52 @@ export default {
                 });
                 this.noteBody = null;
             }
+        },
+        save: function () {
+            if (this.isValid) {
+                if (!this.exists) {
+                    this.form.id = uuid();
+                    this.add();
+                } else {
+                    this.update();
+                }
+
+            }
+        },
+        add: function () {
+            let self = this;
+            formsAPI.form.add(this.form, function (response) {
+                if (response.ok && response.body.success) {
+                    self.exists = true;
+                    self.loading = false;
+                } else {
+                    //self.showApiError(response.getApiErrorData());
+                    self.loading = false;
+                }
+            });
+        },
+        update: function () {
+            let self = this;
+            formsAPI.form.update(this.form, function (response) {
+                if (response.ok && response.body.success) {
+                    self.loading = false;
+                } else {
+                    //self.showApiError(response.getApiErrorData());
+                    self.loading = false;
+                }
+            });
+        },
+        remove: function () {
+            let self = this;
+            formsAPI.form.remove(this.form.id, function (response) {
+                if (response.ok && response.body.success) {
+                    self.exists = false;
+                    self.loading = false;
+                } else {
+                    //self.showApiError(response.getApiErrorData());
+                    self.loading = false;
+                }
+            });
         }
     }
 }
