@@ -773,47 +773,28 @@
 
             $this->put('/{id}', function (Request $request, Response $response, array $args) {
                 $route = $request->getAttribute('route');
-                $formPermissions = array();
-                foreach($request->getParam("formPermissions", array()) as $formPermission) {
-                    $formPermissions[] = new \Forms\FormPermission($formPermission["id"], new \Forms\GroupBase($formPermission["group"]["id"]), $formPermission["allowRead"], $formPermission["allowWrite"]);
-                }
-                $formFields = array();
-                foreach($request->getParam("formFields", array()) as $formField) {
-                    $formFields[] = new \Forms\FormField($formField["id"], new \Forms\Attribute($formField["attribute"]["id"], $formField["attribute"]["name"]), $formField["label"], $formField["required"]);
-                }
-                $template = new \Forms\Template(
+                $form = new \Forms\Form(
                     $route->getArgument("id"),
-                    $request->getParam("name", ""),
                     $request->getParam("description", ""),
-                    $request->getParam("allowFormAttachments", false),
-                    $request->getParam("allowFormNotes", false),
-                    $request->getParam("allowFormLinks", false),
-                    $formPermissions,
-                    $formFields
+                    new \Forms\Template($request->getParam("template")["id"])
                 );
                 $dbh = new \Forms\Database\DB($this);
-                if (\Forms\Template::existsName($dbh, $template->name, $template->id)) {
-                    throw new \Forms\Exception\AlreadyExistsException("name");
-                } else {
-                    $template->update($dbh);
-                    return $response->withJson(
-                        [
-                            'success' => true,
-                            "template" => $template
-                        ], 200
-                    );
-                }
+                $form->update($dbh);
+                return $response->withJson(
+                    [
+                        'success' => true,
+                        "form" => $form
+                    ], 200
+                );
             })->add(new \Forms\Middleware\FormCreationPrivilegesRequired($this->getContainer()));
 
             $this->delete('/{id}', function (Request $request, Response $response, array $args) {
                 $route = $request->getAttribute('route');
-                $template = new \Forms\Template(
-                    $route->getArgument("id"),
-                    "",
-                    ""
+                $form = new \Forms\Form(
+                    $route->getArgument("id")
                 );
                 $dbh = new \Forms\Database\DB($this);
-                $template->delete($dbh);
+                $form->delete($dbh);
                 return $response->withJson(
                     [
                         'success' => true,
